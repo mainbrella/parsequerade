@@ -1,0 +1,14 @@
+[
+  {"slug": "get-v1-apps", "handler": "apps"},
+  {"slug": "get-v1-apps-_id_", "handler": "app"},
+  {"slug": "get-v1-apps-_id_-appinfos", "handler": "appInfos"},
+  {"slug": "get-v1-appinfos-_id_", "handler": "appInfo"},
+  {"slug": "get-v1-appinfos-_id_-appinfolocalizations", "handler": "appInfoLocalizations"},
+  {"slug": "get-v1-appinfolocalizations-_id_", "handler": "appInfoLocalization"},
+  {"slug": "get-v1-appinfos-_id_-ageratingdeclaration", "handler": "ageRating"},
+  {"slug": "get-v1-apps-_id_-appstoreversions", "handler": "versions"},
+  {"slug": "get-v1-appstoreversions-_id_", "handler": "version"},
+  {"slug": "get-v1-appstoreversions-_id_-appstoreversionlocalizations", "handler": "versionLocalizations"},
+  {"slug": "get-v1-appstoreversionlocalizations-_id_", "handler": "versionLocalization"},
+  {"slug": "get-v1-appstoreversions-_id_-appstorereviewdetail", "handler": "reviewContact"}
+]
