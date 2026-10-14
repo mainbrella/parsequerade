@@ -8,7 +8,7 @@ The goal is to let a client list apps, edit a localized description, update a re
 
 ## Documentation site
 
-The static documentation site lives in `dist/`. Run `npm install` once, then use `npm run dev` to preview it locally. `npm run check` checks internal page links and anchors. `npm run deploy` publishes through the existing Wrangler configuration.
+The static site lives in `dist/`; `/` is a blank homepage and the documentation starts at `/docs/`. Run `npm install` once, then use `npm run dev` to preview it locally. `npm run check` checks internal page links and anchors. `npm run deploy` publishes through the existing Wrangler configuration.
 
 ## Why a facade?
 
