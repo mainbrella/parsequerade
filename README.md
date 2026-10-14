@@ -8,7 +8,13 @@ The goal is to let a client list apps, edit a localized description, update a re
 
 ## Documentation site
 
-The static site lives in `dist/`; `/` is the Parsequerade landing page and the documentation starts at `/docs/`. Run `npm install` once, then use `npm run dev` to preview it locally. `npm run check` checks internal page links and anchors. `npm run deploy` publishes through the existing Wrangler configuration.
+The static site lives in `dist/`; `/` is the Parsequerade landing page and the documentation starts at `/docs/`. Run `npm install` once, then use `npm run dev` to preview it locally. `npm run deploy` publishes through the existing Wrangler configuration.
+
+The GET reference covers all **457 GET endpoint pages** reached through Apple’s [App Store documentation topic tree](https://developer.apple.com/documentation/appstoreconnectapi/app-store), organized into 84 topics. Each page describes a proposed facade route, request examples, parameters, JSON response fields, pagination, errors, and its Apple mapping. First-release and read-parity contracts follow `rest.md`; additional resource reads are labeled as extended designs, and older resource shapes have separate `/legacy` routes. This reference does not mean that the service or these adapters are implemented.
+
+- `npm run build:docs` regenerates the reference and guides offline from the reviewed `docs/apple-get-reference.json` snapshot, the facade mappings in `scripts/docs_contracts.py`, editorial overrides in `docs/facade-overrides.json`, and the shared layout and guides under `docs/`.
+- `npm run check` verifies local links and anchors, complete endpoint coverage, response and query examples against their schemas, core route mappings, relationship-ID responses, CSV adapters, and JavaScript syntax.
+- `npm run sync:docs` explicitly downloads Apple’s current topic pages and OpenAPI specification and replaces the source snapshot. Review source changes before rebuilding. The current snapshot records OpenAPI 4.5.1 and the source checksums; ordinary builds make no network requests.
 
 ## Why a facade?
 

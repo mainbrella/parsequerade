@@ -118,6 +118,8 @@ All routes below are relative to the connection base. `{appInfoId}` and `{versio
 
 This deliberately starts with observed writes. Name/subtitle editing, secondary-category updates, version creation, release/submission, uploads, pricing, TestFlight management, and financial/analytics reports need separate contract work. Read-only fields are not implicitly writable. The arbitrary expanded app browser is not an excuse to promise management of every included resource.
 
+The static [GET reference](dist/docs/reference/index.html) now documents proposed read translations for all 457 GET pages reached through Apple’s App Store topic tree, including relationship-ID reads. The first-release and read-parity routes above retain their milestones. Other pages are labeled **Extended read design** or **Legacy read design** and do not add mutation coverage or imply an implemented adapter. Their route mappings, query allowlists, flat response schemas, and examples live in `scripts/docs_contracts.py`, with editorial overrides in `docs/facade-overrides.json` and a versioned source snapshot in `docs/apple-get-reference.json`. `/legacy` distinguishes older Apple resource shapes; it is independent of the facade’s API version. CSV-only code downloads and structured performance metrics have explicit read designs rather than being treated as ordinary resource JSON.
+
 ### Ordinary client examples
 
 The base includes the connection once; all remaining URLs describe application resources.

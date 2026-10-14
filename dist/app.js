@@ -52,10 +52,8 @@
 
   const openDrawer = (opener) => {
     setSidebar(true, opener);
-    window.setTimeout(() => {
-      if (searchInput) searchInput.focus();
-      else sidebarClose?.focus();
-    }, 0);
+    if (searchInput) searchInput.focus({ preventScroll: true });
+    else sidebarClose?.focus({ preventScroll: true });
   };
 
   mobileMenuButtons.forEach((button) => button.addEventListener("click", () => {
@@ -67,12 +65,12 @@
   searchButton?.addEventListener("click", () => {
     openDrawer(searchButton);
   });
-  backdrop?.addEventListener("click", () => setSidebar(false));
 
   const closeDrawer = () => {
     setSidebar(false);
     (lastDrawerOpener || mobileMenuButtons[0] || searchButton)?.focus();
   };
+  backdrop?.addEventListener("click", closeDrawer);
   sidebarClose?.addEventListener("click", closeDrawer);
 
   document.addEventListener("keydown", (event) => {

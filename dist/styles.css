@@ -11,7 +11,7 @@
   --muted: #a0a0a5;
   --subtle: #85868c;
   --accent: #d9d9dc;
-  --link-accent: #d8ef56;
+  --link-accent: #a9d6b2;
   --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --mono: "DM Mono", "SFMono-Regular", Consolas, monospace;
 }
@@ -77,8 +77,8 @@ button { color: inherit; }
 .intro-content p, .document-section p { color: var(--muted); font-size: 15px; margin: 0 0 18px; max-width: 700px; }
 .document-section { border-top: 1px solid var(--line); margin-top: 54px; padding-top: 30px; scroll-margin-top: 32px; }
 .document-section h2 { font-size: 24px; letter-spacing: -.035em; line-height: 1.25; margin: 0 0 14px; }
-.inline-link { border-bottom: 1px solid var(--link-accent); box-shadow: inset 0 -0.22em 0 rgba(216,239,86,.30); color: var(--text); transition: background-color 180ms ease, color 180ms ease; }
-.inline-link:hover, .inline-link:focus-visible { background: var(--link-accent); color: var(--bg); }
+.inline-link { border-bottom: 1px solid #a9d6b260; color: #b6dabe; transition: border-color 180ms ease, color 180ms ease; }
+.inline-link:hover, .inline-link:focus-visible { border-color: var(--link-accent); color: #d6eddb; }
 .on-page { border-left: 1px solid var(--line); margin: 60px 0 0; max-height: 280px; padding: 0 18px; position: sticky; top: 96px; }
 .on-page h2 { color: var(--text); font-size: 12px; font-weight: 500; margin: 0 0 13px; }
 .on-page nav { display: grid; gap: 10px; }
@@ -147,7 +147,7 @@ button { color: inherit; }
 .topic-row > span:first-child { display: grid; gap: 2px; }
 .topic-row .nav-count { flex: none; }
 .endpoint-line { align-items: baseline; background: transparent; border: 0; border-radius: 0; display: flex; gap: 12px; margin: 18px 0 8px; max-width: 100%; min-width: 0; padding: 0; }
-.endpoint-line .method { background: transparent; color: var(--muted); flex: none; font-family: var(--mono); font-size: 12px; font-weight: 500; line-height: 24px; padding: 0; }
+.endpoint-line .method { background: transparent; color: #8bc9ab; flex: none; font-family: var(--mono); font-size: 12px; font-weight: 500; line-height: 24px; padding: 0; }
 .endpoint-line code { color: var(--text); font-family: var(--mono); font-size: 13px; line-height: 24px; overflow-wrap: anywhere; }
 .endpoint-line button, .code-copy { align-items: center; background: transparent; border: 0; border-radius: 0; color: var(--muted); cursor: pointer; flex: none; font-size: 12px; justify-content: center; margin-left: auto; min-height: 36px; padding: 5px 8px; }
 .endpoint-line button:hover, .code-copy:hover { background: var(--surface-hover); color: var(--text); }
@@ -172,7 +172,7 @@ button { color: inherit; }
 .parameter-meta { color: var(--subtle); display: block; font-size: 11px; margin-top: 3px; }
 .enum-values { color: var(--muted); font-family: var(--mono); font-size: 11px; }
 .contract-note { background: transparent; border: 0; color: var(--muted); font-size: 13px; line-height: 1.6; margin: 16px 0; padding: 0; }
-.status-label { background: transparent; border-radius: 0; color: var(--muted); font-size: inherit; padding: 0; }
+.status-label { background: transparent; border-radius: 0; color: #bfa9df; font-size: inherit; padding: 0; }
 .source-details, .schema-details { border-top: 1px solid var(--line); margin-top: 18px; }
 .source-details > summary, .schema-details > summary { color: var(--muted); cursor: pointer; font-size: 12px; min-height: 42px; padding: 10px 0; }
 .mapping-list { display: grid; gap: 8px; padding: 2px 0 14px; }
@@ -207,6 +207,7 @@ button { color: inherit; }
 }
 
 @media (max-width: 800px) {
+  .endpoint-line button, .code-copy, .code-tabs [role="tab"], .nav-link, .nav-group > summary { min-height: 44px; }
   .docs-header { border-bottom: 1px solid rgba(255,255,255,.035); display: flex; height: 64px; justify-content: space-between; padding: 0 20px; }
   .brand-name { font-size: 18px; }
   .brand-name em, .top-nav { display: none; }

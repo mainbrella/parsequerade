@@ -165,9 +165,10 @@ def response_model(endpoint):
     mime = "application/json" if "application/json" in media else next((m for m in media if "+json" in m), next(iter(media)))
     envelope = resolve(media[mime]["schema"])
     wrapped = "data" in envelope.get("properties", {})
-    data = resolve(envelope["properties"]["data"]) if wrapped else envelope
+    raw_data = envelope["properties"]["data"] if wrapped else media[mime]["schema"]
+    data = resolve(raw_data)
     many = data.get("type") == "array"
-    raw_model = data.get("items", data)
+    raw_model = data["items"] if many else raw_data
     model_name = raw_model.get("$ref", "").rsplit("/", 1)[-1]
     return mime, many, resolve(raw_model), model_name, wrapped
 
@@ -243,6 +244,15 @@ def response_shape(endpoint, contract):
         fields.update({name: {"type": "string"} for name in contexts})
         attributes = resolve(model["properties"]["attributes"]).get("properties", {})
         fields.update({name: schema for name, schema in attributes.items() if not schema.get("deprecated") or contract["legacy"]})
+        # The facade preserves absent/null optional listing metadata. Apple’s
+        # update schemas allow these clears even where read schemas omit nullable.
+        listing_nullable = {
+            "AppStoreVersionLocalization": {"description", "keywords", "marketingUrl", "supportUrl", "promotionalText", "whatsNew"},
+            "AppInfoLocalization": {"subtitle", "privacyPolicyUrl", "privacyChoicesUrl"},
+        }
+        for name in listing_nullable.get(model_name, set()):
+            if name in fields:
+                fields[name] = {**fields[name], "nullable": True}
         relationships = resolve(model["properties"].get("relationships", {})).get("properties", {})
         for name, relationship in relationships.items():
             data = resolve(relationship).get("properties", {}).get("data", {})
@@ -303,6 +313,11 @@ def query_parameters(endpoint, contract, shape):
             continue
         if raw_name.startswith("fields["):
             # Only fields on the resource being returned are client-selectable.
+            model_name = re.sub(r"V\d+$", "", shape["modelName"])
+            type_name = model_name[:1].lower() + model_name[1:]
+            type_name = type_name[:-1] + "ies" if type_name.endswith("y") else type_name + "s"
+            if raw_name[7:-1] != type_name:
+                continue
             values = resolve(parameter["schema"]).get("items", {}).get("enum", [])
             attributes = resolve(response_model(endpoint)[2].get("properties", {}).get("attributes", {})).get("properties", {})
             allowed = [v for v in values if v in attributes and v in shape["fields"]]
@@ -381,7 +396,8 @@ def example_value(schema, name="", depth=0):
             return value
     if kind == "string":
         if schema.get("format") == "date-time":
-            return EXAMPLE_VALUES.get(name, "2026-10-14T12:00:00Z")
+            candidate = EXAMPLE_VALUES.get(name, "2026-10-14T12:00:00Z")
+            return candidate if "T" in candidate else candidate + "T12:00:00Z"
         if schema.get("format") == "date":
             return "2026-10-14"
         if schema.get("format") in ("uri", "uri-reference"):
@@ -414,8 +430,12 @@ def response_example(endpoint, contract, shape):
         item = {"id": concrete_route("{" + child.removesuffix("V2") + "Id}")}
     else:
         item = example_value(shape["itemSchema"])
+        if shape["kind"] == "metrics" and "version" in item:
+            item["version"] = "1.0"
         if shape["kind"] == "resource":
-            resource = endpoint["applePath"].split("/")[2]
+            resource = re.sub(r"V\d+$", "", shape["modelName"])
+            resource = resource[:1].lower() + resource[1:]
+            resource = resource[:-1] + "ies" if resource.endswith("y") else resource + "s"
             item["id"] = PATH_EXAMPLES.get(identifier(resource), re.sub(r"(?<!^)(?=[A-Z])", "_", shape["modelName"]).lower().removesuffix("_v2") + "_123")
             item.update(contract.get("context", {}))
             if "locale" in shape["fields"]:
@@ -438,6 +458,18 @@ def make_contract(endpoint):
     override = dict(OVERRIDES.get(endpoint["slug"], {}))
     route, legacy = route_for(endpoint)
     contract = {"route": override.get("route", route), "legacy": legacy, "title": override.get("title", sentence_title(endpoint["title"])), "stage": override.get("stage", "Legacy read design" if legacy else "Extended read design"), "notes": list(override.get("notes", [])), **override}
+    first_release = {
+        "/apps", "/apps/{appId}", "/apps/{appId}/app-infos",
+        "/apps/{appId}/app-infos/{appInfoId}", "/apps/{appId}/app-infos/{appInfoId}/localizations",
+        "/apps/{appId}/app-infos/{appInfoId}/localizations/{locale}", "/apps/{appId}/app-infos/{appInfoId}/age-rating",
+        "/apps/{appId}/versions", "/apps/{appId}/versions/{versionId}",
+        "/apps/{appId}/versions/{versionId}/localizations", "/apps/{appId}/versions/{versionId}/localizations/{locale}",
+        "/apps/{appId}/versions/{versionId}/review-contact",
+    }
+    if contract["route"] in first_release:
+        contract["stage"] = "First release"
+    if contract["route"] in {"/apps/{appId}/builds", "/apps/{appId}/builds/{buildId}", "/apps/{appId}/builds/{buildId}/icons", "/apps/{appId}/versions/{versionId}/build"}:
+        contract["stage"] = "Read parity"
     if endpoint["slug"] in ("get-v1-builds", "get-v1-apps-_id_-builds"):
         contract["queryFrom"] = "get-v1-builds"
         contract["stage"] = "Read parity"

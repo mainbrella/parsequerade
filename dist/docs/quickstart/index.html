@@ -3,43 +3,95 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Parsequerade quickstart documentation is in progress." />
+    <meta name="description" content="Parsequerade’s proposed App Store Connect facade: quickstart." />
     <meta name="theme-color" content="#08090a" />
-    <style>
-      html { background: #08090a; }
-      * { box-sizing: border-box; }
-      body {
-        margin: 0;
-        background: #08090a;
-        color: #f1f1f2;
-        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        font-size: 15px;
-        line-height: 1.6;
-      }
-      a { color: inherit; text-decoration: none; }
-      [hidden] { display: none !important; }
-    </style>
+    <link rel="icon" href="/parsequerade.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/styles.css" />
     <script type="module" src="/app.js"></script>
     <title>Quickstart · Parsequerade docs</title>
   </head>
   <body class="docs-body">
+    <a class="skip-link" href="#main-content">Skip to content</a>
     <header class="docs-header">
-      <a class="brand" href="/docs/" aria-label="Parsequerade documentation home"><span class="brand-mark" aria-hidden="true">P</span><span class="brand-name">Parsequerade <em>/ docs</em></span></a>
-      <nav class="top-nav" aria-label="Primary navigation"><a href="/docs/">Introduction</a><a class="is-current" href="/docs/quickstart/" aria-current="page">Quickstart</a><a href="/docs/reference/">Reference</a></nav>
-      <div class="mobile-header-actions"><button type="button" class="mobile-search-toggle" aria-label="Focus documentation search"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg></button><button type="button" aria-label="Open documentation menu" aria-expanded="false" class="mobile-menu-toggle"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button></div>
+      <a class="brand" href="/" aria-label="Parsequerade home"><img class="brand-mask" src="/parsequerade.svg" width="32" height="32" alt="" /><span class="brand-name">Parsequerade <em>/ docs</em></span></a>
+      <nav class="top-nav" aria-label="Primary navigation"><a href="/docs/" >Introduction</a><a href="/docs/quickstart/" class="is-current" aria-current="page">Quickstart</a><a href="/docs/reference/" >Reference</a></nav>
+      <div class="mobile-header-actions">
+        <button class="mobile-search-toggle" type="button" aria-label="Search documentation" aria-expanded="false" aria-controls="docs-sidebar"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg></button>
+        <button class="mobile-menu-toggle" type="button" aria-label="Open documentation menu" aria-expanded="false" aria-controls="docs-sidebar"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      </div>
     </header>
-    <div class="mobile-breadcrumb"><button class="crumb-menu" type="button" aria-label="Open documentation menu" aria-expanded="false"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><span>Get started</span><span class="crumb-chevron" aria-hidden="true">›</span><strong>Quickstart</strong></div>
-    <main class="docs-app">
+    <div class="mobile-breadcrumb"><button class="crumb-menu" type="button" aria-label="Open documentation menu" aria-expanded="false" aria-controls="docs-sidebar"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><span>Get started</span></div>
+    <button class="sidebar-backdrop" type="button" hidden aria-label="Close documentation menu" tabindex="-1"></button>
+    <div class="docs-app">
       <aside class="docs-sidebar" id="docs-sidebar" aria-label="Documentation">
-        <form class="search-box" role="search" onsubmit="return false"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg><input id="docs-search" type="search" placeholder="Search..." aria-label="Search documentation" autocomplete="off" /><span class="search-shortcut" aria-hidden="true">⌘K</span></form>
-        <p class="search-empty" hidden>No matching pages.</p>
-        <div class="docs-nav"><section class="nav-group"><h2>Get started</h2><nav aria-label="Get started"><a class="nav-link" href="/docs/">Introduction</a><a class="nav-link is-current" href="/docs/quickstart/" aria-current="page">Quickstart</a></nav></section><section class="nav-group"><h2>Reference</h2><nav aria-label="Reference"><a class="nav-link" href="/docs/reference/">API reference</a></nav></section></div>
-        <div class="sidebar-footer"><span class="status-dot" aria-hidden="true"></span>Documentation status<br /><strong>In progress</strong></div>
+        <button class="sidebar-close" type="button" aria-label="Close documentation menu">Close menu <span aria-hidden="true">×</span></button>
+        <form class="search-box" role="search" onsubmit="return false"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg><input id="docs-search" type="search" placeholder="Search endpoints…" aria-label="Search endpoints" aria-controls="docs-search-results" autocomplete="off" /><kbd class="search-shortcut" aria-hidden="true">⌘K</kbd></form>
+        <div id="docs-search-results" class="search-results" hidden aria-live="polite"></div>
+        <div class="docs-nav"><section class="nav-group"><h2>Get started</h2><nav><a class="nav-link" href="/docs/">Introduction</a><a class="nav-link is-current" aria-current="page" href="/docs/quickstart/">Quickstart</a><a class="nav-link" href="/docs/conventions/">API conventions</a></nav></section><section class="nav-group"><h2>Reference</h2><nav><a class="nav-link" href="/docs/reference/">All GET endpoints</a></nav></section><details class="nav-group"><summary>Apps and App Metadata<span class="nav-count">190</span></summary><nav><a class="nav-link" href="/docs/reference/topics/accessibility-declarations/">Accessibility declarations</a><a class="nav-link" href="/docs/reference/topics/age-ratings/">Age Ratings</a><a class="nav-link" href="/docs/reference/topics/app-categories/">App Categories</a><a class="nav-link" href="/docs/reference/topics/app-categories-and-subcategories/">App Categories and Subcategories</a><a class="nav-link" href="/docs/reference/topics/app-custom-product-page-localizations/">App Custom Product Page Localizations</a><a class="nav-link" href="/docs/reference/topics/app-custom-product-page-versions/">App Custom Product Page Versions</a><a class="nav-link" href="/docs/reference/topics/app-custom-product-pages/">App Custom Product Pages</a><a class="nav-link" href="/docs/reference/topics/app-event-localizations/">App Event Localizations</a><a class="nav-link" href="/docs/reference/topics/app-event-screenshots/">App Event Screenshots</a><a class="nav-link" href="/docs/reference/topics/app-event-video-clips/">App Event Video Clips</a><a class="nav-link" href="/docs/reference/topics/app-events/">App Events</a><a class="nav-link" href="/docs/reference/topics/app-info-localizations/">App Info Localizations</a><a class="nav-link" href="/docs/reference/topics/app-infos/">App Infos</a><a class="nav-link" href="/docs/reference/topics/app-preview-sets/">App Preview Sets</a><a class="nav-link" href="/docs/reference/topics/app-previews/">App Previews</a><a class="nav-link" href="/docs/reference/topics/app-screenshot-sets/">App Screenshot Sets</a><a class="nav-link" href="/docs/reference/topics/app-screenshots/">App Screenshots</a><a class="nav-link" href="/docs/reference/topics/app-store-version-localizations/">App Store Version Localizations</a><a class="nav-link" href="/docs/reference/topics/app-store-versions/">App Store Versions</a><a class="nav-link" href="/docs/reference/topics/app-tags/">App tags</a><a class="nav-link" href="/docs/reference/topics/apps/">Apps</a><a class="nav-link" href="/docs/reference/topics/end-user-license-agreements-eula/">End User License Agreements (EULA)</a><a class="nav-link" href="/docs/reference/topics/game-center-enabled-versions/">Game Center Enabled Versions</a><a class="nav-link" href="/docs/reference/topics/routing-app-coverages/">Routing App Coverages</a></nav></details><details class="nav-group"><summary>App Asset Library<span class="nav-count">14</span></summary><nav><a class="nav-link" href="/docs/reference/topics/app-asset-libraries/">App Asset Libraries</a><a class="nav-link" href="/docs/reference/topics/app-asset-library-images/">App Asset Library images</a><a class="nav-link" href="/docs/reference/topics/app-asset-library-placements/">App Asset Library placements</a><a class="nav-link" href="/docs/reference/topics/app-asset-library-reference-data/">App Asset Library reference data</a><a class="nav-link" href="/docs/reference/topics/app-asset-library-videos/">App Asset Library videos</a></nav></details><details class="nav-group"><summary>App Clips<span class="nav-count">18</span></summary><nav><a class="nav-link" href="/docs/reference/topics/advanced-app-clip-experience-images/">Advanced App Clip Experience Images</a><a class="nav-link" href="/docs/reference/topics/advanced-app-clip-experiences/">Advanced App Clip Experiences</a><a class="nav-link" href="/docs/reference/topics/app-clip-header-images/">App Clip Header Images</a><a class="nav-link" href="/docs/reference/topics/app-clips/">App Clips</a><a class="nav-link" href="/docs/reference/topics/default-app-clip-experience-localizations/">Default App Clip Experience Localizations</a><a class="nav-link" href="/docs/reference/topics/default-app-clip-experiences/">Default App Clip Experiences</a></nav></details><details class="nav-group"><summary>Builds<span class="nav-count">44</span></summary><nav><a class="nav-link" href="/docs/reference/topics/app-encryption-declarations/">App Encryption Declarations</a><a class="nav-link" href="/docs/reference/topics/build-bundles/">Build Bundles</a><a class="nav-link" href="/docs/reference/topics/build-uploads/">Build uploads</a><a class="nav-link" href="/docs/reference/topics/builds/">Builds</a></nav></details><details class="nav-group"><summary>In-App Purchases and Subscriptions<span class="nav-count">143</span></summary><nav><a class="nav-link" href="/docs/reference/topics/billing-grace-periods/">Billing Grace Periods</a><a class="nav-link" href="/docs/reference/topics/in-app-purchase-app-store-review-screenshots/">In-App Purchase App Store Review Screenshots</a><a class="nav-link" href="/docs/reference/topics/in-app-purchase-availability/">In-App Purchase availability</a><a class="nav-link" href="/docs/reference/topics/in-app-purchase-images/">In-App Purchase images</a><a class="nav-link" href="/docs/reference/topics/in-app-purchase-images-v1/">In-App Purchase images (v1)</a><a class="nav-link" href="/docs/reference/topics/in-app-purchase-localizations/">In-App Purchase Localizations</a><a class="nav-link" href="/docs/reference/topics/in-app-purchase-localizations-v1/">In-App Purchase localizations (v1)</a><a class="nav-link" href="/docs/reference/topics/in-app-purchase-offers/">In-App Purchase Offer Codes</a><a class="nav-link" href="/docs/reference/topics/in-app-purchase-price-schedules/">In-App Purchase price schedules</a><a class="nav-link" href="/docs/reference/topics/in-app-purchase-versions/">In-App Purchase Versions</a><a class="nav-link" href="/docs/reference/topics/in-app-purchases/">In-App Purchases</a><a class="nav-link" href="/docs/reference/topics/promoted-purchases/">Promoted Purchases</a><a class="nav-link" href="/docs/reference/topics/sandbox-testers/">Sandbox Testers</a><a class="nav-link" href="/docs/reference/topics/subscription-app-store-review-screenshots/">Subscription App Store Review Screenshots</a><a class="nav-link" href="/docs/reference/topics/subscription-availability/">Subscription availability</a><a class="nav-link" href="/docs/reference/topics/subscription-group-localizations/">Subscription Group Localizations</a><a class="nav-link" href="/docs/reference/topics/subscription-group-localizations-v1/">Subscription group localizations (v1)</a><a class="nav-link" href="/docs/reference/topics/subscription-group-versions/">Subscription Group Versions</a><a class="nav-link" href="/docs/reference/topics/subscription-groups/">Subscription Groups</a><a class="nav-link" href="/docs/reference/topics/subscription-images/">Subscription images</a><a class="nav-link" href="/docs/reference/topics/subscription-images-v1/">Subscription images (v1)</a><a class="nav-link" href="/docs/reference/topics/subscription-localizations/">Subscription Localizations</a><a class="nav-link" href="/docs/reference/topics/subscription-localizations-v1/">Subscription localizations (v1)</a><a class="nav-link" href="/docs/reference/topics/subscription-offer-codes/">Subscription Offer Codes</a><a class="nav-link" href="/docs/reference/topics/subscription-plan-availability/">Subscription plan availability</a><a class="nav-link" href="/docs/reference/topics/subscription-price-points-and-subscription-prices/">Subscription price points and subscription prices</a><a class="nav-link" href="/docs/reference/topics/subscription-promotional-offers/">Subscription Promotional Offers</a><a class="nav-link" href="/docs/reference/topics/subscription-versions/">Subscription Versions</a><a class="nav-link" href="/docs/reference/topics/subscriptions/">Subscriptions</a><a class="nav-link" href="/docs/reference/topics/win-back-offers/">Win-back offers</a></nav></details><details class="nav-group"><summary>Customer Reviews and Responses<span class="nav-count">4</span></summary><nav><a class="nav-link" href="/docs/reference/topics/customer-review-responses/">Customer Review Responses</a><a class="nav-link" href="/docs/reference/topics/customer-reviews/">Customer Reviews</a></nav></details><details class="nav-group"><summary>App Pricing and Availability<span class="nav-count">1</span></summary><nav><a class="nav-link" href="/docs/reference/topics/territories/">Territories</a></nav></details><details class="nav-group"><summary>App Store Review Submissions<span class="nav-count">11</span></summary><nav><a class="nav-link" href="/docs/reference/topics/actors/">Actors</a><a class="nav-link" href="/docs/reference/topics/app-clip-app-store-review-details/">App Clip App Store review details</a><a class="nav-link" href="/docs/reference/topics/app-store-review-attachments/">App Store review attachments</a><a class="nav-link" href="/docs/reference/topics/app-store-review-details/">App Store review details</a><a class="nav-link" href="/docs/reference/topics/review-submissions/">Review submissions</a></nav></details><details class="nav-group"><summary>App Store Publishing<span class="nav-count">3</span></summary><nav><a class="nav-link" href="/docs/reference/topics/app-availability/">App availability</a></nav></details><details class="nav-group"><summary>Apple-hosted background assets<span class="nav-count">10</span></summary><nav><a class="nav-link" href="/docs/reference/topics/background-assets/">Background assets</a></nav></details><details class="nav-group"><summary>Featuring Nominations<span class="nav-count">2</span></summary><nav><a class="nav-link" href="/docs/reference/topics/featuring-nominations/">Featuring nominations</a></nav></details><details class="nav-group"><summary>App Store Version Experiments<span class="nav-count">16</span></summary><nav><a class="nav-link" href="/docs/reference/topics/app-store-version-experiment-treatment-localizations/">App Store Version Experiment Treatment Localizations</a><a class="nav-link" href="/docs/reference/topics/app-store-version-experiment-treatments/">App Store Version Experiment Treatments</a><a class="nav-link" href="/docs/reference/topics/app-store-version-experiments/">App Store version experiments</a></nav></details><details class="nav-group"><summary>Android to iOS app mapping<span class="nav-count">1</span></summary><nav><a class="nav-link" href="/docs/reference/topics/android-to-ios-app-mapping/">Android to iOS App Mapping</a></nav></details></div>
+        <div class="sidebar-footer"><span class="status-dot" aria-hidden="true"></span>Proposed API<br /><strong>GET reference</strong></div>
       </aside>
-      <section class="docs-main"><article class="document"><header class="page-header" id="overview"><p class="page-kicker">Get started</p><h1>Quickstart</h1><p class="page-lede">Setup instructions will be published when the service is ready to run.</p><div class="page-tools"><button class="copy-button" type="button" data-copy-page aria-label="Copy page link"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="8" y="8" width="11" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h2"/></svg><span class="copy-text" aria-live="polite">Copied</span></button></div></header><section class="document-section" id="availability"><p class="section-kicker">Documentation status</p><h2>Quickstart is not available yet</h2><p>Parsequerade is not implemented, so there are no installation steps, credentials, or working API examples to follow. This page will be updated when those details are available.</p><p>For the current design, start with the <a class="inline-link" href="/docs/">introduction</a> and the repository README.</p></section></article></section>
-      <aside class="on-page" aria-label="On this page"><h2>On this page</h2><nav><a class="is-current" href="#overview">Quickstart</a><a href="#availability">Availability</a></nav></aside>
-    </main>
-    <footer class="site-footer"><span>Parsequerade documentation · In progress</span><a href="/docs/reference/">API reference</a></footer>
+      <main class="docs-main" id="main-content"><article class="document"><header class="page-header" id="overview">
+  <p class="page-kicker">Getting started</p>
+  <h1>Quickstart</h1>
+  <p class="page-lede">Follow a proposed read flow from an app list to one explicitly selected version and locale.</p>
+</header>
+
+<section class="document-section" id="status">
+  <h2>Status</h2>
+  <p><span class="status-label">Proposed</span> The service is not implemented. <code>asc.example.com</code> and the IDs below are placeholders; these commands describe the planned contract and will not reach an available Parsequerade service.</p>
+</section>
+
+<section class="document-section" id="credentials">
+  <h2>Prepare access</h2>
+  <p>Set <code>ASC_FACADE_KEY</code> to a facade API key issued for a configured connection. The service would use that connection’s Apple credentials on the caller’s behalf; clients would not create Apple JWTs.</p>
+  <p>Requests use this connection-scoped base URL:</p>
+  <div class="code-example">
+    <div class="code-toolbar"><span class="code-label">Shell</span><button class="code-copy" type="button" data-copy-target="quickstart-base" aria-label="Copy base URL"><span class="copy-label">Copy</span></button></div>
+    <pre id="quickstart-base" tabindex="0"><code>BASE='https://asc.example.com/v1/connections/conn_example'</code></pre>
+  </div>
+</section>
+
+<section class="document-section" id="list-apps">
+  <h2>1. List apps</h2>
+  <p>Start with a bounded page. Narrow the list with a supported filter such as <code>bundleId</code> when you know it.</p>
+  <div class="code-example">
+    <div class="code-toolbar"><span class="code-label">cURL</span><button class="code-copy" type="button" data-copy-target="quickstart-apps" aria-label="Copy list apps request"><span class="copy-label">Copy</span></button></div>
+    <pre id="quickstart-apps" tabindex="0"><code>curl --fail-with-body "$BASE/apps?limit=50" \
+  -H "Authorization: Bearer $ASC_FACADE_KEY"
+
+curl --fail-with-body "$BASE/apps?bundleId=com.example.app&amp;limit=50" \
+  -H "Authorization: Bearer $ASC_FACADE_KEY"</code></pre>
+  </div>
+  <p>The collection response would contain plain objects in <code>items</code> and an opaque <code>nextCursor</code>. Select the intended app ID from the result; the service does not choose the first match for you.</p>
+</section>
+
+<section class="document-section" id="select-version">
+  <h2>2. Select a version</h2>
+  <p>Use the app ID from the list, then choose the returned version ID that matches the platform and state you intend to read.</p>
+  <div class="code-example">
+    <div class="code-toolbar"><span class="code-label">cURL</span><button class="code-copy" type="button" data-copy-target="quickstart-versions" aria-label="Copy list versions request"><span class="copy-label">Copy</span></button></div>
+    <pre id="quickstart-versions" tabindex="0"><code>curl --fail-with-body \
+  "$BASE/apps/1234567890/versions?platform=IOS&amp;state=PREPARE_FOR_SUBMISSION" \
+  -H "Authorization: Bearer $ASC_FACADE_KEY"</code></pre>
+  </div>
+  <p>Replace <code>1234567890</code> with an app ID you received. The state filter is explicit; no draft-to-live fallback is implied. See <a class="inline-link" href="/docs/reference/get-v1-apps-_id_-appstoreversions/">List versions</a> for its proposed response fields.</p>
+</section>
+
+<section class="document-section" id="read-locale">
+  <h2>3. Read an exact locale</h2>
+  <p>Use the selected version ID and the exact locale you need. This example reads <code>en-US</code> from <code>version_123</code>.</p>
+  <div class="code-example">
+    <div class="code-toolbar"><span class="code-label">cURL</span><button class="code-copy" type="button" data-copy-target="quickstart-localization" aria-label="Copy localization request"><span class="copy-label">Copy</span></button></div>
+    <pre id="quickstart-localization" tabindex="0"><code>curl --fail-with-body \
+  "$BASE/apps/1234567890/versions/version_123/localizations/en-US" \
+  -H "Authorization: Bearer $ASC_FACADE_KEY"</code></pre>
+  </div>
+  <p>The route resolves that locale under the selected version and returns one flat object. If the exact locale does not exist, the planned response is <code>404 localization_not_found</code>; request another locale or use the version-localizations collection to inspect available locales. It does not substitute the primary locale.</p>
+  <p>See <a class="inline-link" href="/docs/reference/get-v1-appstoreversionlocalizations-_id_/">Read a version localization</a> for the response shape.</p>
+</section>
+</article></main>
+      <aside class="on-page" aria-label="On this page"><h2>On this page</h2><nav><a class="" href="#overview">Quickstart</a><a class="" href="#status">Status</a><a class="" href="#credentials">Prepare access</a><a class="" href="#list-apps">1. List apps</a><a class="" href="#select-version">2. Select a version</a><a class="" href="#read-locale">3. Read an exact locale</a></nav></aside>
+    </div>
+    <footer class="site-footer"><span>Parsequerade · Proposed API</span><a href="https://github.com/mainbrella/parsequerade">Source on GitHub ↗</a></footer>
   </body>
 </html>
