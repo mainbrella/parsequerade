@@ -4,7 +4,6 @@
 import argparse
 import json
 import re
-from collections import defaultdict
 from html.parser import HTMLParser
 from docs_render import ROOT, DIST, esc, code, link, page_url, write_page, header, section, endpoint_line, requests, code_block, table, resource_rows
 from docs_contracts import make_contract
@@ -297,7 +296,9 @@ def build(examples_only=False):
     contracts = {slug: make_contract(e) for slug, e in ENDPOINTS.items() if not examples_only or slug in OVERRIDES}
     topic_lookup = {t["slug"]: t for t in SOURCE["topics"]}
     entries = [{"title": c["title"], "route": c["route"], "url": page_url(slug), "source": ENDPOINTS[slug]["source"], "applePath": ENDPOINTS[slug]["applePath"], "group": topic_lookup[ENDPOINTS[slug]["topic"]]["title"], "topic": ENDPOINTS[slug]["topic"], "keywords": " ".join([slug, c["stage"], *c["shape"]["fields"], *(p["name"] for p in c["parameters"])])} for slug, c in contracts.items()]
-    topics = SOURCE["topics"] if not examples_only else None
+    preferred_topics = ["apps", "app-infos", "app-info-localizations", "app-store-versions", "app-store-version-localizations", "app-categories", "age-ratings", "builds", "build-bundles", "build-uploads", "in-app-purchases", "in-app-purchase-versions", "subscription-groups", "subscriptions", "subscription-versions", "customer-reviews"]
+    priority = {slug: index for index, slug in enumerate(preferred_topics)}
+    topics = sorted(SOURCE["topics"], key=lambda t: (int(t["domain"].split("-")[-1]), priority.get(t["slug"], len(priority)), t["title"].lower())) if not examples_only else None
     domains = SOURCE["domains"] if not examples_only else None
     if not examples_only:
         build_guides(entries, topics, domains)

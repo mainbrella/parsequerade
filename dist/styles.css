@@ -111,7 +111,7 @@ button { color: inherit; }
 .nav-group > summary::-webkit-details-marker { display: none; }
 .nav-group > summary::after { color: var(--subtle); content: "⌄"; font-size: 14px; font-weight: 400; margin-left: 8px; }
 .nav-group:not([open]) > summary::after { content: "›"; }
-.nav-count { align-items: center; background: var(--surface-raised); border-radius: 999px; color: var(--subtle); display: inline-flex; font-family: var(--mono); font-size: 10px; font-weight: 400; justify-content: center; line-height: 1; min-height: 20px; min-width: 24px; padding: 3px 6px; }
+.nav-count { align-items: center; color: var(--subtle); display: inline-flex; font-family: var(--mono); font-size: 10px; font-weight: 400; justify-content: center; line-height: 1; min-height: 20px; min-width: 24px; }
 .nav-group nav { gap: 1px; padding: 1px 0 0; }
 .nav-link { border-radius: 6px; font-size: 12px; min-height: 34px; overflow-wrap: anywhere; padding: 6px 9px; }
 .nav-link.is-current { background: #242426; color: var(--text); }
@@ -166,6 +166,8 @@ button { color: inherit; }
 .param-table th { color: var(--muted); font-size: 11px; font-weight: 500; }
 .param-table th, .param-table td { border-bottom: 1px solid var(--line); padding: 11px 12px; vertical-align: top; }
 .param-table th:first-child, .param-table td:first-child { padding-left: 0; }
+.param-table th:nth-child(2), .param-table td:nth-child(2) { min-width: 112px; width: 112px; }
+.param-table td:nth-child(2) code { overflow-wrap: normal; word-break: normal; }
 .param-table code, .document :not(pre) > code { background: transparent; border-radius: 0; color: var(--accent); font-family: var(--mono); font-size: .9em; font-weight: 400; padding: 0; overflow-wrap: anywhere; }
 .param-table th[scope="row"] { font-weight: 400; }
 .parameter-name { color: var(--text); font-family: var(--mono); font-size: 12px; }
@@ -244,7 +246,7 @@ button { color: inherit; }
   .docs-main { padding-left: 16px; padding-right: 16px; }
   .endpoint-line { gap: 8px; padding: 0; }
   .endpoint-line code { font-size: 11px; }
-  .endpoint-line button { min-height: 36px; padding: 4px 7px; }
+  .endpoint-line button { min-height: 44px; padding: 4px 7px; }
   .resource-row { align-items: flex-start; flex-direction: column; gap: 4px; }
   .resource-row code { text-align: left; }
   .mapping-list > div { grid-template-columns: 1fr; gap: 2px; }

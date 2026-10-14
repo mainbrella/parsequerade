@@ -34,18 +34,6 @@ def download(url):
             time.sleep(attempt + 1)
 
 
-def inline_text(value):
-    if isinstance(value, str):
-        return value
-    if isinstance(value, list):
-        return "".join(inline_text(item) for item in value)
-    if isinstance(value, dict):
-        if "inlineContent" in value:
-            return inline_text(value["inlineContent"])
-        return value.get("text", value.get("code", ""))
-    return ""
-
-
 def run(cache, refresh):
     cache.mkdir(parents=True, exist_ok=True)
 
@@ -112,25 +100,7 @@ def run(cache, refresh):
                             pending.setdefault(child, (section_domain, depth + 1))
             print(f"Read {len(category_sources)} topic pages and {len(endpoint_sources)} GET pages; {len(pending)} queued.", flush=True)
 
-    used_schema_names = set()
-
-    def remember_schema(value):
-        if isinstance(value, dict):
-            ref = value.get("$ref", "")
-            if ref.startswith("#/components/schemas/"):
-                name = ref.rsplit("/", 1)[1]
-                if name not in used_schema_names:
-                    used_schema_names.add(name)
-                    remember_schema(schemas[name])
-            for key, child in value.items():
-                if key != "$ref":
-                    remember_schema(child)
-        elif isinstance(value, list):
-            for child in value:
-                remember_schema(child)
-
     endpoints = []
-    missing = []
     for slug, (doc, digest) in sorted(endpoint_sources.items()):
         sections = doc.get("primaryContentSections", [])
         endpoint_section = next((s for s in sections if s.get("kind") == "restEndpoint"), None)
@@ -140,7 +110,6 @@ def run(cache, refresh):
         path = "/" + path.lstrip("/")
         operation = spec["paths"].get(path, {}).get("get")
         if operation is None:
-            missing.append(path)
             raise ValueError(f"Published GET missing from the pinned OpenAPI specification: {path}")
         documented_params = {
             p["name"]: p for section in sections if section.get("kind") == "restParameters"
@@ -154,10 +123,8 @@ def run(cache, refresh):
                 item["deprecated"] = True
             # Descriptions are deliberately rewritten by the facade renderer.
             params.append(item)
-            remember_schema(item)
         response = operation["responses"].get("200", {})
         content = response.get("content", {})
-        remember_schema(content)
         memberships = sorted(endpoint_topics[slug], key=lambda item: -item["depth"])
         topic = memberships[0]["topic"]
         topics[topic]["endpoints"].append(slug)
