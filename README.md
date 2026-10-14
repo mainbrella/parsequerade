@@ -6,6 +6,10 @@ The goal is to let a client list apps, edit a localized description, update a re
 
 **Status:** This repository documents the design. The service is not implemented yet; the facade routes and responses below are proposed contracts. See [rest.md](rest.md) for the implementation plan, supported fields, and rollout milestones.
 
+## Documentation site
+
+The static documentation site lives in `dist/`. Run `npm install` once, then use `npm run dev` to preview it locally. `npm run check` checks internal page links and anchors. `npm run deploy` publishes through the existing Wrangler configuration.
+
 ## Why a facade?
 
 Apple already provides a REST API that returns JSON. The difficulty is its resource and relationship model. For example, even Apple's [List apps endpoint](https://developer.apple.com/documentation/appstoreconnectapi/get-v1-apps) asks readers to understand query parameters such as `fields[apps]`, which can mix ordinary app attributes with related resources. The reference makes routine app-listing tasks harder to discover because readers must first learn Apple's resource graph; it does not mean every listed field is required or that every resource can be changed.
