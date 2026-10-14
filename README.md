@@ -10,7 +10,13 @@ The goal is to let a client list apps, edit a localized description, update a re
 
 Apple already provides a REST API that returns JSON. The difficulty is its resource and relationship model. For example, even Apple's [List apps endpoint](https://developer.apple.com/documentation/appstoreconnectapi/get-v1-apps) asks readers to understand query parameters such as `fields[apps]`, which can mix ordinary app attributes with related resources. The reference makes routine app-listing tasks harder to discover because readers must first learn Apple's resource graph; it does not mean every listed field is required or that every resource can be changed.
 
+**Before: Apple's API documentation**
+
 ![Apple's List apps API documentation showing the long fields[apps] parameter list of app attributes and related resources.](docs/images/app-store-connect-api-docs.png)
+
+**After: Parsequerade concept**
+
+![Parsequerade concept showing Apple's raw API alongside a simplified JSON facade with flat responses and locale-aware endpoints.](docs/images/parsequerade-after.png)
 
 An app's metadata also spans several resources. App names and privacy URLs belong to app-info localizations. Descriptions and release notes belong to version localizations. A review contact is another resource associated with a version. Editing one field can require finding the right parent, following a relationship, resolving a child ID, and then constructing a typed update body.
 
