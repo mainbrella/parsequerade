@@ -3,7 +3,7 @@ import { base64url, bytes, sha256 } from "./crypto.js";
 import { isObject } from "./auth.js";
 
 export const APPLE_ORIGIN = "https://api.appstoreconnect.apple.com";
-export const POLICY = Object.freeze({ requestMs: 25000, attemptMs: 8000, requests: 32,
+export const POLICY = Object.freeze({ requestMs: 25000, attemptMs: 8000, requests: 32, concurrentReads: 4,
   responseBytes: 4 * 1024 * 1024, totalBytes: 16 * 1024 * 1024, resolverPages: 20, cursorPages: 100 });
 
 export function retryAfter(value, now) {
@@ -115,6 +115,11 @@ export function createAppleTransport({ fetch: fetcher = globalThis.fetch, now = 
     budget: () => ({ deadline: now() + POLICY.requestMs, requests: 0, bytes: 0 }),
     async get(config, state, url, budget, route) {
       if (url.origin !== APPLE_ORIGIN || url.username || url.password || url.hash || !/^\/v1\/[A-Za-z0-9/_-]+$/.test(url.pathname)) throw invalidUpstream();
+      if ((state.active || 0) >= POLICY.concurrentReads) throw new ApiError(429, "rate_limited", "This connection has too many concurrent reads.", {
+        retryable: true, headers: { "Retry-After": "1" },
+      });
+      state.active = (state.active || 0) + 1;
+      try {
       let refreshed = false;
       for (let attempt = 0; attempt < 3; attempt++) {
         if (++budget.requests > POLICY.requests || budget.deadline <= now()) {
@@ -130,6 +135,7 @@ export function createAppleTransport({ fetch: fetcher = globalThis.fetch, now = 
           await Promise.race([(async () => {
             response = await fetcher(url.toString(), { method: "GET", redirect: "manual", signal: controller.signal,
               headers: { Authorization: `Bearer ${jwt}`, Accept: "application/json" } });
+            if (controller.signal.aborted) throw new ApiError(504, "upstream_timeout", "Apple did not respond within the read deadline.", { retryable: true });
             if (response.status >= 300 && response.status < 400) throw invalidUpstream();
             payload = await limitedJson(response, budget, controller.signal);
           })(), timeout]);
@@ -140,7 +146,10 @@ export function createAppleTransport({ fetch: fetcher = globalThis.fetch, now = 
           error = upstreamError(response.status, payload, response.headers, now(), route);
         } catch (caught) {
           error = caught instanceof ApiError ? caught : new ApiError(503, "upstream_unavailable", "The Apple read could not complete.", { retryable: true });
-        } finally { clearTimeout(timer); }
+        } finally {
+          clearTimeout(timer);
+          if (response?.body && !response.bodyUsed) { void response.body.cancel().catch(() => {}); }
+        }
         if (response?.status === 401 && !refreshed && attempt < 2) {
           if (state.token === jwt) state.token = null;
           refreshed = true;
@@ -152,6 +161,7 @@ export function createAppleTransport({ fetch: fetcher = globalThis.fetch, now = 
         if (delay > 2000 || now() + delay >= budget.deadline) throw error;
         await sleep(delay);
       }
+      } finally { state.active--; }
     },
   };
 }

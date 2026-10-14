@@ -9,6 +9,7 @@
     "check": "python3 scripts/check_site.py && python3 scripts/check_reference.py && node --check dist/app.js"
   },
   "devDependencies": {
+    "miniflare": "5.20261012.0-beta",
     "wrangler": "^4.128.0"
   },
   "license": "GPL-3.0-or-later"

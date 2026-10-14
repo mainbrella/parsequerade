@@ -34,7 +34,7 @@ def outputs():
                 linkage[name] = {"field": field, "type": resolve(data)["properties"]["type"]["enum"][0]}
         route = {
             **entry, "route": c["route"], "applePath": endpoint["applePath"],
-            "type": model["properties"]["type"]["enum"][0],
+            "type": c["shape"]["modelName"][0].lower() + c["shape"]["modelName"][1:] + "s",
             "collection": c["shape"]["collection"],
             "attributes": {k: expanded(v, True) for k, v in attributes.items() if k in c["shape"]["fields"]},
             "relationships": linkage,
