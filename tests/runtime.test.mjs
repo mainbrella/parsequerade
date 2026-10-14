@@ -4,15 +4,17 @@ import { readFile, rm, mkdtemp, writeFile } from "node:fs/promises";
 import { resolve, join } from "node:path";
 import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
-import { Miniflare } from "miniflare";
+import { Miniflare, convertV4MiniflareOptions } from "miniflare";
 import { unstable_getMiniflareWorkerOptions } from "wrangler";
 import { makeEnv, request, app, json, jsonResponse, validateJwt, pem, connectionId } from "./helpers.mjs";
 
 test("bundled Worker runs in workerd with the actual Wrangler asset routing", async t => {
   const { workerOptions, externalWorkers } = unstable_getMiniflareWorkerOptions("wrangler.jsonc");
+  // The dry-run bundle has no external modules, so Wrangler's source module rules are unnecessary.
+  delete workerOptions.modulesRules;
   const env = makeEnv(); delete env.ASSETS;
   let calls = 0;
-  const mf = new Miniflare({ workers: [{ ...workerOptions, modules: true,
+  const mf = new Miniflare(convertV4MiniflareOptions({ workers: [{ ...workerOptions, modules: true,
     scriptPath: resolve(".wrangler/test-build/index.js"), bindings: env,
     outboundService: async incoming => {
       const url = new URL(incoming.url);
@@ -20,7 +22,7 @@ test("bundled Worker runs in workerd with the actual Wrangler asset routing", as
       assert.equal(incoming.method, "GET"); calls++;
       return jsonResponse(json([app(calls === 1 ? "123" : "456")], calls === 1 ? "/v1/apps?cursor=next" : null));
     },
-  }, ...externalWorkers] });
+  }, ...externalWorkers] }));
   t.after(() => mf.dispose());
   for (const [path, fragment] of [["/", "Parsequerade"], ["/docs/", "Introduction"], ["/docs/quickstart/", "Quickstart"]]) {
     const response = await mf.dispatchFetch("http://localhost" + path);
@@ -53,9 +55,10 @@ test("generated .dev.vars loads through Wrangler and workerd without manual esca
   await writeFile(join(directory, "index.js"), bundle);
   await writeFile(join(directory, "wrangler.jsonc"), JSON.stringify({ name: "parsequerade-setup-test", main: "./index.js", compatibility_date: "2026-09-13" }));
   const { workerOptions } = unstable_getMiniflareWorkerOptions(join(directory, "wrangler.jsonc"));
-  const mf = new Miniflare({ ...workerOptions, modules: true, scriptPath: join(directory, "index.js"), outboundService: async incoming => {
+  delete workerOptions.modulesRules;
+  const mf = new Miniflare(convertV4MiniflareOptions({ ...workerOptions, modules: true, scriptPath: join(directory, "index.js"), outboundService: async incoming => {
     validateJwt(incoming.headers.get("Authorization")); return jsonResponse(json([app()]));
-  } });
+  } }));
   t.after(() => mf.dispose());
   const key = (await readFile(join(directory, ".parsequerade-client-key"), "utf8")).trim();
   const response = await mf.dispatchFetch("http://localhost/v1/connections/conn_example/apps", { headers: { Authorization: `Bearer ${key}` } });

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Parsequerade’s proposed App Store Connect facade: quickstart." />
+    <meta name="description" content="Parsequerade’s App Store Connect facade: quickstart." />
     <meta name="theme-color" content="#131316" />
     <link rel="icon" href="/parsequerade.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/styles.css" />
@@ -33,17 +33,30 @@
       <main class="docs-main" id="main-content"><article class="document"><header class="page-header" id="overview">
   <p class="page-kicker">Getting started</p>
   <h1>Quickstart</h1>
-  <p class="page-lede">Follow a proposed read flow from an app list to one explicitly selected version and locale.</p>
+  <p class="page-lede">Configure the Worker, then read an app, an explicitly selected version, and an exact locale.</p>
 </header>
 
 <section class="document-section" id="status">
   <h2>Status</h2>
-  <p><span class="status-label">Proposed</span> The service is not implemented. <code>asc.example.com</code> and the IDs below are placeholders; these commands describe the planned contract and will not reach an available Parsequerade service.</p>
+  <p><span class="status-label">Implemented reads</span> This walkthrough uses working read routes. Deployments require operator configuration; <code>asc.example.com</code> and the IDs below are placeholders for your deployment and Apple resources. Mutation, report, and copy routes remain planned.</p>
 </section>
 
 <section class="document-section" id="credentials">
   <h2>Prepare access</h2>
-  <p>Set <code>ASC_FACADE_KEY</code> to a facade API key issued for a configured connection. The service would use that connection’s Apple credentials on the caller’s behalf; clients would not create Apple JWTs.</p>
+  <p>From the repository, install dependencies with <code>npm ci</code>. Obtain an Apple team API key with access to the app you want to read, and run the setup command with your issuer ID, key ID, private-key file, and allowed app ID:</p>
+  <div class="code-example">
+    <div class="code-toolbar"><span class="code-label">Shell</span><button class="code-copy" type="button" data-copy-target="quickstart-setup" aria-label="Copy setup command"><span class="copy-label">Copy</span></button></div>
+    <pre id="quickstart-setup" tabindex="0"><code>npm run configure -- \
+  --connection conn_example \
+  --issuer-id YOUR_ISSUER_UUID \
+  --key-id YOUR_KEY_ID \
+  --private-key /path/to/AuthKey.p8 \
+  --app-id YOUR_APP_ID
+
+npm run dev</code></pre>
+  </div>
+  <p>Repeat <code>--app-id</code> for several apps, or explicitly use <code>--all-apps</code>. Setup creates private <code>.dev.vars</code>, <code>.parsequerade.secrets.json</code>, and <code>.parsequerade-client-key</code> files and refuses to overwrite existing configuration. It makes no Apple calls or deployment. Set <code>ASC_FACADE_KEY</code> from the client-key file. Use <code>http://localhost:8787/v1/connections/conn_example</code> as the base for local reads.</p>
+  <p>For deployment, set your custom domain in <code>wrangler.jsonc</code>, run <code>npm run check</code>, and use <code>npm run deploy -- --secrets-file .parsequerade.secrets.json</code>. The Worker signs Apple JWTs internally; clients use only their facade key.</p>
   <p>Requests use this connection-scoped base URL:</p>
   <div class="code-example">
     <div class="code-toolbar"><span class="code-label">Shell</span><button class="code-copy" type="button" data-copy-target="quickstart-base" aria-label="Copy base URL"><span class="copy-label">Copy</span></button></div>
@@ -62,7 +75,7 @@
 curl --fail-with-body "$BASE/apps?bundleId=com.example.app&amp;limit=50" \
   -H "Authorization: Bearer $ASC_FACADE_KEY"</code></pre>
   </div>
-  <p>The collection response would contain plain objects in <code>items</code> and an opaque <code>nextCursor</code>. Select the intended app ID from the result; the service does not choose the first match for you.</p>
+  <p>The collection response contains plain objects in <code>items</code> and an opaque <code>nextCursor</code>. Select the intended app ID from the result; the service does not choose the first match for you.</p>
 </section>
 
 <section class="document-section" id="select-version">
@@ -74,7 +87,7 @@ curl --fail-with-body "$BASE/apps?bundleId=com.example.app&amp;limit=50" \
   "$BASE/apps/1234567890/versions?platform=IOS&amp;state=PREPARE_FOR_SUBMISSION" \
   -H "Authorization: Bearer $ASC_FACADE_KEY"</code></pre>
   </div>
-  <p>Replace <code>1234567890</code> with an app ID you received. The state filter is explicit; no draft-to-live fallback is implied. See <a class="inline-link" href="/docs/reference/get-v1-apps-_id_-appstoreversions/">List versions</a> for its proposed response fields.</p>
+  <p>Replace <code>1234567890</code> with an app ID you received. The state filter is explicit; no draft-to-live fallback is implied. See <a class="inline-link" href="/docs/reference/get-v1-apps-_id_-appstoreversions/">List versions</a> for its response fields.</p>
 </section>
 
 <section class="document-section" id="read-locale">
@@ -86,7 +99,7 @@ curl --fail-with-body "$BASE/apps?bundleId=com.example.app&amp;limit=50" \
   "$BASE/apps/1234567890/versions/version_123/localizations/en-US" \
   -H "Authorization: Bearer $ASC_FACADE_KEY"</code></pre>
   </div>
-  <p>The route resolves that locale under the selected version and returns one flat object. If the exact locale does not exist, the planned response is <code>404 localization_not_found</code>; request another locale or use the version-localizations collection to inspect available locales. It does not substitute the primary locale.</p>
+  <p>The route resolves that locale under the selected version and returns one flat object. If the exact locale does not exist, it returns <code>404 localization_not_found</code>; request another locale or use the version-localizations collection to inspect available locales. It does not substitute the primary locale.</p>
   <p>See <a class="inline-link" href="/docs/reference/get-v1-appstoreversionlocalizations-_id_/">Read a version localization</a> for the response shape.</p>
 </section>
 </article></main>

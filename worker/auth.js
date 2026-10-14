@@ -40,7 +40,7 @@ export async function authenticate(request, env, connectionId) {
   if (!principal) throw new ApiError(401, "unauthorized", "Provide a valid facade API key.", { headers: { "WWW-Authenticate": "Bearer" } });
   const grant = principal.grants.find(g => g.connectionId === connectionId);
   if (!grant || !grant.capabilities.includes("read")) throw new ApiError(403, "forbidden", "This key cannot read this connection.");
-  return { principalId: principal.id, grant, authorizationRevision: await sha256(JSON.stringify({ principal: principal.id, grant })) };
+  return { principalId: principal.id, grant, authorizationRevision: await sha256(JSON.stringify({ principal: principal.id, keyHash: principal.sha256, grant })) };
 }
 
 export function requireApp(auth, appId) {

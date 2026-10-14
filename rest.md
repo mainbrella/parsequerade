@@ -4,7 +4,7 @@ Build a small HTTP service that owns Apple authentication, translates ordinary J
 
 Apple already exposes a REST API. The value of this facade is a smaller, predictable application contract: plain objects, explicit resource selection, consistent pagination and errors, and safe handling of operations that take several Apple requests.
 
-This is an implementation plan, not an implemented API. It covers calls found in Studio and `../../dev/DiscoNectar`, reviewed on 2026-10-14. Proposed routes and defaults below are design decisions. Repository behavior is identified separately. No authenticated Apple requests were made during this review.
+This document combines the API contract and remaining implementation plan. The Cloudflare Worker now implements 12 core GET routes, connection/app-scoped authentication, Apple JWTs, ownership checks, pagination, and errors. All mutations, reports, copy workflows, and read-parity/extended adapters remain planned. The historical inventory covers calls found in Studio and `../../dev/DiscoNectar`, reviewed on 2026-10-14; its source links refer to those original integrations, not Worker files in this repository. No authenticated Apple calls or production deployment have been made during implementation.
 
 ## 1. What the projects actually do
 
@@ -174,7 +174,7 @@ Separate create and update schemas. For example, creating an app-info localizati
 
 ## 4. Authentication, transport, and errors
 
-Provision Apple credentials once through operator configuration or a separate authenticated administration interface. The first release supports team keys, matching both repositories. Store secrets in a mounted secret file or secret manager; encrypt persisted credentials, keep them out of responses/logs, and return only connection status and nonsecret identifiers. Hash facade API keys and support revocation. Hosted deployments require TLS; a local service binds to loopback and still requires a token.
+Provision Apple credentials through operator configuration. The implemented slice supports team keys, matching both repositories. Use Worker secrets in deployment and private `.dev.vars` files locally; keep them out of static assets, responses, and logs. Facade API keys are hashed and revoked through operator configuration. Each key has explicit connection, capability, and app grants. Hosted deployments require TLS; local Wrangler development still requires a token. See the README setup command for the exact configuration format.
 
 Cache Apple JWTs per credential revision and refresh shortly before expiry. Use a conservative short lifetime within Apple's normal 20-minute limit, handle clock skew, and invalidate tokens after key rotation. Apple documents different claims for individual keys; add those explicitly later rather than accepting an issuer-less key in the team-key path. [Apple token documentation](https://developer.apple.com/documentation/appstoreconnectapi/generating-tokens-for-api-requests).
 
@@ -284,10 +284,10 @@ Plans and operation results can contain private metadata. Authorize reads, redac
 
 ## 7. Implementation shape and rollout
 
-Prefer a standalone Rust library plus HTTP binary in a sibling `../asc-facade/` crate. This follows Studio's language and reuses its tested logic without linking the server to egui or requiring Disco to embed Rust. Keep the initial crate independent; no workspace-wide restructuring is needed to begin.
+Use the Cloudflare Worker in this repository alongside the existing static assets. `wrangler.jsonc` deploys Workers Static Assets and routes `/v1/*` through `worker/index.js`; `/` and `/docs/` retain static hosting. The facade base is the deployed domain plus `/v1/connections/{connectionId}`. The Worker uses small JavaScript modules and native Web Crypto, without runtime dependencies.
 
 ```text
-HTTP routes + facade auth + DTO validation
+Worker HTTP routes + facade auth + query validation
                    |
 resource services / selectors / copy planner
                    |
@@ -295,17 +295,23 @@ Apple transport + JSON adapter + report decoder
                    |
 App Store Connect
 
-Side stores: connection secrets, report cache, durable write/workflow records
+Now: Worker secrets and isolate-local JWT/concurrency state
+Before writes: SQLite-backed Durable Object per connection
+Reports: bounded streaming and immutable snapshots, R2 for larger artifacts
 ```
 
-Use a small Rust HTTP framework and async runtime, such as Axum/Tokio, because this is a concurrent HTTP service. Port network calls to async reqwest or isolate transitional blocking work in a bounded blocking pool. Never run Studio's blocking client directly on an async request executor. Reuse `serde`, `jsonwebtoken`, `csv`, and `flate2` where appropriate. Any new dependency must have a specific job; exact versions belong to implementation, not this plan.
+Implemented modules separate facade authentication, ES256 JWTs/Apple transport, query validation, signed cursors, resource selection, and response normalization. `api/read-routes.json` selects 12 adapters; `scripts/export_api.py` derives their reviewed query and response contracts from the same snapshot/mappings used by the documentation, producing `api/read-contracts.json` and a facade OpenAPI document. Builds are offline. The broader 457-page reference labels implementation status separately from delivery stage.
 
-Keep transport, resource mapping, selectors, report decoding, and copy planning independently testable. Introduce a typed upstream error carrying headers instead of UI strings. Start with one service instance and SQLite for durable intents, idempotency records, plans, and operations; a database-backed worker in that process is sufficient. A multi-instance deployment requires shared storage and leases before it is supported. An external queue is unnecessary for the first deployment.
+The read slice has no resource cache or durable mutation state. JWT reuse and a four-read connection concurrency limit are isolate-local, not a globally enforced Apple quota. Apple reads share 25 seconds, 32 attempts, an 8-second attempt timeout, 4 MiB per-response and 16 MiB total-body limits. Internal resolvers permit 20 pages. Signed client cursors expire after 15 minutes and permit 100 pages; limits fail explicitly rather than returning an incomplete result as complete. Read-only verification uses generated keys and fictional Apple fixtures in unit tests and the local workerd runtime.
+
+Before enabling any mutations, add one SQLite-backed Durable Object per connection to hold write intents, idempotency records, operations, and later copy plans, and coordinate shared request limits. Persist intent and dispatch state before contacting Apple; a dispatched but unconfirmed write is reconciled, not replayed automatically. Use explicit destination-app locking shared by ordinary writes and copy execution, including across async network calls. Durable Object alarms provide restart recovery and background work; their at-least-once delivery must inspect durable step state before dispatching. D1 and an external queue are unnecessary for the initial operator deployment.
+
+For reports, the original 128 MiB expanded-report allowance cannot be buffered in a Worker with a 128 MB isolate memory limit. Stream decoding/parsing into bounded immutable report snapshots, and use R2 for larger artifacts. Verify concatenated gzip behavior and monthly date encoding with captured test fixtures before enabling that route.
 
 | Milestone | Deliverable | Acceptance gate |
 | --- | --- | --- |
-| 1. Contract and fixtures | Facade OpenAPI document, DTOs, field/method allowlists, sanitized fixtures from both integrations; record Apple schema version/hash. | Every observed call is mapped above or explicitly deferred; examples validate against schemas. |
-| 2. Transport and read routes | Connection auth, JWT lifecycle, safe pagination, app/app-info/version/localization reads, structured errors. | A client can resolve an app, platform, version, and any locale using only facade JSON; no silent truncation or cross-connection access. |
+| 1. Contract and fixtures — implemented for reads | Facade OpenAPI, runtime contract manifest, query/field/method allowlists, fictional read fixtures; pinned Apple schema version/hash. | Generated contracts stay in sync with documentation; mutation fixtures remain future work. |
+| 2. Transport and read routes — implemented | Connection/app-scoped auth, JWT lifecycle, safe pagination, app/app-info/version/localization/age-rating/review-contact reads, structured errors. | Unit/security and workerd fixture tests pass; an operator must still configure a real account and perform read-only integration verification. |
 | 3. Ordinary mutations | Durable write intents/idempotency, observed PATCH/POST routes, validation and cache invalidation. | Supported edits and missing-localization creation work; ambiguous timeout/create recovery does not duplicate writes. |
 | 4. Read parity and reports | Users, bundle IDs, builds/icons, fixed metadata read, daily/monthly normalized reports. | Both clients can replace their supported reads; errors and unavailable reports remain distinguishable from empty data. |
 | 5. Copy workflow | Preview records, execution worker, progress, restart reconciliation, cancellation. | Destination-only writes, partial failure, stale plans, duplicate execution, and cancellation behave as specified. |
@@ -325,7 +331,7 @@ Use [Studio copy tests](src/apple_copy/api_tests.rs), [detail tests](src/apple/d
 - Report tests: gzip/multiple members, BOM, changed column order, duplicate/missing headers, malformed rows, decompression limits, signed units, precision beyond cents, multiple currencies, date boundaries, unavailable reports, cache isolation, and paging across refreshes.
 - Security/operational tests: permission checks before cache reads, redaction, key rotation/revocation, URL injection/redirect attempts, bounded fan-out, and durable state recovery.
 
-For implementation validation, run the extracted library/service tests and affected Studio tests. An opt-in integration suite should perform read-only checks by default; mutation tests need designated fixtures and a configured test app. Do not exercise production writes as part of an ordinary build.
+For this repository, run `npm run check`: it validates generated contracts and documentation, exercises the Worker against mocked Apple responses, and runs the dry-run bundle in local workerd through Miniflare. Tests include ownership, grant isolation, JWT signatures/rotation, cursor binding/tampering, pagination failures, timeout/body budgets, error redaction, read concurrency, and generated setup files. Original Studio tests remain useful fixtures for later reports/copy/client migration work. Real-account verification must be explicitly configured and read-only by default; mutation tests need designated fixtures and a test app. Ordinary checks never contact Apple or deploy.
 
 Apple publishes an [OpenAPI specification](https://developer.apple.com/sample-code/app-store-connect/app-store-connect-openapi-specification.zip), linked from its [API overview](https://developer.apple.com/app-store-connect/api/). The download inspected for this plan identifies itself as **4.5.1**. It confirms separate create/update schemas, relationship-based category updates, required name/locale on app-info localization creation, nullable listing fields, and evolving age-rating fields. Treat that as a versioned input, not a permanent guarantee of server behavior.
 

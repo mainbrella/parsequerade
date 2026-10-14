@@ -60,7 +60,7 @@ export function flatten(value, route, context = {}, fields) {
 }
 
 function pageData(payload, type, limit) {
-  if (!Array.isArray(payload.data) || payload.data.length > limit || (payload.links !== undefined && !isObject(payload.links))) throw invalidUpstream();
+  if (!Array.isArray(payload.data) || payload.data.length > limit || !isObject(payload.links)) throw invalidUpstream();
   const ids = new Set();
   for (const item of payload.data) {
     resource(item, type);

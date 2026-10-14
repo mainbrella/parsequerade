@@ -508,4 +508,14 @@ def make_contract(endpoint):
                 contract["queryExample"][parameter["name"]] = str(example_value(schema, parameter["name"]))
     if not contract["notes"]:
         contract["notes"].append("A nested resource must belong to the selected parent and the configured connection. The adapter validates ownership before returning data.")
+    implementation = IMPLEMENTED_ROUTES.get(contract["route"])
+    contract["implementationStatus"] = "implemented" if implementation else "planned"
+    if implementation:
+        contract["runtimeApplePath"] = ENDPOINTS[implementation["slug"]]["applePath"]
     return contract
+
+
+IMPLEMENTED_ROUTES = {
+    OVERRIDES.get(entry["slug"], {}).get("route", route_for(ENDPOINTS[entry["slug"]])[0]): entry
+    for entry in json.loads((ROOT / "api/read-routes.json").read_text())
+}

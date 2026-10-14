@@ -1,0 +1,4 @@
+# Keep editor state and hidden local files out of the public asset upload.
+.*
+*.swp
+*.swo

@@ -19,6 +19,7 @@
       "applePath": "/v1/accessibilityDeclarations/{id}",
       "facadeRoute": "/accessibility-declarations/{accessibilityDeclarationId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-accessibilitydeclarations-_id_/"
     },
@@ -29,6 +30,7 @@
       "applePath": "/v1/actors",
       "facadeRoute": "/actors",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-actors/"
     },
@@ -39,6 +41,7 @@
       "applePath": "/v1/actors/{id}",
       "facadeRoute": "/actors/{actorId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-actors-_id_/"
     },
@@ -49,6 +52,7 @@
       "applePath": "/v1/androidToIosAppMappingDetails/{id}",
       "facadeRoute": "/android-to-ios-app-mapping-details/{androidToIosAppMappingDetailId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-androidtoiosappmappingdetails-_id_/"
     },
@@ -59,6 +63,7 @@
       "applePath": "/v1/appAssetLibraries/{id}",
       "facadeRoute": "/asset-libraries/{assetLibraryId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appassetlibraries-_id_/"
     },
@@ -69,6 +74,7 @@
       "applePath": "/v1/appAssetLibraries/{id}/images",
       "facadeRoute": "/asset-libraries/{assetLibraryId}/images",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appassetlibraries-_id_-images/"
     },
@@ -79,6 +85,7 @@
       "applePath": "/v1/appAssetLibraries/{id}/relationships/images",
       "facadeRoute": "/asset-libraries/{assetLibraryId}/images/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appassetlibraries-_id_-relationships-images/"
     },
@@ -89,6 +96,7 @@
       "applePath": "/v1/appAssetLibraries/{id}/relationships/videos",
       "facadeRoute": "/asset-libraries/{assetLibraryId}/videos/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appassetlibraries-_id_-relationships-videos/"
     },
@@ -99,6 +107,7 @@
       "applePath": "/v1/appAssetLibraries/{id}/videos",
       "facadeRoute": "/asset-libraries/{assetLibraryId}/videos",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appassetlibraries-_id_-videos/"
     },
@@ -109,6 +118,7 @@
       "applePath": "/v1/appAssetLibraryImages/{id}",
       "facadeRoute": "/library-images/{libraryImageId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appassetlibraryimages-_id_/"
     },
@@ -119,6 +129,7 @@
       "applePath": "/v1/appAssetLibraryImages/{id}/placements",
       "facadeRoute": "/library-images/{libraryImageId}/placements",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appassetlibraryimages-_id_-placements/"
     },
@@ -129,6 +140,7 @@
       "applePath": "/v1/appAssetLibraryImages/{id}/relationships/placements",
       "facadeRoute": "/library-images/{libraryImageId}/placements/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appassetlibraryimages-_id_-relationships-placements/"
     },
@@ -139,6 +151,7 @@
       "applePath": "/v1/appAssetLibraryPlacements/{id}",
       "facadeRoute": "/library-placements/{libraryPlacementId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appassetlibraryplacements-_id_/"
     },
@@ -149,6 +162,7 @@
       "applePath": "/v1/appAssetLibraryRefData",
       "facadeRoute": "/asset-reference-data",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appassetlibraryrefdata/"
     },
@@ -159,6 +173,7 @@
       "applePath": "/v1/appAssetLibraryRefData/{id}",
       "facadeRoute": "/asset-reference-data/{assetReferenceDataId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appassetlibraryrefdata-_id_/"
     },
@@ -169,6 +184,7 @@
       "applePath": "/v1/appAssetLibraryVideos/{id}",
       "facadeRoute": "/library-videos/{libraryVideoId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appassetlibraryvideos-_id_/"
     },
@@ -179,6 +195,7 @@
       "applePath": "/v1/appAssetLibraryVideos/{id}/placements",
       "facadeRoute": "/library-videos/{libraryVideoId}/placements",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appassetlibraryvideos-_id_-placements/"
     },
@@ -189,6 +206,7 @@
       "applePath": "/v1/appAssetLibraryVideos/{id}/relationships/placements",
       "facadeRoute": "/library-videos/{libraryVideoId}/placements/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appassetlibraryvideos-_id_-relationships-placements/"
     },
@@ -199,6 +217,7 @@
       "applePath": "/v1/appCategories",
       "facadeRoute": "/categories",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appcategories/"
     },
@@ -209,6 +228,7 @@
       "applePath": "/v1/appCategories/{id}",
       "facadeRoute": "/categories/{categoryId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appcategories-_id_/"
     },
@@ -219,6 +239,7 @@
       "applePath": "/v1/appCategories/{id}/parent",
       "facadeRoute": "/categories/{categoryId}/parent",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appcategories-_id_-parent/"
     },
@@ -229,6 +250,7 @@
       "applePath": "/v1/appCategories/{id}/relationships/parent",
       "facadeRoute": "/categories/{categoryId}/parent/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appcategories-_id_-relationships-parent/"
     },
@@ -239,6 +261,7 @@
       "applePath": "/v1/appCategories/{id}/relationships/subcategories",
       "facadeRoute": "/categories/{categoryId}/subcategories/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appcategories-_id_-relationships-subcategories/"
     },
@@ -249,6 +272,7 @@
       "applePath": "/v1/appCategories/{id}/subcategories",
       "facadeRoute": "/categories/{categoryId}/subcategories",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appcategories-_id_-subcategories/"
     },
@@ -259,6 +283,7 @@
       "applePath": "/v1/appClipAdvancedExperienceImages/{id}",
       "facadeRoute": "/advanced-experience-images/{advancedExperienceImageId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appclipadvancedexperienceimages-_id_/"
     },
@@ -269,6 +294,7 @@
       "applePath": "/v1/appClipAdvancedExperiences/{id}",
       "facadeRoute": "/app-clip-advanced-experiences/{experienceId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appclipadvancedexperiences-_id_/"
     },
@@ -279,6 +305,7 @@
       "applePath": "/v1/appClipAppStoreReviewDetails/{id}",
       "facadeRoute": "/app-clip-review-details/{appClipReviewDetailId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appclipappstorereviewdetails-_id_/"
     },
@@ -289,6 +316,7 @@
       "applePath": "/v1/appClipDefaultExperienceLocalizations/{id}",
       "facadeRoute": "/app-clip-default-experiences/{experienceId}/localizations/{locale}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appclipdefaultexperiencelocalizations-_id_/"
     },
@@ -299,6 +327,7 @@
       "applePath": "/v1/appClipDefaultExperienceLocalizations/{id}/appClipHeaderImage",
       "facadeRoute": "/app-clip-default-experiences/{experienceId}/localizations/{locale}/app-clip-header-image",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appclipdefaultexperiencelocalizations-_id_-appclipheaderimage/"
     },
@@ -309,6 +338,7 @@
       "applePath": "/v1/appClipDefaultExperienceLocalizations/{id}/relationships/appClipHeaderImage",
       "facadeRoute": "/app-clip-default-experiences/{experienceId}/localizations/{locale}/app-clip-header-image/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appclipdefaultexperiencelocalizations-_id_-relationships-appclipheaderimage/"
     },
@@ -319,6 +349,7 @@
       "applePath": "/v1/appClipDefaultExperiences/{id}",
       "facadeRoute": "/app-clip-default-experiences/{experienceId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appclipdefaultexperiences-_id_/"
     },
@@ -329,6 +360,7 @@
       "applePath": "/v1/appClipDefaultExperiences/{id}/appClipAppStoreReviewDetail",
       "facadeRoute": "/app-clip-default-experiences/{experienceId}/review-details",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appclipdefaultexperiences-_id_-appclipappstorereviewdetail/"
     },
@@ -339,6 +371,7 @@
       "applePath": "/v1/appClipDefaultExperiences/{id}/appClipDefaultExperienceLocalizations",
       "facadeRoute": "/app-clip-default-experiences/{experienceId}/localizations",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appclipdefaultexperiences-_id_-appclipdefaultexperiencelocalizations/"
     },
@@ -349,6 +382,7 @@
       "applePath": "/v1/appClipDefaultExperiences/{id}/relationships/appClipAppStoreReviewDetail",
       "facadeRoute": "/app-clip-default-experiences/{experienceId}/review-details/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appclipdefaultexperiences-_id_-relationships-appclipappstorereviewdetail/"
     },
@@ -359,6 +393,7 @@
       "applePath": "/v1/appClipDefaultExperiences/{id}/relationships/appClipDefaultExperienceLocalizations",
       "facadeRoute": "/app-clip-default-experiences/{experienceId}/localizations/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appclipdefaultexperiences-_id_-relationships-appclipdefaultexperiencelocalizations/"
     },
@@ -369,6 +404,7 @@
       "applePath": "/v1/appClipDefaultExperiences/{id}/relationships/releaseWithAppStoreVersion",
       "facadeRoute": "/app-clip-default-experiences/{experienceId}/release-with-app-store-version/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appclipdefaultexperiences-_id_-relationships-releasewithappstoreversion/"
     },
@@ -379,6 +415,7 @@
       "applePath": "/v1/appClipDefaultExperiences/{id}/releaseWithAppStoreVersion",
       "facadeRoute": "/app-clip-default-experiences/{experienceId}/release-with-app-store-version",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appclipdefaultexperiences-_id_-releasewithappstoreversion/"
     },
@@ -389,6 +426,7 @@
       "applePath": "/v1/appClipHeaderImages/{id}",
       "facadeRoute": "/app-clip-header-images/{appClipHeaderImageId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appclipheaderimages-_id_/"
     },
@@ -399,6 +437,7 @@
       "applePath": "/v1/appClips/{id}",
       "facadeRoute": "/app-clips/{appClipId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appclips-_id_/"
     },
@@ -409,6 +448,7 @@
       "applePath": "/v1/appClips/{id}/appClipAdvancedExperiences",
       "facadeRoute": "/app-clips/{appClipId}/advanced-experiences",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appclips-_id_-appclipadvancedexperiences/"
     },
@@ -419,6 +459,7 @@
       "applePath": "/v1/appClips/{id}/appClipDefaultExperiences",
       "facadeRoute": "/app-clips/{appClipId}/default-experiences",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appclips-_id_-appclipdefaultexperiences/"
     },
@@ -429,6 +470,7 @@
       "applePath": "/v1/appClips/{id}/relationships/appClipAdvancedExperiences",
       "facadeRoute": "/app-clips/{appClipId}/advanced-experiences/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appclips-_id_-relationships-appclipadvancedexperiences/"
     },
@@ -439,6 +481,7 @@
       "applePath": "/v1/appClips/{id}/relationships/appClipDefaultExperiences",
       "facadeRoute": "/app-clips/{appClipId}/default-experiences/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appclips-_id_-relationships-appclipdefaultexperiences/"
     },
@@ -449,6 +492,7 @@
       "applePath": "/v1/appCustomProductPageLocalizations/{id}",
       "facadeRoute": "/custom-product-page-versions/{pageVersionId}/localizations/{locale}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appcustomproductpagelocalizations-_id_/"
     },
@@ -459,6 +503,7 @@
       "applePath": "/v1/appCustomProductPageLocalizations/{id}/appPreviewSets",
       "facadeRoute": "/custom-product-page-versions/{pageVersionId}/localizations/{locale}/preview-sets",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appcustomproductpagelocalizations-_id_-apppreviewsets/"
     },
@@ -469,6 +514,7 @@
       "applePath": "/v1/appCustomProductPageLocalizations/{id}/appScreenshotSets",
       "facadeRoute": "/custom-product-page-versions/{pageVersionId}/localizations/{locale}/screenshot-sets",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appcustomproductpagelocalizations-_id_-appscreenshotsets/"
     },
@@ -479,6 +525,7 @@
       "applePath": "/v1/appCustomProductPageLocalizations/{id}/placements",
       "facadeRoute": "/custom-product-page-versions/{pageVersionId}/localizations/{locale}/placements",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appcustomproductpagelocalizations-_id_-placements/"
     },
@@ -489,6 +536,7 @@
       "applePath": "/v1/appCustomProductPageLocalizations/{id}/relationships/appPreviewSets",
       "facadeRoute": "/custom-product-page-versions/{pageVersionId}/localizations/{locale}/preview-sets/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appcustomproductpagelocalizations-_id_-relationships-apppreviewsets/"
     },
@@ -499,6 +547,7 @@
       "applePath": "/v1/appCustomProductPageLocalizations/{id}/relationships/appScreenshotSets",
       "facadeRoute": "/custom-product-page-versions/{pageVersionId}/localizations/{locale}/screenshot-sets/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appcustomproductpagelocalizations-_id_-relationships-appscreenshotsets/"
     },
@@ -509,6 +558,7 @@
       "applePath": "/v1/appCustomProductPageLocalizations/{id}/relationships/placements",
       "facadeRoute": "/custom-product-page-versions/{pageVersionId}/localizations/{locale}/placements/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appcustomproductpagelocalizations-_id_-relationships-placements/"
     },
@@ -519,6 +569,7 @@
       "applePath": "/v1/appCustomProductPageLocalizations/{id}/relationships/searchKeywords",
       "facadeRoute": "/custom-product-page-versions/{pageVersionId}/localizations/{locale}/search-keywords/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appcustomproductpagelocalizations-_id_-relationships-searchkeywords/"
     },
@@ -529,6 +580,7 @@
       "applePath": "/v1/appCustomProductPageLocalizations/{id}/searchKeywords",
       "facadeRoute": "/custom-product-page-versions/{pageVersionId}/localizations/{locale}/search-keywords",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appcustomproductpagelocalizations-_id_-searchkeywords/"
     },
@@ -539,6 +591,7 @@
       "applePath": "/v1/appCustomProductPages/{id}",
       "facadeRoute": "/custom-product-pages/{pageId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appcustomproductpages-_id_/"
     },
@@ -549,6 +602,7 @@
       "applePath": "/v1/appCustomProductPages/{id}/appCustomProductPageVersions",
       "facadeRoute": "/custom-product-pages/{pageId}/custom-product-page-versions",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appcustomproductpages-_id_-appcustomproductpageversions/"
     },
@@ -559,6 +613,7 @@
       "applePath": "/v1/appCustomProductPages/{id}/relationships/appCustomProductPageVersions",
       "facadeRoute": "/custom-product-pages/{pageId}/custom-product-page-versions/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appcustomproductpages-_id_-relationships-appcustomproductpageversions/"
     },
@@ -569,6 +624,7 @@
       "applePath": "/v1/appCustomProductPageVersions/{id}",
       "facadeRoute": "/custom-product-page-versions/{pageVersionId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appcustomproductpageversions-_id_/"
     },
@@ -579,6 +635,7 @@
       "applePath": "/v1/appCustomProductPageVersions/{id}/appCustomProductPageLocalizations",
       "facadeRoute": "/custom-product-page-versions/{pageVersionId}/localizations",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appcustomproductpageversions-_id_-appcustomproductpagelocalizations/"
     },
@@ -589,6 +646,7 @@
       "applePath": "/v1/appCustomProductPageVersions/{id}/relationships/appCustomProductPageLocalizations",
       "facadeRoute": "/custom-product-page-versions/{pageVersionId}/localizations/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appcustomproductpageversions-_id_-relationships-appcustomproductpagelocalizations/"
     },
@@ -599,6 +657,7 @@
       "applePath": "/v1/appEncryptionDeclarationDocuments/{id}",
       "facadeRoute": "/encryption-documents/{encryptionDocumentId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appencryptiondeclarationdocuments-_id_/"
     },
@@ -609,6 +668,7 @@
       "applePath": "/v1/appEncryptionDeclarations",
       "facadeRoute": "/encryption-declarations",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appencryptiondeclarations/"
     },
@@ -619,6 +679,7 @@
       "applePath": "/v1/appEncryptionDeclarations/{id}",
       "facadeRoute": "/encryption-declarations/{encryptionDeclarationId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appencryptiondeclarations-_id_/"
     },
@@ -629,6 +690,7 @@
       "applePath": "/v1/appEncryptionDeclarations/{id}/app",
       "facadeRoute": "/legacy/encryption-declarations/{encryptionDeclarationId}/app",
       "stage": "Legacy read design",
+      "implementationStatus": "planned",
       "legacy": true,
       "page": "/docs/reference/get-v1-appencryptiondeclarations-_id_-app/"
     },
@@ -639,6 +701,7 @@
       "applePath": "/v1/appEncryptionDeclarations/{id}/appEncryptionDeclarationDocument",
       "facadeRoute": "/encryption-declarations/{encryptionDeclarationId}/encryption-document",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appencryptiondeclarations-_id_-appencryptiondeclarationdocument/"
     },
@@ -649,6 +712,7 @@
       "applePath": "/v1/appEncryptionDeclarations/{id}/relationships/app",
       "facadeRoute": "/legacy/encryption-declarations/{encryptionDeclarationId}/app/id",
       "stage": "Legacy read design",
+      "implementationStatus": "planned",
       "legacy": true,
       "page": "/docs/reference/get-v1-appencryptiondeclarations-_id_-relationships-app/"
     },
@@ -659,6 +723,7 @@
       "applePath": "/v1/appEncryptionDeclarations/{id}/relationships/appEncryptionDeclarationDocument",
       "facadeRoute": "/encryption-declarations/{encryptionDeclarationId}/encryption-document/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appencryptiondeclarations-_id_-relationships-appencryptiondeclarationdocument/"
     },
@@ -669,6 +734,7 @@
       "applePath": "/v1/appEventLocalizations/{id}",
       "facadeRoute": "/events/{eventId}/localizations/{locale}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appeventlocalizations-_id_/"
     },
@@ -679,6 +745,7 @@
       "applePath": "/v1/appEventLocalizations/{id}/appEventScreenshots",
       "facadeRoute": "/events/{eventId}/localizations/{locale}/event-screenshots",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appeventlocalizations-_id_-appeventscreenshots/"
     },
@@ -689,6 +756,7 @@
       "applePath": "/v1/appEventLocalizations/{id}/appEventVideoClips",
       "facadeRoute": "/events/{eventId}/localizations/{locale}/event-video-clips",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appeventlocalizations-_id_-appeventvideoclips/"
     },
@@ -699,6 +767,7 @@
       "applePath": "/v1/appEventLocalizations/{id}/placements",
       "facadeRoute": "/events/{eventId}/localizations/{locale}/placements",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appeventlocalizations-_id_-placements/"
     },
@@ -709,6 +778,7 @@
       "applePath": "/v1/appEventLocalizations/{id}/relationships/appEventScreenshots",
       "facadeRoute": "/events/{eventId}/localizations/{locale}/event-screenshots/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appeventlocalizations-_id_-relationships-appeventscreenshots/"
     },
@@ -719,6 +789,7 @@
       "applePath": "/v1/appEventLocalizations/{id}/relationships/appEventVideoClips",
       "facadeRoute": "/events/{eventId}/localizations/{locale}/event-video-clips/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appeventlocalizations-_id_-relationships-appeventvideoclips/"
     },
@@ -729,6 +800,7 @@
       "applePath": "/v1/appEventLocalizations/{id}/relationships/placements",
       "facadeRoute": "/events/{eventId}/localizations/{locale}/placements/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appeventlocalizations-_id_-relationships-placements/"
     },
@@ -739,6 +811,7 @@
       "applePath": "/v1/appEvents/{id}",
       "facadeRoute": "/events/{eventId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appevents-_id_/"
     },
@@ -749,6 +822,7 @@
       "applePath": "/v1/appEvents/{id}/localizations",
       "facadeRoute": "/events/{eventId}/localizations",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appevents-_id_-localizations/"
     },
@@ -759,6 +833,7 @@
       "applePath": "/v1/appEvents/{id}/relationships/localizations",
       "facadeRoute": "/events/{eventId}/localizations/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appevents-_id_-relationships-localizations/"
     },
@@ -769,6 +844,7 @@
       "applePath": "/v1/appEventScreenshots/{id}",
       "facadeRoute": "/event-screenshots/{eventScreenshotId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appeventscreenshots-_id_/"
     },
@@ -779,6 +855,7 @@
       "applePath": "/v1/appEventVideoClips/{id}",
       "facadeRoute": "/event-video-clips/{eventVideoClipId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appeventvideoclips-_id_/"
     },
@@ -789,6 +866,7 @@
       "applePath": "/v1/appInfoLocalizations/{id}",
       "facadeRoute": "/apps/{appId}/app-infos/{appInfoId}/localizations/{locale}",
       "stage": "First release",
+      "implementationStatus": "implemented",
       "legacy": false,
       "page": "/docs/reference/get-v1-appinfolocalizations-_id_/"
     },
@@ -799,6 +877,7 @@
       "applePath": "/v1/appInfos/{id}",
       "facadeRoute": "/apps/{appId}/app-infos/{appInfoId}",
       "stage": "First release",
+      "implementationStatus": "implemented",
       "legacy": false,
       "page": "/docs/reference/get-v1-appinfos-_id_/"
     },
@@ -809,6 +888,7 @@
       "applePath": "/v1/appInfos/{id}/ageRatingDeclaration",
       "facadeRoute": "/apps/{appId}/app-infos/{appInfoId}/age-rating",
       "stage": "First release",
+      "implementationStatus": "implemented",
       "legacy": false,
       "page": "/docs/reference/get-v1-appinfos-_id_-ageratingdeclaration/"
     },
@@ -819,6 +899,7 @@
       "applePath": "/v1/appInfos/{id}/appInfoLocalizations",
       "facadeRoute": "/apps/{appId}/app-infos/{appInfoId}/localizations",
       "stage": "First release",
+      "implementationStatus": "implemented",
       "legacy": false,
       "page": "/docs/reference/get-v1-appinfos-_id_-appinfolocalizations/"
     },
@@ -829,6 +910,7 @@
       "applePath": "/v1/appInfos/{id}/primaryCategory",
       "facadeRoute": "/apps/{appId}/app-infos/{appInfoId}/primary-category",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appinfos-_id_-primarycategory/"
     },
@@ -839,6 +921,7 @@
       "applePath": "/v1/appInfos/{id}/primarySubcategoryOne",
       "facadeRoute": "/apps/{appId}/app-infos/{appInfoId}/primary-subcategory-one",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appinfos-_id_-primarysubcategoryone/"
     },
@@ -849,6 +932,7 @@
       "applePath": "/v1/appInfos/{id}/primarySubcategoryTwo",
       "facadeRoute": "/apps/{appId}/app-infos/{appInfoId}/primary-subcategory-two",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appinfos-_id_-primarysubcategorytwo/"
     },
@@ -859,6 +943,7 @@
       "applePath": "/v1/appInfos/{id}/relationships/ageRatingDeclaration",
       "facadeRoute": "/apps/{appId}/app-infos/{appInfoId}/age-rating/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appinfos-_id_-relationships-ageratingdeclaration/"
     },
@@ -869,6 +954,7 @@
       "applePath": "/v1/appInfos/{id}/relationships/appInfoLocalizations",
       "facadeRoute": "/apps/{appId}/app-infos/{appInfoId}/localizations/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appinfos-_id_-relationships-appinfolocalizations/"
     },
@@ -879,6 +965,7 @@
       "applePath": "/v1/appInfos/{id}/relationships/primaryCategory",
       "facadeRoute": "/apps/{appId}/app-infos/{appInfoId}/primary-category/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appinfos-_id_-relationships-primarycategory/"
     },
@@ -889,6 +976,7 @@
       "applePath": "/v1/appInfos/{id}/relationships/primarySubcategoryOne",
       "facadeRoute": "/apps/{appId}/app-infos/{appInfoId}/primary-subcategory-one/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appinfos-_id_-relationships-primarysubcategoryone/"
     },
@@ -899,6 +987,7 @@
       "applePath": "/v1/appInfos/{id}/relationships/primarySubcategoryTwo",
       "facadeRoute": "/apps/{appId}/app-infos/{appInfoId}/primary-subcategory-two/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appinfos-_id_-relationships-primarysubcategorytwo/"
     },
@@ -909,6 +998,7 @@
       "applePath": "/v1/appInfos/{id}/relationships/secondaryCategory",
       "facadeRoute": "/apps/{appId}/app-infos/{appInfoId}/secondary-category/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appinfos-_id_-relationships-secondarycategory/"
     },
@@ -919,6 +1009,7 @@
       "applePath": "/v1/appInfos/{id}/relationships/secondarySubcategoryOne",
       "facadeRoute": "/apps/{appId}/app-infos/{appInfoId}/secondary-subcategory-one/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appinfos-_id_-relationships-secondarysubcategoryone/"
     },
@@ -929,6 +1020,7 @@
       "applePath": "/v1/appInfos/{id}/relationships/secondarySubcategoryTwo",
       "facadeRoute": "/apps/{appId}/app-infos/{appInfoId}/secondary-subcategory-two/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appinfos-_id_-relationships-secondarysubcategorytwo/"
     },
@@ -939,6 +1031,7 @@
       "applePath": "/v1/appInfos/{id}/relationships/territoryAgeRatings",
       "facadeRoute": "/apps/{appId}/app-infos/{appInfoId}/territory-age-ratings/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appinfos-_id_-relationships-territoryageratings/"
     },
@@ -949,6 +1042,7 @@
       "applePath": "/v1/appInfos/{id}/secondaryCategory",
       "facadeRoute": "/apps/{appId}/app-infos/{appInfoId}/secondary-category",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appinfos-_id_-secondarycategory/"
     },
@@ -959,6 +1053,7 @@
       "applePath": "/v1/appInfos/{id}/secondarySubcategoryOne",
       "facadeRoute": "/apps/{appId}/app-infos/{appInfoId}/secondary-subcategory-one",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appinfos-_id_-secondarysubcategoryone/"
     },
@@ -969,6 +1064,7 @@
       "applePath": "/v1/appInfos/{id}/secondarySubcategoryTwo",
       "facadeRoute": "/apps/{appId}/app-infos/{appInfoId}/secondary-subcategory-two",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appinfos-_id_-secondarysubcategorytwo/"
     },
@@ -979,6 +1075,7 @@
       "applePath": "/v1/appInfos/{id}/territoryAgeRatings",
       "facadeRoute": "/apps/{appId}/app-infos/{appInfoId}/territory-age-ratings",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appinfos-_id_-territoryageratings/"
     },
@@ -989,6 +1086,7 @@
       "applePath": "/v1/appPreviews/{id}",
       "facadeRoute": "/previews/{previewId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apppreviews-_id_/"
     },
@@ -999,6 +1097,7 @@
       "applePath": "/v1/appPreviewSets/{id}",
       "facadeRoute": "/preview-sets/{previewSetId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apppreviewsets-_id_/"
     },
@@ -1009,6 +1108,7 @@
       "applePath": "/v1/appPreviewSets/{id}/appPreviews",
       "facadeRoute": "/preview-sets/{previewSetId}/previews",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apppreviewsets-_id_-apppreviews/"
     },
@@ -1019,6 +1119,7 @@
       "applePath": "/v1/appPreviewSets/{id}/relationships/appPreviews",
       "facadeRoute": "/preview-sets/{previewSetId}/previews/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apppreviewsets-_id_-relationships-apppreviews/"
     },
@@ -1029,6 +1130,7 @@
       "applePath": "/v1/appPriceSchedules/{id}",
       "facadeRoute": "/price-schedules/{scheduleId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apppriceschedules-_id_/"
     },
@@ -1039,6 +1141,7 @@
       "applePath": "/v1/appPriceSchedules/{id}/automaticPrices",
       "facadeRoute": "/price-schedules/{scheduleId}/automatic-prices",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apppriceschedules-_id_-automaticprices/"
     },
@@ -1049,6 +1152,7 @@
       "applePath": "/v1/appPriceSchedules/{id}/baseTerritory",
       "facadeRoute": "/price-schedules/{scheduleId}/base-territory",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apppriceschedules-_id_-baseterritory/"
     },
@@ -1059,6 +1163,7 @@
       "applePath": "/v1/appPriceSchedules/{id}/manualPrices",
       "facadeRoute": "/price-schedules/{scheduleId}/manual-prices",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apppriceschedules-_id_-manualprices/"
     },
@@ -1069,6 +1174,7 @@
       "applePath": "/v1/appPriceSchedules/{id}/relationships/automaticPrices",
       "facadeRoute": "/price-schedules/{scheduleId}/automatic-prices/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apppriceschedules-_id_-relationships-automaticprices/"
     },
@@ -1079,6 +1185,7 @@
       "applePath": "/v1/appPriceSchedules/{id}/relationships/baseTerritory",
       "facadeRoute": "/price-schedules/{scheduleId}/base-territory/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apppriceschedules-_id_-relationships-baseterritory/"
     },
@@ -1089,6 +1196,7 @@
       "applePath": "/v1/appPriceSchedules/{id}/relationships/manualPrices",
       "facadeRoute": "/price-schedules/{scheduleId}/manual-prices/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apppriceschedules-_id_-relationships-manualprices/"
     },
@@ -1099,6 +1207,7 @@
       "applePath": "/v1/apps",
       "facadeRoute": "/apps",
       "stage": "First release",
+      "implementationStatus": "implemented",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps/"
     },
@@ -1109,6 +1218,7 @@
       "applePath": "/v1/apps/{id}",
       "facadeRoute": "/apps/{appId}",
       "stage": "First release",
+      "implementationStatus": "implemented",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_/"
     },
@@ -1119,6 +1229,7 @@
       "applePath": "/v1/apps/{id}/accessibilityDeclarations",
       "facadeRoute": "/apps/{appId}/accessibility-declarations",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-accessibilitydeclarations/"
     },
@@ -1129,6 +1240,7 @@
       "applePath": "/v1/apps/{id}/alternativeDistributionKey",
       "facadeRoute": "/apps/{appId}/alternative-distribution-key",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-alternativedistributionkey/"
     },
@@ -1139,6 +1251,7 @@
       "applePath": "/v1/apps/{id}/analyticsReportRequests",
       "facadeRoute": "/apps/{appId}/analytics-report-requests",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-analyticsreportrequests/"
     },
@@ -1149,6 +1262,7 @@
       "applePath": "/v1/apps/{id}/androidToIosAppMappingDetails",
       "facadeRoute": "/apps/{appId}/android-to-ios-app-mapping-details",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-androidtoiosappmappingdetails/"
     },
@@ -1159,6 +1273,7 @@
       "applePath": "/v1/apps/{id}/appAvailabilityV2",
       "facadeRoute": "/apps/{appId}/availability",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-appavailabilityv2/"
     },
@@ -1169,6 +1284,7 @@
       "applePath": "/v1/apps/{id}/appClips",
       "facadeRoute": "/apps/{appId}/app-clips",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-appclips/"
     },
@@ -1179,6 +1295,7 @@
       "applePath": "/v1/apps/{id}/appCustomProductPages",
       "facadeRoute": "/apps/{appId}/custom-product-pages",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-appcustomproductpages/"
     },
@@ -1189,6 +1306,7 @@
       "applePath": "/v1/apps/{id}/appEncryptionDeclarations",
       "facadeRoute": "/apps/{appId}/encryption-declarations",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-appencryptiondeclarations/"
     },
@@ -1199,6 +1317,7 @@
       "applePath": "/v1/apps/{id}/appEvents",
       "facadeRoute": "/apps/{appId}/events",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-appevents/"
     },
@@ -1209,6 +1328,7 @@
       "applePath": "/v1/apps/{id}/appInfos",
       "facadeRoute": "/apps/{appId}/app-infos",
       "stage": "First release",
+      "implementationStatus": "implemented",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-appinfos/"
     },
@@ -1219,6 +1339,7 @@
       "applePath": "/v1/apps/{id}/appPricePoints",
       "facadeRoute": "/apps/{appId}/price-points",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-apppricepoints/"
     },
@@ -1229,6 +1350,7 @@
       "applePath": "/v1/apps/{id}/appPriceSchedule",
       "facadeRoute": "/apps/{appId}/price-schedule",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-apppriceschedule/"
     },
@@ -1239,6 +1361,7 @@
       "applePath": "/v1/apps/{id}/appStoreVersionExperimentsV2",
       "facadeRoute": "/apps/{appId}/experiments",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-appstoreversionexperimentsv2/"
     },
@@ -1249,6 +1372,7 @@
       "applePath": "/v1/apps/{id}/appStoreVersions",
       "facadeRoute": "/apps/{appId}/versions",
       "stage": "First release",
+      "implementationStatus": "implemented",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-appstoreversions/"
     },
@@ -1259,6 +1383,7 @@
       "applePath": "/v1/apps/{id}/appTags",
       "facadeRoute": "/apps/{appId}/tags",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-apptags/"
     },
@@ -1269,6 +1394,7 @@
       "applePath": "/v1/apps/{id}/assetLibrary",
       "facadeRoute": "/apps/{appId}/asset-library",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-assetlibrary/"
     },
@@ -1279,6 +1405,7 @@
       "applePath": "/v1/apps/{id}/backgroundAssets",
       "facadeRoute": "/apps/{appId}/background-assets",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-backgroundassets/"
     },
@@ -1289,6 +1416,7 @@
       "applePath": "/v1/apps/{id}/betaAppLocalizations",
       "facadeRoute": "/apps/{appId}/beta-localizations",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-betaapplocalizations/"
     },
@@ -1299,6 +1427,7 @@
       "applePath": "/v1/apps/{id}/betaAppReviewDetail",
       "facadeRoute": "/apps/{appId}/beta-review-details",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-betaappreviewdetail/"
     },
@@ -1309,6 +1438,7 @@
       "applePath": "/v1/apps/{id}/betaFeedbackCrashSubmissions",
       "facadeRoute": "/apps/{appId}/beta-feedback-crash-submissions",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-betafeedbackcrashsubmissions/"
     },
@@ -1319,6 +1449,7 @@
       "applePath": "/v1/apps/{id}/betaFeedbackScreenshotSubmissions",
       "facadeRoute": "/apps/{appId}/beta-feedback-screenshot-submissions",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-betafeedbackscreenshotsubmissions/"
     },
@@ -1329,6 +1460,7 @@
       "applePath": "/v1/apps/{id}/betaGroups",
       "facadeRoute": "/apps/{appId}/beta-groups",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-betagroups/"
     },
@@ -1339,6 +1471,7 @@
       "applePath": "/v1/apps/{id}/betaLicenseAgreement",
       "facadeRoute": "/apps/{appId}/beta-license-agreement",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-betalicenseagreement/"
     },
@@ -1349,6 +1482,7 @@
       "applePath": "/v1/apps/{id}/builds",
       "facadeRoute": "/apps/{appId}/builds",
       "stage": "Read parity",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-builds/"
     },
@@ -1359,6 +1493,7 @@
       "applePath": "/v1/apps/{id}/buildUploads",
       "facadeRoute": "/apps/{appId}/build-uploads",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-builduploads/"
     },
@@ -1369,6 +1504,7 @@
       "applePath": "/v1/apps/{id}/ciProduct",
       "facadeRoute": "/apps/{appId}/xcode-cloud-product",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-ciproduct/"
     },
@@ -1379,6 +1515,7 @@
       "applePath": "/v1/apps/{id}/customerReviews",
       "facadeRoute": "/apps/{appId}/customer-reviews",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-customerreviews/"
     },
@@ -1389,6 +1526,7 @@
       "applePath": "/v1/apps/{id}/customerReviewSummarizations",
       "facadeRoute": "/apps/{appId}/customer-review-summarizations",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-customerreviewsummarizations/"
     },
@@ -1399,6 +1537,7 @@
       "applePath": "/v1/apps/{id}/endUserLicenseAgreement",
       "facadeRoute": "/apps/{appId}/license-agreement",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-enduserlicenseagreement/"
     },
@@ -1409,6 +1548,7 @@
       "applePath": "/v1/apps/{id}/gameCenterDetail",
       "facadeRoute": "/apps/{appId}/game-center-detail",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-gamecenterdetail/"
     },
@@ -1419,6 +1559,7 @@
       "applePath": "/v1/apps/{id}/gameCenterEnabledVersions",
       "facadeRoute": "/legacy/apps/{appId}/game-center-enabled-versions",
       "stage": "Legacy read design",
+      "implementationStatus": "planned",
       "legacy": true,
       "page": "/docs/reference/get-v1-apps-_id_-gamecenterenabledversions/"
     },
@@ -1429,6 +1570,7 @@
       "applePath": "/v1/apps/{id}/inAppPurchases",
       "facadeRoute": "/legacy/apps/{appId}/in-app-purchases",
       "stage": "Legacy read design",
+      "implementationStatus": "planned",
       "legacy": true,
       "page": "/docs/reference/get-v1-apps-_id_-inapppurchases/"
     },
@@ -1439,6 +1581,7 @@
       "applePath": "/v1/apps/{id}/inAppPurchasesV2",
       "facadeRoute": "/apps/{appId}/in-app-purchases",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-inapppurchasesv2/"
     },
@@ -1449,6 +1592,7 @@
       "applePath": "/v1/apps/{id}/marketplaceSearchDetail",
       "facadeRoute": "/apps/{appId}/marketplace-search-detail",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-marketplacesearchdetail/"
     },
@@ -1459,6 +1603,7 @@
       "applePath": "/v1/apps/{id}/metrics/betaTesterUsages",
       "facadeRoute": "/apps/{appId}/metrics/beta-tester-usages",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-metrics-betatesterusages/"
     },
@@ -1469,6 +1614,7 @@
       "applePath": "/v1/apps/{id}/performanceOverviews",
       "facadeRoute": "/apps/{appId}/performance-overviews",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-performanceoverviews/"
     },
@@ -1479,6 +1625,7 @@
       "applePath": "/v1/apps/{id}/perfPowerMetrics",
       "facadeRoute": "/apps/{appId}/power-performance-metrics",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-perfpowermetrics/"
     },
@@ -1489,6 +1636,7 @@
       "applePath": "/v1/apps/{id}/preReleaseVersions",
       "facadeRoute": "/apps/{appId}/prerelease-versions",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-prereleaseversions/"
     },
@@ -1499,6 +1647,7 @@
       "applePath": "/v1/apps/{id}/promotedPurchases",
       "facadeRoute": "/apps/{appId}/promoted-purchases",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-promotedpurchases/"
     },
@@ -1509,6 +1658,7 @@
       "applePath": "/v1/apps/{id}/relationships/accessibilityDeclarations",
       "facadeRoute": "/apps/{appId}/accessibility-declarations/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-accessibilitydeclarations/"
     },
@@ -1519,6 +1669,7 @@
       "applePath": "/v1/apps/{id}/relationships/alternativeDistributionKey",
       "facadeRoute": "/apps/{appId}/alternative-distribution-key/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-alternativedistributionkey/"
     },
@@ -1529,6 +1680,7 @@
       "applePath": "/v1/apps/{id}/relationships/analyticsReportRequests",
       "facadeRoute": "/apps/{appId}/analytics-report-requests/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-analyticsreportrequests/"
     },
@@ -1539,6 +1691,7 @@
       "applePath": "/v1/apps/{id}/relationships/androidToIosAppMappingDetails",
       "facadeRoute": "/apps/{appId}/android-to-ios-app-mapping-details/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-androidtoiosappmappingdetails/"
     },
@@ -1549,6 +1702,7 @@
       "applePath": "/v1/apps/{id}/relationships/appAvailabilityV2",
       "facadeRoute": "/apps/{appId}/availability/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-appavailabilityv2/"
     },
@@ -1559,6 +1713,7 @@
       "applePath": "/v1/apps/{id}/relationships/appClips",
       "facadeRoute": "/apps/{appId}/app-clips/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-appclips/"
     },
@@ -1569,6 +1724,7 @@
       "applePath": "/v1/apps/{id}/relationships/appCustomProductPages",
       "facadeRoute": "/apps/{appId}/custom-product-pages/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-appcustomproductpages/"
     },
@@ -1579,6 +1735,7 @@
       "applePath": "/v1/apps/{id}/relationships/appEncryptionDeclarations",
       "facadeRoute": "/apps/{appId}/encryption-declarations/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-appencryptiondeclarations/"
     },
@@ -1589,6 +1746,7 @@
       "applePath": "/v1/apps/{id}/relationships/appEvents",
       "facadeRoute": "/apps/{appId}/events/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-appevents/"
     },
@@ -1599,6 +1757,7 @@
       "applePath": "/v1/apps/{id}/relationships/appInfos",
       "facadeRoute": "/apps/{appId}/app-infos/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-appinfos/"
     },
@@ -1609,6 +1768,7 @@
       "applePath": "/v1/apps/{id}/relationships/appPricePoints",
       "facadeRoute": "/apps/{appId}/price-points/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-apppricepoints/"
     },
@@ -1619,6 +1779,7 @@
       "applePath": "/v1/apps/{id}/relationships/appPriceSchedule",
       "facadeRoute": "/apps/{appId}/price-schedule/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-apppriceschedule/"
     },
@@ -1629,6 +1790,7 @@
       "applePath": "/v1/apps/{id}/relationships/appStoreVersionExperimentsV2",
       "facadeRoute": "/apps/{appId}/experiments/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-appstoreversionexperimentsv2/"
     },
@@ -1639,6 +1801,7 @@
       "applePath": "/v1/apps/{id}/relationships/appStoreVersions",
       "facadeRoute": "/apps/{appId}/versions/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-appstoreversions/"
     },
@@ -1649,6 +1812,7 @@
       "applePath": "/v1/apps/{id}/relationships/appTags",
       "facadeRoute": "/apps/{appId}/tags/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-apptags/"
     },
@@ -1659,6 +1823,7 @@
       "applePath": "/v1/apps/{id}/relationships/assetLibrary",
       "facadeRoute": "/apps/{appId}/asset-library/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-assetlibrary/"
     },
@@ -1669,6 +1834,7 @@
       "applePath": "/v1/apps/{id}/relationships/backgroundAssets",
       "facadeRoute": "/apps/{appId}/background-assets/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-backgroundassets/"
     },
@@ -1679,6 +1845,7 @@
       "applePath": "/v1/apps/{id}/relationships/betaAppLocalizations",
       "facadeRoute": "/apps/{appId}/beta-localizations/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-betaapplocalizations/"
     },
@@ -1689,6 +1856,7 @@
       "applePath": "/v1/apps/{id}/relationships/betaAppReviewDetail",
       "facadeRoute": "/apps/{appId}/beta-review-details/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-betaappreviewdetail/"
     },
@@ -1699,6 +1867,7 @@
       "applePath": "/v1/apps/{id}/relationships/betaGroups",
       "facadeRoute": "/apps/{appId}/beta-groups/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-betagroups/"
     },
@@ -1709,6 +1878,7 @@
       "applePath": "/v1/apps/{id}/relationships/betaLicenseAgreement",
       "facadeRoute": "/apps/{appId}/beta-license-agreement/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-betalicenseagreement/"
     },
@@ -1719,6 +1889,7 @@
       "applePath": "/v1/apps/{id}/relationships/builds",
       "facadeRoute": "/apps/{appId}/builds/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-builds/"
     },
@@ -1729,6 +1900,7 @@
       "applePath": "/v1/apps/{id}/relationships/buildUploads",
       "facadeRoute": "/apps/{appId}/build-uploads/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-builduploads/"
     },
@@ -1739,6 +1911,7 @@
       "applePath": "/v1/apps/{id}/relationships/ciProduct",
       "facadeRoute": "/apps/{appId}/xcode-cloud-product/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-ciproduct/"
     },
@@ -1749,6 +1922,7 @@
       "applePath": "/v1/apps/{id}/relationships/customerReviews",
       "facadeRoute": "/apps/{appId}/customer-reviews/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-customerreviews/"
     },
@@ -1759,6 +1933,7 @@
       "applePath": "/v1/apps/{id}/relationships/endUserLicenseAgreement",
       "facadeRoute": "/apps/{appId}/license-agreement/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-enduserlicenseagreement/"
     },
@@ -1769,6 +1944,7 @@
       "applePath": "/v1/apps/{id}/relationships/gameCenterDetail",
       "facadeRoute": "/apps/{appId}/game-center-detail/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-gamecenterdetail/"
     },
@@ -1779,6 +1955,7 @@
       "applePath": "/v1/apps/{id}/relationships/gameCenterEnabledVersions",
       "facadeRoute": "/legacy/apps/{appId}/game-center-enabled-versions/ids",
       "stage": "Legacy read design",
+      "implementationStatus": "planned",
       "legacy": true,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-gamecenterenabledversions/"
     },
@@ -1789,6 +1966,7 @@
       "applePath": "/v1/apps/{id}/relationships/inAppPurchases",
       "facadeRoute": "/legacy/apps/{appId}/in-app-purchases/ids",
       "stage": "Legacy read design",
+      "implementationStatus": "planned",
       "legacy": true,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-inapppurchases/"
     },
@@ -1799,6 +1977,7 @@
       "applePath": "/v1/apps/{id}/relationships/inAppPurchasesV2",
       "facadeRoute": "/apps/{appId}/in-app-purchases/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-inapppurchasesv2/"
     },
@@ -1809,6 +1988,7 @@
       "applePath": "/v1/apps/{id}/relationships/marketplaceSearchDetail",
       "facadeRoute": "/apps/{appId}/marketplace-search-detail/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-marketplacesearchdetail/"
     },
@@ -1819,6 +1999,7 @@
       "applePath": "/v1/apps/{id}/relationships/preReleaseVersions",
       "facadeRoute": "/apps/{appId}/prerelease-versions/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-prereleaseversions/"
     },
@@ -1829,6 +2010,7 @@
       "applePath": "/v1/apps/{id}/relationships/promotedPurchases",
       "facadeRoute": "/apps/{appId}/promoted-purchases/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-promotedpurchases/"
     },
@@ -1839,6 +2021,7 @@
       "applePath": "/v1/apps/{id}/relationships/reviewSubmissions",
       "facadeRoute": "/apps/{appId}/review-submissions/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-reviewsubmissions/"
     },
@@ -1849,6 +2032,7 @@
       "applePath": "/v1/apps/{id}/relationships/searchKeywords",
       "facadeRoute": "/apps/{appId}/search-keywords/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-searchkeywords/"
     },
@@ -1859,6 +2043,7 @@
       "applePath": "/v1/apps/{id}/relationships/subscriptionGracePeriod",
       "facadeRoute": "/apps/{appId}/grace-period/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-subscriptiongraceperiod/"
     },
@@ -1869,6 +2054,7 @@
       "applePath": "/v1/apps/{id}/relationships/subscriptionGroups",
       "facadeRoute": "/apps/{appId}/subscription-groups/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-subscriptiongroups/"
     },
@@ -1879,6 +2065,7 @@
       "applePath": "/v1/apps/{id}/relationships/webhooks",
       "facadeRoute": "/apps/{appId}/webhooks/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-relationships-webhooks/"
     },
@@ -1889,6 +2076,7 @@
       "applePath": "/v1/apps/{id}/reviewSubmissions",
       "facadeRoute": "/apps/{appId}/review-submissions",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-reviewsubmissions/"
     },
@@ -1899,6 +2087,7 @@
       "applePath": "/v1/apps/{id}/searchKeywords",
       "facadeRoute": "/apps/{appId}/search-keywords",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-searchkeywords/"
     },
@@ -1909,6 +2098,7 @@
       "applePath": "/v1/apps/{id}/subscriptionGracePeriod",
       "facadeRoute": "/apps/{appId}/grace-period",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-subscriptiongraceperiod/"
     },
@@ -1919,6 +2109,7 @@
       "applePath": "/v1/apps/{id}/subscriptionGroups",
       "facadeRoute": "/apps/{appId}/subscription-groups",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-subscriptiongroups/"
     },
@@ -1929,6 +2120,7 @@
       "applePath": "/v1/apps/{id}/webhooks",
       "facadeRoute": "/apps/{appId}/webhooks",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apps-_id_-webhooks/"
     },
@@ -1939,6 +2131,7 @@
       "applePath": "/v1/appScreenshots/{id}",
       "facadeRoute": "/screenshots/{screenshotId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appscreenshots-_id_/"
     },
@@ -1949,6 +2142,7 @@
       "applePath": "/v1/appScreenshotSets/{id}",
       "facadeRoute": "/screenshot-sets/{screenshotSetId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appscreenshotsets-_id_/"
     },
@@ -1959,6 +2153,7 @@
       "applePath": "/v1/appScreenshotSets/{id}/appScreenshots",
       "facadeRoute": "/screenshot-sets/{screenshotSetId}/screenshots",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appscreenshotsets-_id_-appscreenshots/"
     },
@@ -1969,6 +2164,7 @@
       "applePath": "/v1/appScreenshotSets/{id}/relationships/appScreenshots",
       "facadeRoute": "/screenshot-sets/{screenshotSetId}/screenshots/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appscreenshotsets-_id_-relationships-appscreenshots/"
     },
@@ -1979,6 +2175,7 @@
       "applePath": "/v1/appStoreReviewAttachments/{id}",
       "facadeRoute": "/review-attachments/{reviewAttachmentId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstorereviewattachments-_id_/"
     },
@@ -1989,6 +2186,7 @@
       "applePath": "/v1/appStoreReviewDetails/{id}",
       "facadeRoute": "/apps/{appId}/versions/{versionId}/review-contact",
       "stage": "First release",
+      "implementationStatus": "implemented",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstorereviewdetails-_id_/"
     },
@@ -1999,6 +2197,7 @@
       "applePath": "/v1/appStoreReviewDetails/{id}/appStoreReviewAttachments",
       "facadeRoute": "/apps/{appId}/versions/{versionId}/review-contact/review-attachments",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstorereviewdetails-_id_-appstorereviewattachments/"
     },
@@ -2009,6 +2208,7 @@
       "applePath": "/v1/appStoreReviewDetails/{id}/relationships/appStoreReviewAttachments",
       "facadeRoute": "/apps/{appId}/versions/{versionId}/review-contact/review-attachments/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstorereviewdetails-_id_-relationships-appstorereviewattachments/"
     },
@@ -2019,6 +2219,7 @@
       "applePath": "/v1/appStoreVersionExperiments/{id}",
       "facadeRoute": "/legacy/experiments/{experimentId}",
       "stage": "Legacy read design",
+      "implementationStatus": "planned",
       "legacy": true,
       "page": "/docs/reference/get-v1-appstoreversionexperiments-_id_/"
     },
@@ -2029,6 +2230,7 @@
       "applePath": "/v1/appStoreVersionExperiments/{id}/appStoreVersionExperimentTreatments",
       "facadeRoute": "/legacy/experiments/{experimentId}/treatments",
       "stage": "Legacy read design",
+      "implementationStatus": "planned",
       "legacy": true,
       "page": "/docs/reference/get-v1-appstoreversionexperiments-_id_-appstoreversionexperimenttreatments/"
     },
@@ -2039,6 +2241,7 @@
       "applePath": "/v1/appStoreVersionExperiments/{id}/relationships/appStoreVersionExperimentTreatments",
       "facadeRoute": "/legacy/experiments/{experimentId}/treatments/ids",
       "stage": "Legacy read design",
+      "implementationStatus": "planned",
       "legacy": true,
       "page": "/docs/reference/get-v1-appstoreversionexperiments-_id_-relationships-appstoreversionexperimenttreatments/"
     },
@@ -2049,6 +2252,7 @@
       "applePath": "/v1/appStoreVersionExperimentTreatmentLocalizations/{id}",
       "facadeRoute": "/experiment-treatments/{treatmentId}/localizations/{locale}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversionexperimenttreatmentlocalizations-_id_/"
     },
@@ -2059,6 +2263,7 @@
       "applePath": "/v1/appStoreVersionExperimentTreatmentLocalizations/{id}/appPreviewSets",
       "facadeRoute": "/experiment-treatments/{treatmentId}/localizations/{locale}/preview-sets",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversionexperimenttreatmentlocalizations-_id_-apppreviewsets/"
     },
@@ -2069,6 +2274,7 @@
       "applePath": "/v1/appStoreVersionExperimentTreatmentLocalizations/{id}/appScreenshotSets",
       "facadeRoute": "/experiment-treatments/{treatmentId}/localizations/{locale}/screenshot-sets",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversionexperimenttreatmentlocalizations-_id_-appscreenshotsets/"
     },
@@ -2079,6 +2285,7 @@
       "applePath": "/v1/appStoreVersionExperimentTreatmentLocalizations/{id}/placements",
       "facadeRoute": "/experiment-treatments/{treatmentId}/localizations/{locale}/placements",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversionexperimenttreatmentlocalizations-_id_-placements/"
     },
@@ -2089,6 +2296,7 @@
       "applePath": "/v1/appStoreVersionExperimentTreatmentLocalizations/{id}/relationships/appPreviewSets",
       "facadeRoute": "/experiment-treatments/{treatmentId}/localizations/{locale}/preview-sets/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversionexperimenttreatmentlocalizations-_id_-relationships-apppreviewsets/"
     },
@@ -2099,6 +2307,7 @@
       "applePath": "/v1/appStoreVersionExperimentTreatmentLocalizations/{id}/relationships/appScreenshotSets",
       "facadeRoute": "/experiment-treatments/{treatmentId}/localizations/{locale}/screenshot-sets/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversionexperimenttreatmentlocalizations-_id_-relationships-appscreenshotsets/"
     },
@@ -2109,6 +2318,7 @@
       "applePath": "/v1/appStoreVersionExperimentTreatmentLocalizations/{id}/relationships/placements",
       "facadeRoute": "/experiment-treatments/{treatmentId}/localizations/{locale}/placements/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversionexperimenttreatmentlocalizations-_id_-relationships-placements/"
     },
@@ -2119,6 +2329,7 @@
       "applePath": "/v1/appStoreVersionExperimentTreatments/{id}",
       "facadeRoute": "/experiment-treatments/{treatmentId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversionexperimenttreatments-_id_/"
     },
@@ -2129,6 +2340,7 @@
       "applePath": "/v1/appStoreVersionExperimentTreatments/{id}/appStoreVersionExperimentTreatmentLocalizations",
       "facadeRoute": "/experiment-treatments/{treatmentId}/localizations",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversionexperimenttreatments-_id_-appstoreversionexperimenttreatmentlocalizations/"
     },
@@ -2139,6 +2351,7 @@
       "applePath": "/v1/appStoreVersionExperimentTreatments/{id}/relationships/appStoreVersionExperimentTreatmentLocalizations",
       "facadeRoute": "/experiment-treatments/{treatmentId}/localizations/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversionexperimenttreatments-_id_-relationships-appstoreversionexperimenttreatmentlocalizations/"
     },
@@ -2149,6 +2362,7 @@
       "applePath": "/v1/appStoreVersionLocalizations/{id}",
       "facadeRoute": "/apps/{appId}/versions/{versionId}/localizations/{locale}",
       "stage": "First release",
+      "implementationStatus": "implemented",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversionlocalizations-_id_/"
     },
@@ -2159,6 +2373,7 @@
       "applePath": "/v1/appStoreVersionLocalizations/{id}/appPreviewSets",
       "facadeRoute": "/apps/{appId}/versions/{versionId}/localizations/{locale}/preview-sets",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversionlocalizations-_id_-apppreviewsets/"
     },
@@ -2169,6 +2384,7 @@
       "applePath": "/v1/appStoreVersionLocalizations/{id}/appScreenshotSets",
       "facadeRoute": "/apps/{appId}/versions/{versionId}/localizations/{locale}/screenshot-sets",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversionlocalizations-_id_-appscreenshotsets/"
     },
@@ -2179,6 +2395,7 @@
       "applePath": "/v1/appStoreVersionLocalizations/{id}/placements",
       "facadeRoute": "/apps/{appId}/versions/{versionId}/localizations/{locale}/placements",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversionlocalizations-_id_-placements/"
     },
@@ -2189,6 +2406,7 @@
       "applePath": "/v1/appStoreVersionLocalizations/{id}/relationships/appPreviewSets",
       "facadeRoute": "/apps/{appId}/versions/{versionId}/localizations/{locale}/preview-sets/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversionlocalizations-_id_-relationships-apppreviewsets/"
     },
@@ -2199,6 +2417,7 @@
       "applePath": "/v1/appStoreVersionLocalizations/{id}/relationships/appScreenshotSets",
       "facadeRoute": "/apps/{appId}/versions/{versionId}/localizations/{locale}/screenshot-sets/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversionlocalizations-_id_-relationships-appscreenshotsets/"
     },
@@ -2209,6 +2428,7 @@
       "applePath": "/v1/appStoreVersionLocalizations/{id}/relationships/placements",
       "facadeRoute": "/apps/{appId}/versions/{versionId}/localizations/{locale}/placements/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversionlocalizations-_id_-relationships-placements/"
     },
@@ -2219,6 +2439,7 @@
       "applePath": "/v1/appStoreVersionLocalizations/{id}/relationships/searchKeywords",
       "facadeRoute": "/apps/{appId}/versions/{versionId}/localizations/{locale}/search-keywords/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversionlocalizations-_id_-relationships-searchkeywords/"
     },
@@ -2229,6 +2450,7 @@
       "applePath": "/v1/appStoreVersionLocalizations/{id}/searchKeywords",
       "facadeRoute": "/apps/{appId}/versions/{versionId}/localizations/{locale}/search-keywords",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversionlocalizations-_id_-searchkeywords/"
     },
@@ -2239,6 +2461,7 @@
       "applePath": "/v1/appStoreVersions/{id}",
       "facadeRoute": "/apps/{appId}/versions/{versionId}",
       "stage": "First release",
+      "implementationStatus": "implemented",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversions-_id_/"
     },
@@ -2249,6 +2472,7 @@
       "applePath": "/v1/appStoreVersions/{id}/alternativeDistributionPackage",
       "facadeRoute": "/apps/{appId}/versions/{versionId}/alternative-distribution-package",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversions-_id_-alternativedistributionpackage/"
     },
@@ -2259,6 +2483,7 @@
       "applePath": "/v1/appStoreVersions/{id}/appClipDefaultExperience",
       "facadeRoute": "/apps/{appId}/versions/{versionId}/default-experience",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversions-_id_-appclipdefaultexperience/"
     },
@@ -2269,6 +2494,7 @@
       "applePath": "/v1/appStoreVersions/{id}/appStoreReviewDetail",
       "facadeRoute": "/apps/{appId}/versions/{versionId}/review-contact",
       "stage": "First release",
+      "implementationStatus": "implemented",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversions-_id_-appstorereviewdetail/"
     },
@@ -2279,6 +2505,7 @@
       "applePath": "/v1/appStoreVersions/{id}/appStoreVersionExperiments",
       "facadeRoute": "/legacy/apps/{appId}/versions/{versionId}/experiments",
       "stage": "Legacy read design",
+      "implementationStatus": "planned",
       "legacy": true,
       "page": "/docs/reference/get-v1-appstoreversions-_id_-appstoreversionexperiments/"
     },
@@ -2289,6 +2516,7 @@
       "applePath": "/v1/appStoreVersions/{id}/appStoreVersionExperimentsV2",
       "facadeRoute": "/apps/{appId}/versions/{versionId}/experiments",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversions-_id_-appstoreversionexperimentsv2/"
     },
@@ -2299,6 +2527,7 @@
       "applePath": "/v1/appStoreVersions/{id}/appStoreVersionLocalizations",
       "facadeRoute": "/apps/{appId}/versions/{versionId}/localizations",
       "stage": "First release",
+      "implementationStatus": "implemented",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversions-_id_-appstoreversionlocalizations/"
     },
@@ -2309,6 +2538,7 @@
       "applePath": "/v1/appStoreVersions/{id}/appStoreVersionPhasedRelease",
       "facadeRoute": "/apps/{appId}/versions/{versionId}/phased-release",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversions-_id_-appstoreversionphasedrelease/"
     },
@@ -2319,6 +2549,7 @@
       "applePath": "/v1/appStoreVersions/{id}/appStoreVersionSubmission",
       "facadeRoute": "/legacy/apps/{appId}/versions/{versionId}/submission",
       "stage": "Legacy read design",
+      "implementationStatus": "planned",
       "legacy": true,
       "page": "/docs/reference/get-v1-appstoreversions-_id_-appstoreversionsubmission/"
     },
@@ -2329,6 +2560,7 @@
       "applePath": "/v1/appStoreVersions/{id}/build",
       "facadeRoute": "/apps/{appId}/versions/{versionId}/build",
       "stage": "Read parity",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversions-_id_-build/"
     },
@@ -2339,6 +2571,7 @@
       "applePath": "/v1/appStoreVersions/{id}/customerReviews",
       "facadeRoute": "/apps/{appId}/versions/{versionId}/customer-reviews",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversions-_id_-customerreviews/"
     },
@@ -2349,6 +2582,7 @@
       "applePath": "/v1/appStoreVersions/{id}/gameCenterAppVersion",
       "facadeRoute": "/apps/{appId}/versions/{versionId}/game-center-app-version",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversions-_id_-gamecenterappversion/"
     },
@@ -2359,6 +2593,7 @@
       "applePath": "/v1/appStoreVersions/{id}/relationships/alternativeDistributionPackage",
       "facadeRoute": "/apps/{appId}/versions/{versionId}/alternative-distribution-package/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversions-_id_-relationships-alternativedistributionpackage/"
     },
@@ -2369,6 +2604,7 @@
       "applePath": "/v1/appStoreVersions/{id}/relationships/appClipDefaultExperience",
       "facadeRoute": "/apps/{appId}/versions/{versionId}/default-experience/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversions-_id_-relationships-appclipdefaultexperience/"
     },
@@ -2379,6 +2615,7 @@
       "applePath": "/v1/appStoreVersions/{id}/relationships/appStoreReviewDetail",
       "facadeRoute": "/apps/{appId}/versions/{versionId}/review-contact/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversions-_id_-relationships-appstorereviewdetail/"
     },
@@ -2389,6 +2626,7 @@
       "applePath": "/v1/appStoreVersions/{id}/relationships/appStoreVersionExperiments",
       "facadeRoute": "/legacy/apps/{appId}/versions/{versionId}/experiments/ids",
       "stage": "Legacy read design",
+      "implementationStatus": "planned",
       "legacy": true,
       "page": "/docs/reference/get-v1-appstoreversions-_id_-relationships-appstoreversionexperiments/"
     },
@@ -2399,6 +2637,7 @@
       "applePath": "/v1/appStoreVersions/{id}/relationships/appStoreVersionExperimentsV2",
       "facadeRoute": "/apps/{appId}/versions/{versionId}/experiments/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversions-_id_-relationships-appstoreversionexperimentsv2/"
     },
@@ -2409,6 +2648,7 @@
       "applePath": "/v1/appStoreVersions/{id}/relationships/appStoreVersionLocalizations",
       "facadeRoute": "/apps/{appId}/versions/{versionId}/localizations/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversions-_id_-relationships-appstoreversionlocalizations/"
     },
@@ -2419,6 +2659,7 @@
       "applePath": "/v1/appStoreVersions/{id}/relationships/appStoreVersionPhasedRelease",
       "facadeRoute": "/apps/{appId}/versions/{versionId}/phased-release/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversions-_id_-relationships-appstoreversionphasedrelease/"
     },
@@ -2429,6 +2670,7 @@
       "applePath": "/v1/appStoreVersions/{id}/relationships/appStoreVersionSubmission",
       "facadeRoute": "/legacy/apps/{appId}/versions/{versionId}/submission/id",
       "stage": "Legacy read design",
+      "implementationStatus": "planned",
       "legacy": true,
       "page": "/docs/reference/get-v1-appstoreversions-_id_-relationships-appstoreversionsubmission/"
     },
@@ -2439,6 +2681,7 @@
       "applePath": "/v1/appStoreVersions/{id}/relationships/build",
       "facadeRoute": "/apps/{appId}/versions/{versionId}/build/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversions-_id_-relationships-build/"
     },
@@ -2449,6 +2692,7 @@
       "applePath": "/v1/appStoreVersions/{id}/relationships/customerReviews",
       "facadeRoute": "/apps/{appId}/versions/{versionId}/customer-reviews/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversions-_id_-relationships-customerreviews/"
     },
@@ -2459,6 +2703,7 @@
       "applePath": "/v1/appStoreVersions/{id}/relationships/gameCenterAppVersion",
       "facadeRoute": "/apps/{appId}/versions/{versionId}/game-center-app-version/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversions-_id_-relationships-gamecenterappversion/"
     },
@@ -2469,6 +2714,7 @@
       "applePath": "/v1/appStoreVersions/{id}/relationships/routingAppCoverage",
       "facadeRoute": "/apps/{appId}/versions/{versionId}/routing-coverage/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversions-_id_-relationships-routingappcoverage/"
     },
@@ -2479,6 +2725,7 @@
       "applePath": "/v1/appStoreVersions/{id}/routingAppCoverage",
       "facadeRoute": "/apps/{appId}/versions/{versionId}/routing-coverage",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-appstoreversions-_id_-routingappcoverage/"
     },
@@ -2489,6 +2736,7 @@
       "applePath": "/v1/appTags/{id}/relationships/territories",
       "facadeRoute": "/tags/{tagId}/territories/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apptags-_id_-relationships-territories/"
     },
@@ -2499,6 +2747,7 @@
       "applePath": "/v1/appTags/{id}/territories",
       "facadeRoute": "/tags/{tagId}/territories",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-apptags-_id_-territories/"
     },
@@ -2509,6 +2758,7 @@
       "applePath": "/v1/backgroundAssets/{id}",
       "facadeRoute": "/background-assets/{backgroundAssetId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-backgroundassets-_id_/"
     },
@@ -2519,6 +2769,7 @@
       "applePath": "/v1/backgroundAssets/{id}/relationships/versions",
       "facadeRoute": "/background-assets/{backgroundAssetId}/versions/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-backgroundassets-_id_-relationships-versions/"
     },
@@ -2529,6 +2780,7 @@
       "applePath": "/v1/backgroundAssets/{id}/versions",
       "facadeRoute": "/background-assets/{backgroundAssetId}/versions",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-backgroundassets-_id_-versions/"
     },
@@ -2539,6 +2791,7 @@
       "applePath": "/v1/backgroundAssetUploadFiles/{id}",
       "facadeRoute": "/background-asset-upload-files/{backgroundAssetUploadFileId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-backgroundassetuploadfiles-_id_/"
     },
@@ -2549,6 +2802,7 @@
       "applePath": "/v1/backgroundAssetVersionAppStoreReleases/{id}",
       "facadeRoute": "/background-asset-version-app-store-releases/{backgroundAssetVersionAppStoreReleaseId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-backgroundassetversionappstorereleases-_id_/"
     },
@@ -2559,6 +2813,7 @@
       "applePath": "/v1/backgroundAssetVersionExternalBetaReleases/{id}",
       "facadeRoute": "/background-asset-version-external-beta-releases/{backgroundAssetVersionExternalBetaReleaseId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-backgroundassetversionexternalbetareleases-_id_/"
     },
@@ -2569,6 +2824,7 @@
       "applePath": "/v1/backgroundAssetVersionInternalBetaReleases/{id}",
       "facadeRoute": "/background-asset-version-internal-beta-releases/{backgroundAssetVersionInternalBetaReleaseId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-backgroundassetversioninternalbetareleases-_id_/"
     },
@@ -2579,6 +2835,7 @@
       "applePath": "/v1/backgroundAssetVersions/{id}",
       "facadeRoute": "/background-asset-versions/{backgroundAssetVersionId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-backgroundassetversions-_id_/"
     },
@@ -2589,6 +2846,7 @@
       "applePath": "/v1/backgroundAssetVersions/{id}/backgroundAssetUploadFiles",
       "facadeRoute": "/background-asset-versions/{backgroundAssetVersionId}/background-asset-upload-files",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-backgroundassetversions-_id_-backgroundassetuploadfiles/"
     },
@@ -2599,6 +2857,7 @@
       "applePath": "/v1/backgroundAssetVersions/{id}/relationships/backgroundAssetUploadFiles",
       "facadeRoute": "/background-asset-versions/{backgroundAssetVersionId}/background-asset-upload-files/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-backgroundassetversions-_id_-relationships-backgroundassetuploadfiles/"
     },
@@ -2609,6 +2868,7 @@
       "applePath": "/v1/buildBundles/{id}/appClipDomainCacheStatus",
       "facadeRoute": "/build-bundles/{buildBundleId}/app-clip-domain-cache-status",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-buildbundles-_id_-appclipdomaincachestatus/"
     },
@@ -2619,6 +2879,7 @@
       "applePath": "/v1/buildBundles/{id}/appClipDomainDebugStatus",
       "facadeRoute": "/build-bundles/{buildBundleId}/app-clip-domain-debug-status",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-buildbundles-_id_-appclipdomaindebugstatus/"
     },
@@ -2629,6 +2890,7 @@
       "applePath": "/v1/buildBundles/{id}/betaAppClipInvocations",
       "facadeRoute": "/build-bundles/{buildBundleId}/beta-app-clip-invocations",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-buildbundles-_id_-betaappclipinvocations/"
     },
@@ -2639,6 +2901,7 @@
       "applePath": "/v1/buildBundles/{id}/buildBundleFileSizes",
       "facadeRoute": "/build-bundles/{buildBundleId}/build-bundle-file-sizes",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-buildbundles-_id_-buildbundlefilesizes/"
     },
@@ -2649,6 +2912,7 @@
       "applePath": "/v1/buildBundles/{id}/relationships/appClipDomainCacheStatus",
       "facadeRoute": "/build-bundles/{buildBundleId}/app-clip-domain-cache-status/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-buildbundles-_id_-relationships-appclipdomaincachestatus/"
     },
@@ -2659,6 +2923,7 @@
       "applePath": "/v1/buildBundles/{id}/relationships/appClipDomainDebugStatus",
       "facadeRoute": "/build-bundles/{buildBundleId}/app-clip-domain-debug-status/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-buildbundles-_id_-relationships-appclipdomaindebugstatus/"
     },
@@ -2669,6 +2934,7 @@
       "applePath": "/v1/buildBundles/{id}/relationships/betaAppClipInvocations",
       "facadeRoute": "/build-bundles/{buildBundleId}/beta-app-clip-invocations/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-buildbundles-_id_-relationships-betaappclipinvocations/"
     },
@@ -2679,6 +2945,7 @@
       "applePath": "/v1/buildBundles/{id}/relationships/buildBundleFileSizes",
       "facadeRoute": "/build-bundles/{buildBundleId}/build-bundle-file-sizes/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-buildbundles-_id_-relationships-buildbundlefilesizes/"
     },
@@ -2689,6 +2956,7 @@
       "applePath": "/v1/builds",
       "facadeRoute": "/apps/{appId}/builds",
       "stage": "Read parity",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-builds/"
     },
@@ -2699,6 +2967,7 @@
       "applePath": "/v1/builds/{id}",
       "facadeRoute": "/apps/{appId}/builds/{buildId}",
       "stage": "Read parity",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-builds-_id_/"
     },
@@ -2709,6 +2978,7 @@
       "applePath": "/v1/builds/{id}/app",
       "facadeRoute": "/apps/{appId}/builds/{buildId}/app",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-builds-_id_-app/"
     },
@@ -2719,6 +2989,7 @@
       "applePath": "/v1/builds/{id}/appEncryptionDeclaration",
       "facadeRoute": "/apps/{appId}/builds/{buildId}/encryption-declaration",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-builds-_id_-appencryptiondeclaration/"
     },
@@ -2729,6 +3000,7 @@
       "applePath": "/v1/builds/{id}/appStoreVersion",
       "facadeRoute": "/apps/{appId}/builds/{buildId}/version",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-builds-_id_-appstoreversion/"
     },
@@ -2739,6 +3011,7 @@
       "applePath": "/v1/builds/{id}/betaAppReviewSubmission",
       "facadeRoute": "/apps/{appId}/builds/{buildId}/beta-app-review-submission",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-builds-_id_-betaappreviewsubmission/"
     },
@@ -2749,6 +3022,7 @@
       "applePath": "/v1/builds/{id}/betaBuildLocalizations",
       "facadeRoute": "/apps/{appId}/builds/{buildId}/beta-build-localizations",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-builds-_id_-betabuildlocalizations/"
     },
@@ -2759,6 +3033,7 @@
       "applePath": "/v1/builds/{id}/buildBetaDetail",
       "facadeRoute": "/apps/{appId}/builds/{buildId}/build-beta-detail",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-builds-_id_-buildbetadetail/"
     },
@@ -2769,6 +3044,7 @@
       "applePath": "/v1/builds/{id}/diagnosticSignatures",
       "facadeRoute": "/apps/{appId}/builds/{buildId}/diagnostic-signatures",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-builds-_id_-diagnosticsignatures/"
     },
@@ -2779,6 +3055,7 @@
       "applePath": "/v1/builds/{id}/icons",
       "facadeRoute": "/apps/{appId}/builds/{buildId}/icons",
       "stage": "Read parity",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-builds-_id_-icons/"
     },
@@ -2789,6 +3066,7 @@
       "applePath": "/v1/builds/{id}/individualTesters",
       "facadeRoute": "/apps/{appId}/builds/{buildId}/individual-testers",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-builds-_id_-individualtesters/"
     },
@@ -2799,6 +3077,7 @@
       "applePath": "/v1/builds/{id}/metrics/betaBuildUsages",
       "facadeRoute": "/apps/{appId}/builds/{buildId}/metrics/beta-build-usages",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-builds-_id_-metrics-betabuildusages/"
     },
@@ -2809,6 +3088,7 @@
       "applePath": "/v1/builds/{id}/preReleaseVersion",
       "facadeRoute": "/apps/{appId}/builds/{buildId}/prerelease-version",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-builds-_id_-prereleaseversion/"
     },
@@ -2819,6 +3099,7 @@
       "applePath": "/v1/builds/{id}/relationships/app",
       "facadeRoute": "/apps/{appId}/builds/{buildId}/app/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-builds-_id_-relationships-app/"
     },
@@ -2829,6 +3110,7 @@
       "applePath": "/v1/builds/{id}/relationships/appEncryptionDeclaration",
       "facadeRoute": "/apps/{appId}/builds/{buildId}/encryption-declaration/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-builds-_id_-relationships-appencryptiondeclaration/"
     },
@@ -2839,6 +3121,7 @@
       "applePath": "/v1/builds/{id}/relationships/appStoreVersion",
       "facadeRoute": "/apps/{appId}/builds/{buildId}/version/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-builds-_id_-relationships-appstoreversion/"
     },
@@ -2849,6 +3132,7 @@
       "applePath": "/v1/builds/{id}/relationships/betaAppReviewSubmission",
       "facadeRoute": "/apps/{appId}/builds/{buildId}/beta-app-review-submission/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-builds-_id_-relationships-betaappreviewsubmission/"
     },
@@ -2859,6 +3143,7 @@
       "applePath": "/v1/builds/{id}/relationships/betaBuildLocalizations",
       "facadeRoute": "/apps/{appId}/builds/{buildId}/beta-build-localizations/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-builds-_id_-relationships-betabuildlocalizations/"
     },
@@ -2869,6 +3154,7 @@
       "applePath": "/v1/builds/{id}/relationships/buildBetaDetail",
       "facadeRoute": "/apps/{appId}/builds/{buildId}/build-beta-detail/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-builds-_id_-relationships-buildbetadetail/"
     },
@@ -2879,6 +3165,7 @@
       "applePath": "/v1/builds/{id}/relationships/diagnosticSignatures",
       "facadeRoute": "/apps/{appId}/builds/{buildId}/diagnostic-signatures/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-builds-_id_-relationships-diagnosticsignatures/"
     },
@@ -2889,6 +3176,7 @@
       "applePath": "/v1/builds/{id}/relationships/icons",
       "facadeRoute": "/apps/{appId}/builds/{buildId}/icons/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-builds-_id_-relationships-icons/"
     },
@@ -2899,6 +3187,7 @@
       "applePath": "/v1/builds/{id}/relationships/individualTesters",
       "facadeRoute": "/apps/{appId}/builds/{buildId}/individual-testers/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-builds-_id_-relationships-individualtesters/"
     },
@@ -2909,6 +3198,7 @@
       "applePath": "/v1/builds/{id}/relationships/preReleaseVersion",
       "facadeRoute": "/apps/{appId}/builds/{buildId}/prerelease-version/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-builds-_id_-relationships-prereleaseversion/"
     },
@@ -2919,6 +3209,7 @@
       "applePath": "/v1/buildUploadFiles/{id}",
       "facadeRoute": "/build-upload-files/{buildUploadFileId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-builduploadfiles-_id_/"
     },
@@ -2929,6 +3220,7 @@
       "applePath": "/v1/buildUploads/{id}",
       "facadeRoute": "/build-uploads/{buildUploadId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-builduploads-_id_/"
     },
@@ -2939,6 +3231,7 @@
       "applePath": "/v1/buildUploads/{id}/buildUploadFiles",
       "facadeRoute": "/build-uploads/{buildUploadId}/build-upload-files",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-builduploads-_id_-builduploadfiles/"
     },
@@ -2949,6 +3242,7 @@
       "applePath": "/v1/buildUploads/{id}/relationships/buildUploadFiles",
       "facadeRoute": "/build-uploads/{buildUploadId}/build-upload-files/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-builduploads-_id_-relationships-builduploadfiles/"
     },
@@ -2959,6 +3253,7 @@
       "applePath": "/v1/customerReviewResponses/{id}",
       "facadeRoute": "/customer-review-responses/{responseId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-customerreviewresponses-_id_/"
     },
@@ -2969,6 +3264,7 @@
       "applePath": "/v1/customerReviews/{id}",
       "facadeRoute": "/customer-reviews/{reviewId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-customerreviews-_id_/"
     },
@@ -2979,6 +3275,7 @@
       "applePath": "/v1/customerReviews/{id}/relationships/response",
       "facadeRoute": "/customer-reviews/{reviewId}/response/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-customerreviews-_id_-relationships-response/"
     },
@@ -2989,6 +3286,7 @@
       "applePath": "/v1/customerReviews/{id}/response",
       "facadeRoute": "/customer-reviews/{reviewId}/response",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-customerreviews-_id_-response/"
     },
@@ -2999,6 +3297,7 @@
       "applePath": "/v1/endUserLicenseAgreements/{id}",
       "facadeRoute": "/license-agreements/{licenseAgreementId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-enduserlicenseagreements-_id_/"
     },
@@ -3009,6 +3308,7 @@
       "applePath": "/v1/endUserLicenseAgreements/{id}/relationships/territories",
       "facadeRoute": "/license-agreements/{licenseAgreementId}/territories/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-enduserlicenseagreements-_id_-relationships-territories/"
     },
@@ -3019,6 +3319,7 @@
       "applePath": "/v1/endUserLicenseAgreements/{id}/territories",
       "facadeRoute": "/license-agreements/{licenseAgreementId}/territories",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-enduserlicenseagreements-_id_-territories/"
     },
@@ -3029,6 +3330,7 @@
       "applePath": "/v1/gameCenterEnabledVersions/{id}/compatibleVersions",
       "facadeRoute": "/legacy/game-center-enabled-versions/{gameCenterEnabledVersionId}/compatible-versions",
       "stage": "Legacy read design",
+      "implementationStatus": "planned",
       "legacy": true,
       "page": "/docs/reference/get-v1-gamecenterenabledversions-_id_-compatibleversions/"
     },
@@ -3039,6 +3341,7 @@
       "applePath": "/v1/gameCenterEnabledVersions/{id}/relationships/compatibleVersions",
       "facadeRoute": "/legacy/game-center-enabled-versions/{gameCenterEnabledVersionId}/compatible-versions/ids",
       "stage": "Legacy read design",
+      "implementationStatus": "planned",
       "legacy": true,
       "page": "/docs/reference/get-v1-gamecenterenabledversions-_id_-relationships-compatibleversions/"
     },
@@ -3049,6 +3352,7 @@
       "applePath": "/v1/inAppPurchaseAppStoreReviewScreenshots/{id}",
       "facadeRoute": "/purchase-review-screenshots/{purchaseReviewScreenshotId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-inapppurchaseappstorereviewscreenshots-_id_/"
     },
@@ -3059,6 +3363,7 @@
       "applePath": "/v1/inAppPurchaseAvailabilities/{id}",
       "facadeRoute": "/purchase-availabilities/{availabilityId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-inapppurchaseavailabilities-_id_/"
     },
@@ -3069,6 +3374,7 @@
       "applePath": "/v1/inAppPurchaseAvailabilities/{id}/availableTerritories",
       "facadeRoute": "/purchase-availabilities/{availabilityId}/available-territories",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-inapppurchaseavailabilities-_id_-availableterritories/"
     },
@@ -3079,6 +3385,7 @@
       "applePath": "/v1/inAppPurchaseAvailabilities/{id}/relationships/availableTerritories",
       "facadeRoute": "/purchase-availabilities/{availabilityId}/available-territories/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-inapppurchaseavailabilities-_id_-relationships-availableterritories/"
     },
@@ -3089,6 +3396,7 @@
       "applePath": "/v1/inAppPurchaseContents/{id}",
       "facadeRoute": "/purchase-contents/{purchaseContentId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-inapppurchasecontents-_id_/"
     },
@@ -3099,6 +3407,7 @@
       "applePath": "/v1/inAppPurchaseImages/{id}",
       "facadeRoute": "/legacy/purchase-images/{purchaseImageId}",
       "stage": "Legacy read design",
+      "implementationStatus": "planned",
       "legacy": true,
       "page": "/docs/reference/get-v1-inapppurchaseimages-_id_/"
     },
@@ -3109,6 +3418,7 @@
       "applePath": "/v1/inAppPurchaseLocalizations/{id}",
       "facadeRoute": "/legacy/in-app-purchases/{purchaseId}/localizations/{locale}",
       "stage": "Legacy read design",
+      "implementationStatus": "planned",
       "legacy": true,
       "page": "/docs/reference/get-v1-inapppurchaselocalizations-_id_/"
     },
@@ -3119,6 +3429,7 @@
       "applePath": "/v1/inAppPurchaseOfferCodeCustomCodes/{id}",
       "facadeRoute": "/purchase-custom-codes/{purchaseCustomCodeId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-inapppurchaseoffercodecustomcodes-_id_/"
     },
@@ -3129,6 +3440,7 @@
       "applePath": "/v1/inAppPurchaseOfferCodeOneTimeUseCodes/{id}",
       "facadeRoute": "/purchase-code-batches/{purchaseCodeBatcheId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-inapppurchaseoffercodeonetimeusecodes-_id_/"
     },
@@ -3139,6 +3451,7 @@
       "applePath": "/v1/inAppPurchaseOfferCodeOneTimeUseCodes/{id}/values",
       "facadeRoute": "/purchase-code-batches/{purchaseCodeBatcheId}/values",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-inapppurchaseoffercodeonetimeusecodes-_id_-values/"
     },
@@ -3149,6 +3462,7 @@
       "applePath": "/v1/inAppPurchaseOfferCodes/{id}",
       "facadeRoute": "/purchase-offer-codes/{purchaseOfferCodeId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-inapppurchaseoffercodes-_id_/"
     },
@@ -3159,6 +3473,7 @@
       "applePath": "/v1/inAppPurchaseOfferCodes/{id}/customCodes",
       "facadeRoute": "/purchase-offer-codes/{purchaseOfferCodeId}/custom-codes",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-inapppurchaseoffercodes-_id_-customcodes/"
     },
@@ -3169,6 +3484,7 @@
       "applePath": "/v1/inAppPurchaseOfferCodes/{id}/oneTimeUseCodes",
       "facadeRoute": "/purchase-offer-codes/{purchaseOfferCodeId}/one-time-use-codes",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-inapppurchaseoffercodes-_id_-onetimeusecodes/"
     },
@@ -3179,6 +3495,7 @@
       "applePath": "/v1/inAppPurchaseOfferCodes/{id}/prices",
       "facadeRoute": "/purchase-offer-codes/{purchaseOfferCodeId}/prices",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-inapppurchaseoffercodes-_id_-prices/"
     },
@@ -3189,6 +3506,7 @@
       "applePath": "/v1/inAppPurchaseOfferCodes/{id}/relationships/customCodes",
       "facadeRoute": "/purchase-offer-codes/{purchaseOfferCodeId}/custom-codes/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-inapppurchaseoffercodes-_id_-relationships-customcodes/"
     },
@@ -3199,6 +3517,7 @@
       "applePath": "/v1/inAppPurchaseOfferCodes/{id}/relationships/oneTimeUseCodes",
       "facadeRoute": "/purchase-offer-codes/{purchaseOfferCodeId}/one-time-use-codes/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-inapppurchaseoffercodes-_id_-relationships-onetimeusecodes/"
     },
@@ -3209,6 +3528,7 @@
       "applePath": "/v1/inAppPurchaseOfferCodes/{id}/relationships/prices",
       "facadeRoute": "/purchase-offer-codes/{purchaseOfferCodeId}/prices/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-inapppurchaseoffercodes-_id_-relationships-prices/"
     },
@@ -3219,6 +3539,7 @@
       "applePath": "/v1/inAppPurchasePricePoints/{id}/equalizations",
       "facadeRoute": "/purchase-price-points/{pricePointId}/equalizations",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-inapppurchasepricepoints-_id_-equalizations/"
     },
@@ -3229,6 +3550,7 @@
       "applePath": "/v1/inAppPurchasePricePoints/{id}/relationships/equalizations",
       "facadeRoute": "/purchase-price-points/{pricePointId}/equalizations/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-inapppurchasepricepoints-_id_-relationships-equalizations/"
     },
@@ -3239,6 +3561,7 @@
       "applePath": "/v1/inAppPurchasePriceSchedules/{id}",
       "facadeRoute": "/purchase-price-schedules/{scheduleId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-inapppurchasepriceschedules-_id_/"
     },
@@ -3249,6 +3572,7 @@
       "applePath": "/v1/inAppPurchasePriceSchedules/{id}/automaticPrices",
       "facadeRoute": "/purchase-price-schedules/{scheduleId}/automatic-prices",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-inapppurchasepriceschedules-_id_-automaticprices/"
     },
@@ -3259,6 +3583,7 @@
       "applePath": "/v1/inAppPurchasePriceSchedules/{id}/baseTerritory",
       "facadeRoute": "/purchase-price-schedules/{scheduleId}/base-territory",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-inapppurchasepriceschedules-_id_-baseterritory/"
     },
@@ -3269,6 +3594,7 @@
       "applePath": "/v1/inAppPurchasePriceSchedules/{id}/manualPrices",
       "facadeRoute": "/purchase-price-schedules/{scheduleId}/manual-prices",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-inapppurchasepriceschedules-_id_-manualprices/"
     },
@@ -3279,6 +3605,7 @@
       "applePath": "/v1/inAppPurchasePriceSchedules/{id}/relationships/automaticPrices",
       "facadeRoute": "/purchase-price-schedules/{scheduleId}/automatic-prices/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-inapppurchasepriceschedules-_id_-relationships-automaticprices/"
     },
@@ -3289,6 +3616,7 @@
       "applePath": "/v1/inAppPurchasePriceSchedules/{id}/relationships/baseTerritory",
       "facadeRoute": "/purchase-price-schedules/{scheduleId}/base-territory/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-inapppurchasepriceschedules-_id_-relationships-baseterritory/"
     },
@@ -3299,6 +3627,7 @@
       "applePath": "/v1/inAppPurchasePriceSchedules/{id}/relationships/manualPrices",
       "facadeRoute": "/purchase-price-schedules/{scheduleId}/manual-prices/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-inapppurchasepriceschedules-_id_-relationships-manualprices/"
     },
@@ -3309,6 +3638,7 @@
       "applePath": "/v1/inAppPurchases/{id}",
       "facadeRoute": "/legacy/in-app-purchases/{purchaseId}",
       "stage": "Legacy read design",
+      "implementationStatus": "planned",
       "legacy": true,
       "page": "/docs/reference/get-v1-inapppurchases-_id_/"
     },
@@ -3319,6 +3649,7 @@
       "applePath": "/v1/inAppPurchaseVersions/{id}",
       "facadeRoute": "/purchase-versions/{purchaseVersionId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-inapppurchaseversions-_id_/"
     },
@@ -3329,6 +3660,7 @@
       "applePath": "/v1/inAppPurchaseVersions/{id}/image",
       "facadeRoute": "/purchase-versions/{purchaseVersionId}/image",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-inapppurchaseversions-_id_-image/"
     },
@@ -3339,6 +3671,7 @@
       "applePath": "/v1/inAppPurchaseVersions/{id}/images",
       "facadeRoute": "/purchase-versions/{purchaseVersionId}/images",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-inapppurchaseversions-_id_-images/"
     },
@@ -3349,6 +3682,7 @@
       "applePath": "/v1/inAppPurchaseVersions/{id}/localizations",
       "facadeRoute": "/purchase-versions/{purchaseVersionId}/localizations",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-inapppurchaseversions-_id_-localizations/"
     },
@@ -3359,6 +3693,7 @@
       "applePath": "/v1/inAppPurchaseVersions/{id}/relationships/image",
       "facadeRoute": "/purchase-versions/{purchaseVersionId}/image/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-inapppurchaseversions-_id_-relationships-image/"
     },
@@ -3369,6 +3704,7 @@
       "applePath": "/v1/inAppPurchaseVersions/{id}/relationships/images",
       "facadeRoute": "/purchase-versions/{purchaseVersionId}/images/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-inapppurchaseversions-_id_-relationships-images/"
     },
@@ -3379,6 +3715,7 @@
       "applePath": "/v1/inAppPurchaseVersions/{id}/relationships/localizations",
       "facadeRoute": "/purchase-versions/{purchaseVersionId}/localizations/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-inapppurchaseversions-_id_-relationships-localizations/"
     },
@@ -3389,6 +3726,7 @@
       "applePath": "/v1/nominations",
       "facadeRoute": "/featuring-nominations",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-nominations/"
     },
@@ -3399,6 +3737,7 @@
       "applePath": "/v1/nominations/{id}",
       "facadeRoute": "/featuring-nominations/{featuringNominationId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-nominations-_id_/"
     },
@@ -3409,6 +3748,7 @@
       "applePath": "/v1/promotedPurchases/{id}",
       "facadeRoute": "/promoted-purchases/{promotedPurchaseId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-promotedpurchases-_id_/"
     },
@@ -3419,6 +3759,7 @@
       "applePath": "/v1/reviewSubmissions",
       "facadeRoute": "/review-submissions",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-reviewsubmissions/"
     },
@@ -3429,6 +3770,7 @@
       "applePath": "/v1/reviewSubmissions/{id}",
       "facadeRoute": "/review-submissions/{reviewSubmissionId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-reviewsubmissions-_id_/"
     },
@@ -3439,6 +3781,7 @@
       "applePath": "/v1/reviewSubmissions/{id}/items",
       "facadeRoute": "/review-submissions/{reviewSubmissionId}/items",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-reviewsubmissions-_id_-items/"
     },
@@ -3449,6 +3792,7 @@
       "applePath": "/v1/reviewSubmissions/{id}/relationships/items",
       "facadeRoute": "/review-submissions/{reviewSubmissionId}/items/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-reviewsubmissions-_id_-relationships-items/"
     },
@@ -3459,6 +3803,7 @@
       "applePath": "/v1/routingAppCoverages/{id}",
       "facadeRoute": "/routing-coverages/{routingCoverageId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-routingappcoverages-_id_/"
     },
@@ -3469,6 +3814,7 @@
       "applePath": "/v1/subscriptionAppStoreReviewScreenshots/{id}",
       "facadeRoute": "/subscription-review-screenshots/{subscriptionReviewScreenshotId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptionappstorereviewscreenshots-_id_/"
     },
@@ -3479,6 +3825,7 @@
       "applePath": "/v1/subscriptionAvailabilities/{id}",
       "facadeRoute": "/legacy/subscription-availabilities/{availabilityId}",
       "stage": "Legacy read design",
+      "implementationStatus": "planned",
       "legacy": true,
       "page": "/docs/reference/get-v1-subscriptionavailabilities-_id_/"
     },
@@ -3489,6 +3836,7 @@
       "applePath": "/v1/subscriptionAvailabilities/{id}/availableTerritories",
       "facadeRoute": "/legacy/subscription-availabilities/{availabilityId}/available-territories",
       "stage": "Legacy read design",
+      "implementationStatus": "planned",
       "legacy": true,
       "page": "/docs/reference/get-v1-subscriptionavailabilities-_id_-availableterritories/"
     },
@@ -3499,6 +3847,7 @@
       "applePath": "/v1/subscriptionAvailabilities/{id}/relationships/availableTerritories",
       "facadeRoute": "/legacy/subscription-availabilities/{availabilityId}/available-territories/ids",
       "stage": "Legacy read design",
+      "implementationStatus": "planned",
       "legacy": true,
       "page": "/docs/reference/get-v1-subscriptionavailabilities-_id_-relationships-availableterritories/"
     },
@@ -3509,6 +3858,7 @@
       "applePath": "/v1/subscriptionGracePeriods/{id}",
       "facadeRoute": "/grace-periods/{gracePeriodId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptiongraceperiods-_id_/"
     },
@@ -3519,6 +3869,7 @@
       "applePath": "/v1/subscriptionGroupLocalizations/{id}",
       "facadeRoute": "/legacy/subscription-groups/{groupId}/localizations/{locale}",
       "stage": "Legacy read design",
+      "implementationStatus": "planned",
       "legacy": true,
       "page": "/docs/reference/get-v1-subscriptiongrouplocalizations-_id_/"
     },
@@ -3529,6 +3880,7 @@
       "applePath": "/v1/subscriptionGroups/{id}",
       "facadeRoute": "/subscription-groups/{groupId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptiongroups-_id_/"
     },
@@ -3539,6 +3891,7 @@
       "applePath": "/v1/subscriptionGroups/{id}/relationships/subscriptionGroupLocalizations",
       "facadeRoute": "/subscription-groups/{groupId}/localizations/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptiongroups-_id_-relationships-subscriptiongrouplocalizations/"
     },
@@ -3549,6 +3902,7 @@
       "applePath": "/v1/subscriptionGroups/{id}/relationships/subscriptions",
       "facadeRoute": "/subscription-groups/{groupId}/subscriptions/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptiongroups-_id_-relationships-subscriptions/"
     },
@@ -3559,6 +3913,7 @@
       "applePath": "/v1/subscriptionGroups/{id}/relationships/versions",
       "facadeRoute": "/subscription-groups/{groupId}/versions/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptiongroups-_id_-relationships-versions/"
     },
@@ -3569,6 +3924,7 @@
       "applePath": "/v1/subscriptionGroups/{id}/subscriptionGroupLocalizations",
       "facadeRoute": "/subscription-groups/{groupId}/localizations",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptiongroups-_id_-subscriptiongrouplocalizations/"
     },
@@ -3579,6 +3935,7 @@
       "applePath": "/v1/subscriptionGroups/{id}/subscriptions",
       "facadeRoute": "/subscription-groups/{groupId}/subscriptions",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptiongroups-_id_-subscriptions/"
     },
@@ -3589,6 +3946,7 @@
       "applePath": "/v1/subscriptionGroups/{id}/versions",
       "facadeRoute": "/subscription-groups/{groupId}/versions",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptiongroups-_id_-versions/"
     },
@@ -3599,6 +3957,7 @@
       "applePath": "/v1/subscriptionGroupVersions/{id}",
       "facadeRoute": "/subscription-group-versions/{groupVersionId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptiongroupversions-_id_/"
     },
@@ -3609,6 +3968,7 @@
       "applePath": "/v1/subscriptionGroupVersions/{id}/localizations",
       "facadeRoute": "/subscription-group-versions/{groupVersionId}/localizations",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptiongroupversions-_id_-localizations/"
     },
@@ -3619,6 +3979,7 @@
       "applePath": "/v1/subscriptionGroupVersions/{id}/relationships/localizations",
       "facadeRoute": "/subscription-group-versions/{groupVersionId}/localizations/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptiongroupversions-_id_-relationships-localizations/"
     },
@@ -3629,6 +3990,7 @@
       "applePath": "/v1/subscriptionImages/{id}",
       "facadeRoute": "/legacy/subscription-images/{subscriptionImageId}",
       "stage": "Legacy read design",
+      "implementationStatus": "planned",
       "legacy": true,
       "page": "/docs/reference/get-v1-subscriptionimages-_id_/"
     },
@@ -3639,6 +4001,7 @@
       "applePath": "/v1/subscriptionLocalizations/{id}",
       "facadeRoute": "/legacy/subscriptions/{subscriptionId}/localizations/{locale}",
       "stage": "Legacy read design",
+      "implementationStatus": "planned",
       "legacy": true,
       "page": "/docs/reference/get-v1-subscriptionlocalizations-_id_/"
     },
@@ -3649,6 +4012,7 @@
       "applePath": "/v1/subscriptionOfferCodeCustomCodes/{id}",
       "facadeRoute": "/subscription-custom-codes/{subscriptionCustomCodeId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptionoffercodecustomcodes-_id_/"
     },
@@ -3659,6 +4023,7 @@
       "applePath": "/v1/subscriptionOfferCodeOneTimeUseCodes/{id}",
       "facadeRoute": "/subscription-code-batches/{subscriptionCodeBatcheId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptionoffercodeonetimeusecodes-_id_/"
     },
@@ -3669,6 +4034,7 @@
       "applePath": "/v1/subscriptionOfferCodeOneTimeUseCodes/{id}/values",
       "facadeRoute": "/subscription-code-batches/{subscriptionCodeBatcheId}/values",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptionoffercodeonetimeusecodes-_id_-values/"
     },
@@ -3679,6 +4045,7 @@
       "applePath": "/v1/subscriptionOfferCodes/{id}",
       "facadeRoute": "/subscription-offer-codes/{subscriptionOfferCodeId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptionoffercodes-_id_/"
     },
@@ -3689,6 +4056,7 @@
       "applePath": "/v1/subscriptionOfferCodes/{id}/customCodes",
       "facadeRoute": "/subscription-offer-codes/{subscriptionOfferCodeId}/custom-codes",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptionoffercodes-_id_-customcodes/"
     },
@@ -3699,6 +4067,7 @@
       "applePath": "/v1/subscriptionOfferCodes/{id}/oneTimeUseCodes",
       "facadeRoute": "/subscription-offer-codes/{subscriptionOfferCodeId}/one-time-use-codes",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptionoffercodes-_id_-onetimeusecodes/"
     },
@@ -3709,6 +4078,7 @@
       "applePath": "/v1/subscriptionOfferCodes/{id}/prices",
       "facadeRoute": "/subscription-offer-codes/{subscriptionOfferCodeId}/prices",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptionoffercodes-_id_-prices/"
     },
@@ -3719,6 +4089,7 @@
       "applePath": "/v1/subscriptionOfferCodes/{id}/relationships/customCodes",
       "facadeRoute": "/subscription-offer-codes/{subscriptionOfferCodeId}/custom-codes/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptionoffercodes-_id_-relationships-customcodes/"
     },
@@ -3729,6 +4100,7 @@
       "applePath": "/v1/subscriptionOfferCodes/{id}/relationships/oneTimeUseCodes",
       "facadeRoute": "/subscription-offer-codes/{subscriptionOfferCodeId}/one-time-use-codes/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptionoffercodes-_id_-relationships-onetimeusecodes/"
     },
@@ -3739,6 +4111,7 @@
       "applePath": "/v1/subscriptionOfferCodes/{id}/relationships/prices",
       "facadeRoute": "/subscription-offer-codes/{subscriptionOfferCodeId}/prices/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptionoffercodes-_id_-relationships-prices/"
     },
@@ -3749,6 +4122,7 @@
       "applePath": "/v1/subscriptionPlanAvailabilities/{id}",
       "facadeRoute": "/plan-availabilities/{planAvailabilityId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptionplanavailabilities-_id_/"
     },
@@ -3759,6 +4133,7 @@
       "applePath": "/v1/subscriptionPlanAvailabilities/{id}/availableTerritories",
       "facadeRoute": "/plan-availabilities/{planAvailabilityId}/available-territories",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptionplanavailabilities-_id_-availableterritories/"
     },
@@ -3769,6 +4144,7 @@
       "applePath": "/v1/subscriptionPlanAvailabilities/{id}/relationships/availableTerritories",
       "facadeRoute": "/plan-availabilities/{planAvailabilityId}/available-territories/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptionplanavailabilities-_id_-relationships-availableterritories/"
     },
@@ -3779,6 +4155,7 @@
       "applePath": "/v1/subscriptionPricePoints/{id}",
       "facadeRoute": "/subscription-price-points/{pricePointId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptionpricepoints-_id_/"
     },
@@ -3789,6 +4166,7 @@
       "applePath": "/v1/subscriptionPricePoints/{id}/adjustedEqualizations",
       "facadeRoute": "/subscription-price-points/{pricePointId}/adjusted-equalizations",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptionpricepoints-_id_-adjustedequalizations/"
     },
@@ -3799,6 +4177,7 @@
       "applePath": "/v1/subscriptionPricePoints/{id}/equalizations",
       "facadeRoute": "/subscription-price-points/{pricePointId}/equalizations",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptionpricepoints-_id_-equalizations/"
     },
@@ -3809,6 +4188,7 @@
       "applePath": "/v1/subscriptionPricePoints/{id}/relationships/equalizations",
       "facadeRoute": "/subscription-price-points/{pricePointId}/equalizations/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptionpricepoints-_id_-relationships-equalizations/"
     },
@@ -3819,6 +4199,7 @@
       "applePath": "/v1/subscriptionPromotionalOffers/{id}",
       "facadeRoute": "/subscription-promotional-offers/{subscriptionPromotionalOfferId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptionpromotionaloffers-_id_/"
     },
@@ -3829,6 +4210,7 @@
       "applePath": "/v1/subscriptionPromotionalOffers/{id}/prices",
       "facadeRoute": "/subscription-promotional-offers/{subscriptionPromotionalOfferId}/prices",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptionpromotionaloffers-_id_-prices/"
     },
@@ -3839,6 +4221,7 @@
       "applePath": "/v1/subscriptionPromotionalOffers/{id}/relationships/prices",
       "facadeRoute": "/subscription-promotional-offers/{subscriptionPromotionalOfferId}/prices/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptionpromotionaloffers-_id_-relationships-prices/"
     },
@@ -3849,6 +4232,7 @@
       "applePath": "/v1/subscriptions/{id}",
       "facadeRoute": "/subscriptions/{subscriptionId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptions-_id_/"
     },
@@ -3859,6 +4243,7 @@
       "applePath": "/v1/subscriptions/{id}/appStoreReviewScreenshot",
       "facadeRoute": "/subscriptions/{subscriptionId}/review-screenshot",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptions-_id_-appstorereviewscreenshot/"
     },
@@ -3869,6 +4254,7 @@
       "applePath": "/v1/subscriptions/{id}/images",
       "facadeRoute": "/subscriptions/{subscriptionId}/images",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptions-_id_-images/"
     },
@@ -3879,6 +4265,7 @@
       "applePath": "/v1/subscriptions/{id}/introductoryOffers",
       "facadeRoute": "/subscriptions/{subscriptionId}/introductory-offers",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptions-_id_-introductoryoffers/"
     },
@@ -3889,6 +4276,7 @@
       "applePath": "/v1/subscriptions/{id}/offerCodes",
       "facadeRoute": "/subscriptions/{subscriptionId}/offer-codes",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptions-_id_-offercodes/"
     },
@@ -3899,6 +4287,7 @@
       "applePath": "/v1/subscriptions/{id}/planAvailabilities",
       "facadeRoute": "/subscriptions/{subscriptionId}/plan-availabilities",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptions-_id_-planavailabilities/"
     },
@@ -3909,6 +4298,7 @@
       "applePath": "/v1/subscriptions/{id}/pricePoints",
       "facadeRoute": "/subscriptions/{subscriptionId}/price-points",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptions-_id_-pricepoints/"
     },
@@ -3919,6 +4309,7 @@
       "applePath": "/v1/subscriptions/{id}/prices",
       "facadeRoute": "/subscriptions/{subscriptionId}/prices",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptions-_id_-prices/"
     },
@@ -3929,6 +4320,7 @@
       "applePath": "/v1/subscriptions/{id}/promotedPurchase",
       "facadeRoute": "/subscriptions/{subscriptionId}/promoted-purchase",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptions-_id_-promotedpurchase/"
     },
@@ -3939,6 +4331,7 @@
       "applePath": "/v1/subscriptions/{id}/promotionalOffers",
       "facadeRoute": "/subscriptions/{subscriptionId}/promotional-offers",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptions-_id_-promotionaloffers/"
     },
@@ -3949,6 +4342,7 @@
       "applePath": "/v1/subscriptions/{id}/relationships/appStoreReviewScreenshot",
       "facadeRoute": "/subscriptions/{subscriptionId}/review-screenshot/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptions-_id_-relationships-appstorereviewscreenshot/"
     },
@@ -3959,6 +4353,7 @@
       "applePath": "/v1/subscriptions/{id}/relationships/images",
       "facadeRoute": "/subscriptions/{subscriptionId}/images/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptions-_id_-relationships-images/"
     },
@@ -3969,6 +4364,7 @@
       "applePath": "/v1/subscriptions/{id}/relationships/introductoryOffers",
       "facadeRoute": "/subscriptions/{subscriptionId}/introductory-offers/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptions-_id_-relationships-introductoryoffers/"
     },
@@ -3979,6 +4375,7 @@
       "applePath": "/v1/subscriptions/{id}/relationships/offerCodes",
       "facadeRoute": "/subscriptions/{subscriptionId}/offer-codes/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptions-_id_-relationships-offercodes/"
     },
@@ -3989,6 +4386,7 @@
       "applePath": "/v1/subscriptions/{id}/relationships/planAvailabilities",
       "facadeRoute": "/subscriptions/{subscriptionId}/plan-availabilities/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptions-_id_-relationships-planavailabilities/"
     },
@@ -3999,6 +4397,7 @@
       "applePath": "/v1/subscriptions/{id}/relationships/pricePoints",
       "facadeRoute": "/subscriptions/{subscriptionId}/price-points/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptions-_id_-relationships-pricepoints/"
     },
@@ -4009,6 +4408,7 @@
       "applePath": "/v1/subscriptions/{id}/relationships/prices",
       "facadeRoute": "/subscriptions/{subscriptionId}/prices/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptions-_id_-relationships-prices/"
     },
@@ -4019,6 +4419,7 @@
       "applePath": "/v1/subscriptions/{id}/relationships/promotedPurchase",
       "facadeRoute": "/subscriptions/{subscriptionId}/promoted-purchase/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptions-_id_-relationships-promotedpurchase/"
     },
@@ -4029,6 +4430,7 @@
       "applePath": "/v1/subscriptions/{id}/relationships/promotionalOffers",
       "facadeRoute": "/subscriptions/{subscriptionId}/promotional-offers/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptions-_id_-relationships-promotionaloffers/"
     },
@@ -4039,6 +4441,7 @@
       "applePath": "/v1/subscriptions/{id}/relationships/subscriptionAvailability",
       "facadeRoute": "/legacy/subscriptions/{subscriptionId}/availability/id",
       "stage": "Legacy read design",
+      "implementationStatus": "planned",
       "legacy": true,
       "page": "/docs/reference/get-v1-subscriptions-_id_-relationships-subscriptionavailability/"
     },
@@ -4049,6 +4452,7 @@
       "applePath": "/v1/subscriptions/{id}/relationships/subscriptionLocalizations",
       "facadeRoute": "/subscriptions/{subscriptionId}/localizations/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptions-_id_-relationships-subscriptionlocalizations/"
     },
@@ -4059,6 +4463,7 @@
       "applePath": "/v1/subscriptions/{id}/relationships/versions",
       "facadeRoute": "/subscriptions/{subscriptionId}/versions/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptions-_id_-relationships-versions/"
     },
@@ -4069,6 +4474,7 @@
       "applePath": "/v1/subscriptions/{id}/relationships/winBackOffers",
       "facadeRoute": "/subscriptions/{subscriptionId}/win-back-offers/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptions-_id_-relationships-winbackoffers/"
     },
@@ -4079,6 +4485,7 @@
       "applePath": "/v1/subscriptions/{id}/subscriptionAvailability",
       "facadeRoute": "/legacy/subscriptions/{subscriptionId}/availability",
       "stage": "Legacy read design",
+      "implementationStatus": "planned",
       "legacy": true,
       "page": "/docs/reference/get-v1-subscriptions-_id_-subscriptionavailability/"
     },
@@ -4089,6 +4496,7 @@
       "applePath": "/v1/subscriptions/{id}/subscriptionLocalizations",
       "facadeRoute": "/subscriptions/{subscriptionId}/localizations",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptions-_id_-subscriptionlocalizations/"
     },
@@ -4099,6 +4507,7 @@
       "applePath": "/v1/subscriptions/{id}/versions",
       "facadeRoute": "/subscriptions/{subscriptionId}/versions",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptions-_id_-versions/"
     },
@@ -4109,6 +4518,7 @@
       "applePath": "/v1/subscriptions/{id}/winBackOffers",
       "facadeRoute": "/subscriptions/{subscriptionId}/win-back-offers",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptions-_id_-winbackoffers/"
     },
@@ -4119,6 +4529,7 @@
       "applePath": "/v1/subscriptionVersions/{id}",
       "facadeRoute": "/subscription-versions/{subscriptionVersionId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptionversions-_id_/"
     },
@@ -4129,6 +4540,7 @@
       "applePath": "/v1/subscriptionVersions/{id}/image",
       "facadeRoute": "/subscription-versions/{subscriptionVersionId}/image",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptionversions-_id_-image/"
     },
@@ -4139,6 +4551,7 @@
       "applePath": "/v1/subscriptionVersions/{id}/images",
       "facadeRoute": "/subscription-versions/{subscriptionVersionId}/images",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptionversions-_id_-images/"
     },
@@ -4149,6 +4562,7 @@
       "applePath": "/v1/subscriptionVersions/{id}/localizations",
       "facadeRoute": "/subscription-versions/{subscriptionVersionId}/localizations",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptionversions-_id_-localizations/"
     },
@@ -4159,6 +4573,7 @@
       "applePath": "/v1/subscriptionVersions/{id}/relationships/image",
       "facadeRoute": "/subscription-versions/{subscriptionVersionId}/image/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptionversions-_id_-relationships-image/"
     },
@@ -4169,6 +4584,7 @@
       "applePath": "/v1/subscriptionVersions/{id}/relationships/images",
       "facadeRoute": "/subscription-versions/{subscriptionVersionId}/images/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptionversions-_id_-relationships-images/"
     },
@@ -4179,6 +4595,7 @@
       "applePath": "/v1/subscriptionVersions/{id}/relationships/localizations",
       "facadeRoute": "/subscription-versions/{subscriptionVersionId}/localizations/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-subscriptionversions-_id_-relationships-localizations/"
     },
@@ -4189,6 +4606,7 @@
       "applePath": "/v1/territories",
       "facadeRoute": "/territories",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-territories/"
     },
@@ -4199,6 +4617,7 @@
       "applePath": "/v1/winBackOffers/{id}",
       "facadeRoute": "/win-back-offers/{winBackOfferId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-winbackoffers-_id_/"
     },
@@ -4209,6 +4628,7 @@
       "applePath": "/v1/winBackOffers/{id}/prices",
       "facadeRoute": "/win-back-offers/{winBackOfferId}/prices",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-winbackoffers-_id_-prices/"
     },
@@ -4219,6 +4639,7 @@
       "applePath": "/v1/winBackOffers/{id}/relationships/prices",
       "facadeRoute": "/win-back-offers/{winBackOfferId}/prices/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v1-winbackoffers-_id_-relationships-prices/"
     },
@@ -4229,6 +4650,7 @@
       "applePath": "/v2/appAvailabilities/{id}",
       "facadeRoute": "/availabilities/{availabilityId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-appavailabilities-_id_/"
     },
@@ -4239,6 +4661,7 @@
       "applePath": "/v2/appAvailabilities/{id}/relationships/territoryAvailabilities",
       "facadeRoute": "/availabilities/{availabilityId}/territory-availabilities/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-appavailabilities-_id_-relationships-territoryavailabilities/"
     },
@@ -4249,6 +4672,7 @@
       "applePath": "/v2/appAvailabilities/{id}/territoryAvailabilities",
       "facadeRoute": "/availabilities/{availabilityId}/territory-availabilities",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-appavailabilities-_id_-territoryavailabilities/"
     },
@@ -4259,6 +4683,7 @@
       "applePath": "/v2/appStoreVersionExperiments/{id}",
       "facadeRoute": "/experiments/{experimentId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-appstoreversionexperiments-_id_/"
     },
@@ -4269,6 +4694,7 @@
       "applePath": "/v2/appStoreVersionExperiments/{id}/appStoreVersionExperimentTreatments",
       "facadeRoute": "/experiments/{experimentId}/treatments",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-appstoreversionexperiments-_id_-appstoreversionexperimenttreatments/"
     },
@@ -4279,6 +4705,7 @@
       "applePath": "/v2/appStoreVersionExperiments/{id}/relationships/appStoreVersionExperimentTreatments",
       "facadeRoute": "/experiments/{experimentId}/treatments/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-appstoreversionexperiments-_id_-relationships-appstoreversionexperimenttreatments/"
     },
@@ -4289,6 +4716,7 @@
       "applePath": "/v2/inAppPurchaseImages/{id}",
       "facadeRoute": "/purchase-images/{purchaseImageId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-inapppurchaseimages-_id_/"
     },
@@ -4299,6 +4727,7 @@
       "applePath": "/v2/inAppPurchaseLocalizations/{id}",
       "facadeRoute": "/purchase-versions/{purchaseVersionId}/localizations/{locale}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-inapppurchaselocalizations-_id_/"
     },
@@ -4309,6 +4738,7 @@
       "applePath": "/v2/inAppPurchases/{id}",
       "facadeRoute": "/in-app-purchases/{purchaseId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-inapppurchases-_id_/"
     },
@@ -4319,6 +4749,7 @@
       "applePath": "/v2/inAppPurchases/{id}/appStoreReviewScreenshot",
       "facadeRoute": "/in-app-purchases/{purchaseId}/review-screenshot",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-inapppurchases-_id_-appstorereviewscreenshot/"
     },
@@ -4329,6 +4760,7 @@
       "applePath": "/v2/inAppPurchases/{id}/content",
       "facadeRoute": "/in-app-purchases/{purchaseId}/content",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-inapppurchases-_id_-content/"
     },
@@ -4339,6 +4771,7 @@
       "applePath": "/v2/inAppPurchases/{id}/iapPriceSchedule",
       "facadeRoute": "/in-app-purchases/{purchaseId}/price-schedule",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-inapppurchases-_id_-iappriceschedule/"
     },
@@ -4349,6 +4782,7 @@
       "applePath": "/v2/inAppPurchases/{id}/images",
       "facadeRoute": "/in-app-purchases/{purchaseId}/images",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-inapppurchases-_id_-images/"
     },
@@ -4359,6 +4793,7 @@
       "applePath": "/v2/inAppPurchases/{id}/inAppPurchaseAvailability",
       "facadeRoute": "/in-app-purchases/{purchaseId}/availability",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-inapppurchases-_id_-inapppurchaseavailability/"
     },
@@ -4369,6 +4804,7 @@
       "applePath": "/v2/inAppPurchases/{id}/inAppPurchaseLocalizations",
       "facadeRoute": "/in-app-purchases/{purchaseId}/localizations",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-inapppurchases-_id_-inapppurchaselocalizations/"
     },
@@ -4379,6 +4815,7 @@
       "applePath": "/v2/inAppPurchases/{id}/offerCodes",
       "facadeRoute": "/in-app-purchases/{purchaseId}/offer-codes",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-inapppurchases-_id_-offercodes/"
     },
@@ -4389,6 +4826,7 @@
       "applePath": "/v2/inAppPurchases/{id}/pricePoints",
       "facadeRoute": "/in-app-purchases/{purchaseId}/price-points",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-inapppurchases-_id_-pricepoints/"
     },
@@ -4399,6 +4837,7 @@
       "applePath": "/v2/inAppPurchases/{id}/promotedPurchase",
       "facadeRoute": "/in-app-purchases/{purchaseId}/promoted-purchase",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-inapppurchases-_id_-promotedpurchase/"
     },
@@ -4409,6 +4848,7 @@
       "applePath": "/v2/inAppPurchases/{id}/relationships/appStoreReviewScreenshot",
       "facadeRoute": "/in-app-purchases/{purchaseId}/review-screenshot/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-inapppurchases-_id_-relationships-appstorereviewscreenshot/"
     },
@@ -4419,6 +4859,7 @@
       "applePath": "/v2/inAppPurchases/{id}/relationships/content",
       "facadeRoute": "/in-app-purchases/{purchaseId}/content/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-inapppurchases-_id_-relationships-content/"
     },
@@ -4429,6 +4870,7 @@
       "applePath": "/v2/inAppPurchases/{id}/relationships/iapPriceSchedule",
       "facadeRoute": "/in-app-purchases/{purchaseId}/price-schedule/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-inapppurchases-_id_-relationships-iappriceschedule/"
     },
@@ -4439,6 +4881,7 @@
       "applePath": "/v2/inAppPurchases/{id}/relationships/images",
       "facadeRoute": "/in-app-purchases/{purchaseId}/images/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-inapppurchases-_id_-relationships-images/"
     },
@@ -4449,6 +4892,7 @@
       "applePath": "/v2/inAppPurchases/{id}/relationships/inAppPurchaseAvailability",
       "facadeRoute": "/in-app-purchases/{purchaseId}/availability/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-inapppurchases-_id_-relationships-inapppurchaseavailability/"
     },
@@ -4459,6 +4903,7 @@
       "applePath": "/v2/inAppPurchases/{id}/relationships/inAppPurchaseLocalizations",
       "facadeRoute": "/in-app-purchases/{purchaseId}/localizations/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-inapppurchases-_id_-relationships-inapppurchaselocalizations/"
     },
@@ -4469,6 +4914,7 @@
       "applePath": "/v2/inAppPurchases/{id}/relationships/offerCodes",
       "facadeRoute": "/in-app-purchases/{purchaseId}/offer-codes/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-inapppurchases-_id_-relationships-offercodes/"
     },
@@ -4479,6 +4925,7 @@
       "applePath": "/v2/inAppPurchases/{id}/relationships/pricePoints",
       "facadeRoute": "/in-app-purchases/{purchaseId}/price-points/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-inapppurchases-_id_-relationships-pricepoints/"
     },
@@ -4489,6 +4936,7 @@
       "applePath": "/v2/inAppPurchases/{id}/relationships/promotedPurchase",
       "facadeRoute": "/in-app-purchases/{purchaseId}/promoted-purchase/id",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-inapppurchases-_id_-relationships-promotedpurchase/"
     },
@@ -4499,6 +4947,7 @@
       "applePath": "/v2/inAppPurchases/{id}/relationships/versions",
       "facadeRoute": "/in-app-purchases/{purchaseId}/versions/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-inapppurchases-_id_-relationships-versions/"
     },
@@ -4509,6 +4958,7 @@
       "applePath": "/v2/inAppPurchases/{id}/versions",
       "facadeRoute": "/in-app-purchases/{purchaseId}/versions",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-inapppurchases-_id_-versions/"
     },
@@ -4519,6 +4969,7 @@
       "applePath": "/v2/sandboxTesters",
       "facadeRoute": "/sandbox-testers",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-sandboxtesters/"
     },
@@ -4529,6 +4980,7 @@
       "applePath": "/v2/subscriptionGroupLocalizations/{id}",
       "facadeRoute": "/subscription-group-versions/{groupVersionId}/localizations/{locale}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-subscriptiongrouplocalizations-_id_/"
     },
@@ -4539,6 +4991,7 @@
       "applePath": "/v2/subscriptionImages/{id}",
       "facadeRoute": "/subscription-images/{subscriptionImageId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-subscriptionimages-_id_/"
     },
@@ -4549,6 +5002,7 @@
       "applePath": "/v2/subscriptionLocalizations/{id}",
       "facadeRoute": "/subscription-versions/{subscriptionVersionId}/localizations/{locale}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v2-subscriptionlocalizations-_id_/"
     },
@@ -4559,6 +5013,7 @@
       "applePath": "/v3/appPricePoints/{id}",
       "facadeRoute": "/price-points/{pricePointId}",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v3-apppricepoints-_id_/"
     },
@@ -4569,6 +5024,7 @@
       "applePath": "/v3/appPricePoints/{id}/equalizations",
       "facadeRoute": "/price-points/{pricePointId}/equalizations",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v3-apppricepoints-_id_-equalizations/"
     },
@@ -4579,6 +5035,7 @@
       "applePath": "/v3/appPricePoints/{id}/relationships/equalizations",
       "facadeRoute": "/price-points/{pricePointId}/equalizations/ids",
       "stage": "Extended read design",
+      "implementationStatus": "planned",
       "legacy": false,
       "page": "/docs/reference/get-v3-apppricepoints-_id_-relationships-equalizations/"
     }

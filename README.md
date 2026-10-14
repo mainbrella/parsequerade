@@ -1,19 +1,70 @@
 # Parsequerade
 
-Parsequerade is a planned, self-hosted JSON REST facade for App Store Connect. It would turn Apple's resource envelopes, type identifiers, and relationship links into ordinary JSON and predictable resource URLs, let clients preview metadata copies, and record the outcome of each write.
+Parsequerade is an operator-deployed JSON REST facade for App Store Connect, running on Cloudflare Workers alongside a static documentation site. Its core reads turn Apple's resource envelopes, type identifiers, and relationship links into ordinary JSON and predictable resource URLs.
 
 The goal is to let a client list apps, edit a localized description, update a review contact, or read sales data without signing Apple JWTs, looking up internal child IDs, or assembling relationship payloads.
 
-**Status:** This repository documents the design. The service is not implemented yet; the facade routes and responses below are proposed contracts. See [rest.md](rest.md) for the implementation plan, supported fields, and rollout milestones.
+**Status:** The read-only first slice is implemented: 12 GET routes for apps, app infos, versions, their localization collections and exact locales, age ratings, and review contacts. Authentication, Apple JWTs, ownership checks, bounded pagination, and structured errors are included. Writes, reports, copy workflows, and broader reads remain planned. Setup and deployment require your own Apple team key and Cloudflare account; no authenticated Apple calls or deployment have been performed as part of implementation. See [rest.md](rest.md) for the remaining milestones.
+
+## Configure and run
+
+Use Node.js 22 or newer and Python 3. Install dependencies with `npm ci`, then configure an Apple team key and the app IDs this client may read:
+
+```sh
+npm run configure -- \
+  --connection conn_main \
+  --issuer-id YOUR_ISSUER_UUID \
+  --key-id YOUR_KEY_ID \
+  --private-key /path/to/AuthKey.p8 \
+  --app-id YOUR_APP_ID
+
+npm run dev
+```
+
+Repeat `--app-id` for multiple apps, or explicitly use `--all-apps`. Setup validates a P-256 PKCS#8 key locally and generates three private, gitignored files with mode `0600`:
+
+- `.dev.vars`: local Worker configuration and secrets, loaded by Wrangler.
+- `.parsequerade.secrets.json`: the same configuration for deployment.
+- `.parsequerade-client-key`: the newly issued facade bearer key. The Worker configuration contains only its SHA-256 hash.
+
+The command refuses to overwrite existing files and makes no network requests. Set `ASC_FACADE_KEY` from the client-key file, then read an app:
+
+```sh
+ASC_FACADE_KEY="$(cat .parsequerade-client-key)"
+BASE='http://localhost:8787/v1/connections/conn_main'
+
+curl --fail-with-body "$BASE/apps?limit=50" \
+  -H "Authorization: Bearer $ASC_FACADE_KEY"
+```
+
+For deployment, update the custom domain in `wrangler.jsonc`, authenticate Wrangler to your Cloudflare account, run `npm run check`, then run:
+
+```sh
+npm run deploy -- --secrets-file .parsequerade.secrets.json
+```
+
+The existing configuration serves `/` and `/docs/` as static assets and sends `/v1/*` to `worker/index.js`. API data and errors use `Cache-Control: private, no-store`; private configuration belongs outside `dist/`. Missing configuration returns `503 service_not_configured`, while the static site remains available.
+
+Configuration consists of `APPLE_CONNECTIONS_JSON` (connection ID → issuer ID, key ID, credential revision, and private-key secret name), separately named `APPLE_PRIVATE_KEY` or `APPLE_PRIVATE_KEY_*` secrets, `FACADE_API_KEYS_JSON` (key IDs, hashes, and per-connection capability/app grants), and a 32-byte base64url `CURSOR_SIGNING_KEY`. The generated JSON file is an editable example. Grants accept `appIds: "*"` or an explicit list of up to 200 app IDs; an empty list grants no apps. All four values are deployed as Worker secrets.
+
+Revoke a facade key by removing its record or setting `revoked: true`, then publish the updated secrets. Issue a replacement with a new random key and hash. To rotate an Apple key, update its issuer/key ID and private-key secret and increment `credentialRevision`; this invalidates cached JWTs and old cursors. Rotating `CURSOR_SIGNING_KEY` also invalidates existing cursors. The setup helper provisions one connection and client; additional connections and grants can be added explicitly to the configuration.
+
+Known resource routes currently accept GET only. Mutation methods return `405`; planned routes return JSON `404 route_not_found`. There is no public connection-administration endpoint or arbitrary upstream URL proxy. Permission checks happen before resource reads, and app-scoped list requests constrain Apple's `filter[id]` rather than filtering an unbounded account crawl.
+
+Each facade request permits 25 seconds and 32 Apple attempts, with an 8-second attempt timeout, 4 MiB response limit, and 16 MiB total body limit. Safe reads retry up to twice within that budget, respect short `Retry-After` delays, and refresh a rejected cached JWT at most once. A long throttle delay is returned to the caller. Locale/ownership resolvers permit 20 pages. Cursors expire after 15 minutes, permit 100 pages, and bind the caller/key grant, Apple credential revision, path, filters, fields, ordering, and limit. Concurrency is bounded to four Apple reads per connection **within each isolate**; shared connection-wide coordination is deferred to the Durable Object phase. No private resource cache is used in this slice.
+
+## Verify
+
+`npm run check` validates documentation, generated runtime/OpenAPI contracts, and JavaScript, then runs unit/security tests and the bundled Worker in local `workerd` via Miniflare. Tests use fictional fixtures and generated test keys; all outbound Apple requests are mocked. The deployment build uses `--dry-run`, so checks do not publish anything. Real-account verification is a separate, explicitly configured read-only check.
 
 ## Documentation site
 
 The static site lives in `dist/`; `/` is the Parsequerade landing page and the documentation starts at `/docs/`. Run `npm install` once, then use `npm run dev` to preview it locally. `npm run deploy` publishes through the existing Wrangler configuration.
 
-The GET reference covers all **457 GET endpoint pages** reached through Apple’s [App Store documentation topic tree](https://developer.apple.com/documentation/appstoreconnectapi/app-store), organized into 84 topics. Each page describes a proposed facade route, request examples, parameters, JSON response fields, pagination, errors, and its Apple mapping. First-release and read-parity contracts follow `rest.md`; additional resource reads are labeled as extended designs, and older resource shapes have separate `/legacy` routes. This reference does not mean that the service or these adapters are implemented.
+The GET reference covers all **457 GET endpoint pages** reached through Apple’s [App Store documentation topic tree](https://developer.apple.com/documentation/appstoreconnectapi/app-store), organized into 84 topics. Pages identify implementation status separately from delivery stage; documentation coverage is broader than runtime coverage. Additional resource reads are extended designs, and older resource shapes have separate proposed `/legacy` routes. The [facade OpenAPI document](dist/docs/openapi.json) covers only the 12 implemented routes.
 
-- `npm run build:docs` regenerates the reference and guides offline from the reviewed `docs/apple-get-reference.json` snapshot, the facade mappings in `scripts/docs_contracts.py`, editorial overrides in `docs/facade-overrides.json`, and the shared layout and guides under `docs/`.
-- `npm run check` verifies local links and anchors, complete endpoint coverage, response and query examples against their schemas, core route mappings, relationship-ID responses, CSV adapters, and JavaScript syntax.
+- `npm run build:docs` exports `api/read-contracts.json` and the facade OpenAPI document, then regenerates the reference and guides offline from the reviewed Apple snapshot, facade mappings, editorial overrides, and guide sources. `api/read-routes.json` explicitly selects implemented adapters.
+- `npm run check` verifies local links, endpoint coverage, examples, contract drift, syntax, API behavior, and local Worker execution. Miniflare is a test-only dependency; the Worker adds no runtime packages.
 - `npm run sync:docs` explicitly downloads Apple’s current topic pages and OpenAPI specification and replaces the source snapshot. Review source changes before rebuilding. The current snapshot records OpenAPI 4.5.1 and the source checksums; ordinary builds make no network requests.
 
 ## Why a facade?

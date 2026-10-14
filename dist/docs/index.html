@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Parsequerade’s proposed App Store Connect facade: introduction." />
+    <meta name="description" content="Parsequerade’s App Store Connect facade: introduction." />
     <meta name="theme-color" content="#131316" />
     <link rel="icon" href="/parsequerade.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/styles.css" />
@@ -33,12 +33,12 @@
       <main class="docs-main" id="main-content"><article class="document"><header class="page-header" id="overview">
   <p class="page-kicker">Getting started</p>
   <h1>Introduction</h1>
-  <p class="page-lede">A proposed JSON REST facade for reading App Store Connect data through explicit resources, predictable pagination, and connection-scoped access.</p>
+  <p class="page-lede">Read App Store Connect data through explicit resources, predictable pagination, and connection-scoped access.</p>
 </header>
 
 <div class="intro-content">
   <p>Clients call ordinary routes such as <code>/apps</code> and receive flat JSON objects. The service would own Apple authentication, translate Apple’s resource envelopes, and resolve nested resources such as a version localization by its exact locale.</p>
-  <p><span class="status-label">Proposed</span> The facade is a design plan; no service or authenticated API is available yet. Routes and examples describe the planned contract.</p>
+  <p><span class="status-label">Read-only implementation</span> The Worker implements 12 core read routes for apps, app information, versions, localizations, age ratings, and review contacts. Configure your Apple connection and facade key, then deploy it in your Cloudflare account. Writes, reports, builds, and copy workflows remain planned. The reference labels each route’s implementation status.</p>
 </div>
 
 <section class="document-section" id="common-reads">
@@ -47,14 +47,13 @@
     <a class="resource-row" href="/docs/reference/get-v1-apps/"><span class="resource-title">List apps</span><code>GET /apps</code><span class="resource-meta">Find an app by bundle ID, name, or SKU.</span></a>
     <a class="resource-row" href="/docs/reference/get-v1-apps-_id_-appinfos/"><span class="resource-title">List app information</span><code>GET /apps/{appId}/app-infos</code><span class="resource-meta">Read app-level information and category IDs.</span></a>
     <a class="resource-row" href="/docs/reference/get-v1-apps-_id_-appstoreversions/"><span class="resource-title">List versions</span><code>GET /apps/{appId}/versions</code><span class="resource-meta">Select a platform and version state explicitly.</span></a>
-    <a class="resource-row" href="/docs/reference/get-v1-apps-_id_-builds/"><span class="resource-title">List builds</span><code>GET /apps/{appId}/builds</code><span class="resource-meta">Inspect processed builds for an app.</span></a>
     <a class="resource-row" href="/docs/reference/get-v1-appstoreversionlocalizations-_id_/"><span class="resource-title">Read a version localization</span><code>GET /apps/{appId}/versions/{versionId}/localizations/{locale}</code><span class="resource-meta">Address a specific locale without fallback.</span></a>
   </div>
 </section>
 
 <section class="document-section" id="reading-the-docs">
   <h2>Reading the docs</h2>
-  <p>Start with the <a class="inline-link" href="/docs/quickstart/">quickstart</a> for a read-only request walkthrough. <a class="inline-link" href="/docs/conventions/">API conventions</a> describes authentication, selection, pagination, and errors. The <a class="inline-link" href="/docs/reference/">GET reference</a> documents proposed routes and their Apple mappings.</p>
+  <p>Start with the <a class="inline-link" href="/docs/quickstart/">quickstart</a> for setup and a read-only walkthrough. <a class="inline-link" href="/docs/conventions/">API conventions</a> describes authentication, selection, pagination, and errors. The <a class="inline-link" href="/docs/reference/">GET reference</a> documents implemented and proposed routes and their Apple mappings.</p>
 </section>
 </article></main>
       <aside class="on-page" aria-label="On this page"><h2>On this page</h2><nav><a class="" href="#overview">Introduction</a><a class="" href="#common-reads">Common reads</a><a class="" href="#reading-the-docs">Reading the docs</a></nav></aside>

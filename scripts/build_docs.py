@@ -217,7 +217,8 @@ def render_endpoint(endpoint, contract, entries, topics=None, domains=None):
     title, route = contract["title"], contract["route"]
     group = next(t["title"] for t in SOURCE["topics"] if t["slug"] == endpoint["topic"])
     body = header(title, contract["summary"], group) + endpoint_line(route)
-    body += '<p class="response-caption"><span class="status-label">Proposed</span> · ' + esc(contract["stage"]) + ' · Service not implemented</p>'
+    implemented = contract["implementationStatus"] == "implemented"
+    body += '<p class="response-caption"><span class="status-label">' + ("Implemented" if implemented else "Proposed") + '</span> · ' + esc(contract["stage"]) + (' · Operator configuration and deployment required' if implemented else ' · Adapter not implemented') + '</p>'
     body += section("request", "Request", '<p>Routes are relative to your connection. Use a facade API key; the service manages Apple authentication.</p>' + requests(route, contract.get("queryExample")) + '<p class="response-caption">asc.example.com is a placeholder for your deployment. Examples use fictional IDs.</p>')
     path_rows = []
     path_descriptions = {"appId": "Apple’s app ID. Returned by List apps.", "versionId": "An explicit version ID belonging to this app. Select it from the version list.", "appInfoId": "An explicit app-info ID belonging to this app.", "locale": "The exact locale to read. No fallback to a different locale."}
@@ -260,7 +261,9 @@ def render_endpoint(endpoint, contract, entries, topics=None, domains=None):
     if "{locale}" in route:
         error_rows.insert(4, ("409", "ambiguous_selection", "More than one localization matches the selected parent and locale."))
     body += section("errors", "Errors", table(error_rows, "HTTP"))
-    source_body = '<p>The adapter calls ' + code("GET " + endpoint["applePath"]) + '. ' + link(endpoint["source"], "Read Apple’s original endpoint ↗") + "</p>"
+    source_body = '<p>The adapter calls ' + code("GET " + contract.get("runtimeApplePath", endpoint["applePath"])) + '. ' + link(endpoint["source"], "Read Apple’s original endpoint ↗") + "</p>"
+    if implemented and contract.get("runtimeApplePath") != endpoint["applePath"]:
+        source_body += '<p>The implemented facade resolves the review contact through the selected version’s related endpoint. Clients do not supply a review-detail ID.</p>'
     if contract.get("queryFrom"):
         other = ENDPOINTS[contract["queryFrom"]]
         source_body += '<p>Filtered requests use ' + code("GET " + other["applePath"]) + ' with ' + code("filter[app]") + ' supplied from the path. ' + link(other["source"], "Apple’s filter reference ↗") + "</p>"
@@ -348,7 +351,7 @@ def build_guides(entries, topics, domains):
         article = (ROOT / "docs/guides" / (slug + ".html")).read_text()
         outline = Outline()
         outline.feed(article)
-        write_page(url, title, "Parsequerade’s proposed App Store Connect facade: " + title.lower() + ".", article, entries, outline.items, "Get started", topics, domains)
+        write_page(url, title, "Parsequerade’s App Store Connect facade: " + title.lower() + ".", article, entries, outline.items, "Get started", topics, domains)
 
 
 def topic_url(topic):
@@ -357,7 +360,7 @@ def topic_url(topic):
 
 def build_reference(entries, contracts, topics, domains):
     body = header("API reference", f"{len(entries)} GET reference pages for App Store Connect, with readable routes, flat JSON, and connection-scoped access.")
-    body += '<p class="contract-note">Proposed API. First-release reads, read-parity work, and extended designs are identified on each page.</p>'
+    body += '<p class="contract-note">Core reads are implemented; other adapters remain proposed. Each page identifies implementation status and delivery stage. ' + link("/docs/openapi.json", "Download OpenAPI for implemented routes") + '.</p>'
     toc = [("overview", "API reference")]
     for domain in domains:
         members = [t for t in topics if t["domain"] == domain["id"]]
@@ -382,7 +385,7 @@ def build_reference(entries, contracts, topics, domains):
         body += section("source", "Source", '<p>' + link(topic["source"], "Apple’s " + topic["title"] + " documentation ↗") + ' · ' + link("/docs/reference/", "All GET topics") + "</p>")
         toc.append(("source", "Source"))
         write_page(topic_url(topic), topic["title"], "Proposed GET routes for " + topic["title"] + ".", body, entries, toc, "Reference", topics, domains)
-    coverage = {"source": SOURCE["source"], "reviewedAt": SOURCE["reviewedAt"], "specification": SOURCE["specification"], "counts": SOURCE["counts"], "endpoints": [{"slug": slug, "source": ENDPOINTS[slug]["source"], "sourceSha256": ENDPOINTS[slug]["sourceSha256"], "applePath": ENDPOINTS[slug]["applePath"], "facadeRoute": c["route"], "stage": c["stage"], "legacy": c["legacy"], "page": page_url(slug)} for slug, c in contracts.items()]}
+    coverage = {"source": SOURCE["source"], "reviewedAt": SOURCE["reviewedAt"], "specification": SOURCE["specification"], "counts": SOURCE["counts"], "endpoints": [{"slug": slug, "source": ENDPOINTS[slug]["source"], "sourceSha256": ENDPOINTS[slug]["sourceSha256"], "applePath": ENDPOINTS[slug]["applePath"], "facadeRoute": c["route"], "stage": c["stage"], "implementationStatus": c["implementationStatus"], "legacy": c["legacy"], "page": page_url(slug)} for slug, c in contracts.items()]}
     (DIST / "docs/coverage.json").write_text(json.dumps(coverage, indent=2) + "\n")
 
 

@@ -1,16 +1,16 @@
 <header class="page-header" id="overview">
   <p class="page-kicker">Getting started</p>
   <h1>API conventions</h1>
-  <p class="page-lede">The proposed facade uses flat JSON, explicit resource selection, bounded pages, and stable errors across its App Store Connect reads.</p>
+  <p class="page-lede">The facade uses flat JSON, explicit resource selection, bounded pages, and stable errors across its App Store Connect reads.</p>
 </header>
 
 <div class="intro-content">
-  <p><span class="status-label">Proposed</span> These conventions describe a planned service, not a running API. First release routes cover core app, app-info, version, and localization reads; additional reads have separate milestones.</p>
+  <p><span class="status-label">Read-only implementation</span> Core app, app-info, version, localization, age-rating, and review-contact reads are implemented. Operators configure and deploy the Worker; additional reads and all mutations have separate milestones.</p>
 </div>
 
 <section class="document-section" id="base-url-and-authentication">
   <h2>Base URL and authentication</h2>
-  <p>Resource routes are relative to <code>https://asc.example.com/v1/connections/{connectionId}</code>. Send a facade API key as <code>Authorization: Bearer &lt;facade-api-key&gt;</code>. The service would own Apple credentials and JWTs; clients never sign Apple JWTs or send Apple relationship envelopes.</p>
+  <p>Resource routes are relative to <code>https://asc.example.com/v1/connections/{connectionId}</code>. Send a facade API key as <code>Authorization: Bearer &lt;facade-api-key&gt;</code>. The service owns configured Apple credentials and JWTs; clients never sign Apple JWTs or send Apple relationship envelopes.</p>
   <p>A connection ID grants no access by itself. Check the caller’s connection and resource permissions on every request, including every cursor page. A missing or invalid facade key maps to <code>401 unauthorized</code>; rejected configured Apple credentials map to <code>502 upstream_authentication_failed</code>.</p>
 </section>
 
@@ -19,7 +19,7 @@
   <ul class="prose-list">
     <li>Use explicit IDs for app, app-info, and version resources. Validate that each nested resource belongs to the selected parent app.</li>
     <li>Use an exact locale key, such as <code>en-US</code>. A missing localization returns <code>404 localization_not_found</code>; it does not fall back to another locale.</li>
-    <li>Choose platform and version state deliberately. The proposed adapter maps Apple’s <code>state</code>, <code>appVersionState</code>, and legacy <code>appStoreState</code> values; it does not select the first version or silently substitute a live one for a draft.</li>
+    <li>Choose platform and version state deliberately. The <code>state</code> query maps to Apple’s current <code>appVersionState</code> filter; read enum values are preserved. The Worker does not select the first version or silently substitute a live one for a draft.</li>
     <li>Only the fixed, documented fields on a route are returned or writable. Read access does not imply mutation support.</li>
   </ul>
 </section>
@@ -33,7 +33,7 @@
 <section class="document-section" id="pagination">
   <h2>Pagination</h2>
   <p>Collections default to 50 items per page. A route may set a lower or higher maximum within Apple’s endpoint limits. Pass a returned opaque <code>nextCursor</code> back as <code>cursor</code> with the same connection, route, filters, and ordering. Stop when <code>nextCursor</code> is <code>null</code>.</p>
-  <p>Cursors are planned to be signed, expiring, and bound to those request values. Each page is authorized again. A bounded request returns one page; internal traversal that exceeds page, time, or size limits returns an explicit error instead of a successful but truncated collection.</p>
+  <p>Cursors are signed, expire after 15 minutes, and bind the caller’s grant, credential revision, resource path, filters, fields, and page size. Each page is authorized again. A cursor chain permits up to 100 pages. Internal ownership and locale resolution permit up to 20 pages; all Apple reads in a facade request share a 25-second deadline, 32-attempt budget, 4 MiB per-response limit, and 16 MiB total-body limit. Exceeding a budget returns an explicit error instead of a successful but truncated collection.</p>
 </section>
 
 <section class="document-section" id="query-parameters">
@@ -83,5 +83,5 @@
 
 <section class="document-section" id="rollout">
   <h2>Rollout</h2>
-  <p>Initial delivery is core resource reads and selection, followed by observed mutations. Read-parity endpoints such as builds, users, and bundle IDs come later; reports and multi-step copy workflows are separate milestones. Each endpoint page labels its proposed stage. Consult the <a class="inline-link" href="/docs/reference/">GET reference</a> for the current route coverage.</p>
+  <p>Core reads and explicit selection are implemented. Known resources accept GET only; mutation methods return <code>405 method_not_allowed</code>. Read-parity endpoints such as builds, users, and bundle IDs come later; reports and multi-step copy workflows are separate milestones. Each endpoint page labels implementation status separately from its delivery stage. Consult the <a class="inline-link" href="/docs/reference/">GET reference</a> or <a class="inline-link" href="/docs/openapi.json">implemented-route OpenAPI</a> for coverage.</p>
 </section>
