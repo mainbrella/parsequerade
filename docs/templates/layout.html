@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="$description" />
+    <meta name="theme-color" content="#08090a" />
+    <link rel="icon" href="/parsequerade.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="module" src="/app.js"></script>
+    <title>$title · Parsequerade docs</title>
+  </head>
+  <body class="docs-body">
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="docs-header">
+      <a class="brand" href="/" aria-label="Parsequerade home"><img class="brand-mask" src="/parsequerade.svg" width="32" height="32" alt="" /><span class="brand-name">Parsequerade <em>/ docs</em></span></a>
+      <nav class="top-nav" aria-label="Primary navigation"><a href="/docs/" $intro_current>Introduction</a><a href="/docs/quickstart/" $quickstart_current>Quickstart</a><a href="/docs/reference/" $reference_current>Reference</a></nav>
+      <div class="mobile-header-actions">
+        <button class="mobile-search-toggle" type="button" aria-label="Search documentation" aria-expanded="false" aria-controls="docs-sidebar"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg></button>
+        <button class="mobile-menu-toggle" type="button" aria-label="Open documentation menu" aria-expanded="false" aria-controls="docs-sidebar"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      </div>
+    </header>
+    <div class="mobile-breadcrumb"><button class="crumb-menu" type="button" aria-label="Open documentation menu" aria-expanded="false" aria-controls="docs-sidebar"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><span>$breadcrumb</span></div>
+    <button class="sidebar-backdrop" type="button" hidden aria-label="Close documentation menu" tabindex="-1"></button>
+    <div class="docs-app">
+      <aside class="docs-sidebar" id="docs-sidebar" aria-label="Documentation">
+        <button class="sidebar-close" type="button" aria-label="Close documentation menu">Close menu <span aria-hidden="true">×</span></button>
+        <form class="search-box" role="search" onsubmit="return false"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg><input id="docs-search" type="search" placeholder="Search endpoints…" aria-label="Search endpoints" aria-controls="docs-search-results" autocomplete="off" /><kbd class="search-shortcut" aria-hidden="true">⌘K</kbd></form>
+        <div id="docs-search-results" class="search-results" hidden aria-live="polite"></div>
+        <div class="docs-nav">$sidebar</div>
+        <div class="sidebar-footer"><span class="status-dot" aria-hidden="true"></span>Proposed API<br /><strong>GET reference</strong></div>
+      </aside>
+      <main class="docs-main" id="main-content"><article class="document">$article</article></main>
+      <aside class="on-page" aria-label="On this page"><h2>On this page</h2><nav>$toc</nav></aside>
+    </div>
+    <footer class="site-footer"><span>Parsequerade · Proposed API</span><a href="https://github.com/mainbrella/parsequerade">Source on GitHub ↗</a></footer>
+  </body>
+</html>

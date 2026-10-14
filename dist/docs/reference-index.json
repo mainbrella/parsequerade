@@ -1,0 +1,26 @@
+[
+  {
+    "title": "List apps",
+    "route": "/apps",
+    "url": "/docs/reference/get-v1-apps/",
+    "applePath": "/v1/apps",
+    "group": "Example pages",
+    "keywords": "get-v1-apps"
+  },
+  {
+    "title": "List an app\u2019s builds",
+    "route": "/apps/{appId}/builds",
+    "url": "/docs/reference/get-v1-apps-_id_-builds/",
+    "applePath": "/v1/apps/{id}/builds",
+    "group": "Example pages",
+    "keywords": "get-v1-apps-_id_-builds"
+  },
+  {
+    "title": "Read a version localization",
+    "route": "/apps/{appId}/versions/{versionId}/localizations/{locale}",
+    "url": "/docs/reference/get-v1-appstoreversionlocalizations-_id_/",
+    "applePath": "/v1/appStoreVersionLocalizations/{id}",
+    "group": "Example pages",
+    "keywords": "get-v1-appstoreversionlocalizations-_id_"
+  }
+]

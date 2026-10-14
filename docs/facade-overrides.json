@@ -1,0 +1,31 @@
+{
+  "get-v1-apps": {
+    "title": "List apps",
+    "route": "/apps",
+    "summary": "Find apps by bundle ID, name, or SKU. Get plain app objects with a cursor for the next page.",
+    "stage": "First release",
+    "queryExample": {"bundleId": "com.example.notes"},
+    "example": {"items": [{"id": "1234567890", "name": "Example Notes", "bundleId": "com.example.notes", "sku": "example-ios", "primaryLocale": "en-US", "contentRightsDeclaration": "DOES_NOT_USE_THIRD_PARTY_CONTENT"}], "nextCursor": null},
+    "notes": ["Use bundleId for an exact bundle-identifier match. Name and SKU filters use Apple’s supported matching behavior.", "Versions, builds, and localizations have their own GET routes. This request does not silently load an app’s resource graph."]
+  },
+  "get-v1-apps-_id_-builds": {
+    "title": "List an app’s builds",
+    "route": "/apps/{appId}/builds",
+    "summary": "Read builds for one app. Filter by processing state and follow a cursor to retrieve additional builds.",
+    "stage": "Read parity",
+    "queryFrom": "get-v1-builds",
+    "queryExample": {"processingState": "PROCESSING"},
+    "context": {"appId": "1234567890"},
+    "example": {"items": [{"id": "build_123", "appId": "1234567890", "version": "42", "uploadedDate": "2026-10-13T18:00:00Z", "expirationDate": "2027-01-11T18:00:00Z", "expired": false, "minOsVersion": "18.0", "processingState": "PROCESSING"}], "nextCursor": null},
+    "notes": ["processingState describes build processing. It does not indicate App Review approval or whether a version is live.", "The adapter uses Apple’s app-build endpoint for an unfiltered list. Filtering uses GET /v1/builds with filter[app] fixed to appId, so filters apply across the collection rather than to one page."]
+  },
+  "get-v1-appstoreversionlocalizations-_id_": {
+    "title": "Read a version localization",
+    "route": "/apps/{appId}/versions/{versionId}/localizations/{locale}",
+    "summary": "Read the store listing for an exact version and locale. Address the locale directly; Parsequerade resolves Apple’s localization ID.",
+    "stage": "First release",
+    "context": {"appId": "1234567890", "versionId": "version_123"},
+    "example": {"id": "localization_456", "appId": "1234567890", "versionId": "version_123", "locale": "en-US", "description": "Keep your notes organized.", "keywords": "notes,productivity,writing", "marketingUrl": null, "supportUrl": "https://example.com/support", "promotionalText": "A clearer place for your ideas.", "whatsNew": "Faster search and improved offline editing."},
+    "notes": ["Choose versionId from the app’s version list. The adapter checks that it belongs to appId and resolves locale against that version’s localizations.", "A missing locale returns 404 localization_not_found. The service does not substitute the primary locale or create a localization during a GET.", "App name, subtitle, and privacy URLs belong to app-info localizations. They are separate from the version listing shown here."]
+  }
+}

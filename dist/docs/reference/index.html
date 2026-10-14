@@ -3,43 +3,36 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Parsequerade API reference documentation is in progress." />
+    <meta name="description" content="Parsequerade proposed GET API reference." />
     <meta name="theme-color" content="#08090a" />
-    <style>
-      html { background: #08090a; }
-      * { box-sizing: border-box; }
-      body {
-        margin: 0;
-        background: #08090a;
-        color: #f1f1f2;
-        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        font-size: 15px;
-        line-height: 1.6;
-      }
-      a { color: inherit; text-decoration: none; }
-      [hidden] { display: none !important; }
-    </style>
+    <link rel="icon" href="/parsequerade.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/styles.css" />
     <script type="module" src="/app.js"></script>
     <title>API reference · Parsequerade docs</title>
   </head>
   <body class="docs-body">
+    <a class="skip-link" href="#main-content">Skip to content</a>
     <header class="docs-header">
-      <a class="brand" href="/docs/" aria-label="Parsequerade documentation home"><span class="brand-mark" aria-hidden="true">P</span><span class="brand-name">Parsequerade <em>/ docs</em></span></a>
-      <nav class="top-nav" aria-label="Primary navigation"><a href="/docs/">Introduction</a><a href="/docs/quickstart/">Quickstart</a><a class="is-current" href="/docs/reference/" aria-current="page">Reference</a></nav>
-      <div class="mobile-header-actions"><button type="button" class="mobile-search-toggle" aria-label="Focus documentation search"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg></button><button type="button" aria-label="Open documentation menu" aria-expanded="false" class="mobile-menu-toggle"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button></div>
+      <a class="brand" href="/" aria-label="Parsequerade home"><img class="brand-mask" src="/parsequerade.svg" width="32" height="32" alt="" /><span class="brand-name">Parsequerade <em>/ docs</em></span></a>
+      <nav class="top-nav" aria-label="Primary navigation"><a href="/docs/" >Introduction</a><a href="/docs/quickstart/" >Quickstart</a><a href="/docs/reference/" class="is-current" aria-current="page">Reference</a></nav>
+      <div class="mobile-header-actions">
+        <button class="mobile-search-toggle" type="button" aria-label="Search documentation" aria-expanded="false" aria-controls="docs-sidebar"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg></button>
+        <button class="mobile-menu-toggle" type="button" aria-label="Open documentation menu" aria-expanded="false" aria-controls="docs-sidebar"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      </div>
     </header>
-    <div class="mobile-breadcrumb"><button class="crumb-menu" type="button" aria-label="Open documentation menu" aria-expanded="false"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><span>Reference</span><span class="crumb-chevron" aria-hidden="true">›</span><strong>API reference</strong></div>
-    <main class="docs-app">
+    <div class="mobile-breadcrumb"><button class="crumb-menu" type="button" aria-label="Open documentation menu" aria-expanded="false" aria-controls="docs-sidebar"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><span>Reference</span></div>
+    <button class="sidebar-backdrop" type="button" hidden aria-label="Close documentation menu" tabindex="-1"></button>
+    <div class="docs-app">
       <aside class="docs-sidebar" id="docs-sidebar" aria-label="Documentation">
-        <form class="search-box" role="search" onsubmit="return false"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg><input id="docs-search" type="search" placeholder="Search..." aria-label="Search documentation" autocomplete="off" /><span class="search-shortcut" aria-hidden="true">⌘K</span></form>
-        <p class="search-empty" hidden>No matching pages.</p>
-        <div class="docs-nav"><section class="nav-group"><h2>Get started</h2><nav aria-label="Get started"><a class="nav-link" href="/docs/">Introduction</a><a class="nav-link" href="/docs/quickstart/">Quickstart</a></nav></section><section class="nav-group"><h2>Reference</h2><nav aria-label="Reference"><a class="nav-link is-current" href="/docs/reference/" aria-current="page">API reference</a></nav></section></div>
-        <div class="sidebar-footer"><span class="status-dot" aria-hidden="true"></span>Documentation status<br /><strong>In progress</strong></div>
+        <button class="sidebar-close" type="button" aria-label="Close documentation menu">Close menu <span aria-hidden="true">×</span></button>
+        <form class="search-box" role="search" onsubmit="return false"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg><input id="docs-search" type="search" placeholder="Search endpoints…" aria-label="Search endpoints" aria-controls="docs-search-results" autocomplete="off" /><kbd class="search-shortcut" aria-hidden="true">⌘K</kbd></form>
+        <div id="docs-search-results" class="search-results" hidden aria-live="polite"></div>
+        <div class="docs-nav"><section class="nav-group"><h2>Get started</h2><nav><a class="nav-link" href="/docs/">Introduction</a><a class="nav-link" href="/docs/quickstart/">Quickstart</a></nav></section><section class="nav-group"><h2>Reference</h2><nav><a class="nav-link is-current" aria-current="page" href="/docs/reference/">All GET endpoints</a></nav></section><section class="nav-group"><h2>Example pages</h2><nav><a class="nav-link" href="/docs/reference/get-v1-apps/">List apps</a><a class="nav-link" href="/docs/reference/get-v1-apps-_id_-builds/">List an app’s builds</a><a class="nav-link" href="/docs/reference/get-v1-appstoreversionlocalizations-_id_/">Read a version localization</a></nav></section></div>
+        <div class="sidebar-footer"><span class="status-dot" aria-hidden="true"></span>Proposed API<br /><strong>GET reference</strong></div>
       </aside>
-      <section class="docs-main"><article class="document"><header class="page-header" id="overview"><p class="page-kicker">Reference</p><h1>API reference</h1><p class="page-lede">Route and field documentation will follow once the proposed contract is implemented.</p><div class="page-tools"><button class="copy-button" type="button" data-copy-page aria-label="Copy page link"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="8" y="8" width="11" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h2"/></svg><span class="copy-text" aria-live="polite">Copied</span></button></div></header><section class="document-section" id="availability"><p class="section-kicker">Documentation status</p><h2>Reference is not available yet</h2><p>The routes described in the design are proposed contracts. There is no running service, stable API, or supported request format to reference yet.</p><p>See the <a class="inline-link" href="/docs/">introduction</a> for the service's intended scope.</p></section></article></section>
-      <aside class="on-page" aria-label="On this page"><h2>On this page</h2><nav><a class="is-current" href="#overview">API reference</a><a href="#availability">Availability</a></nav></aside>
-    </main>
-    <footer class="site-footer"><span>Parsequerade documentation · In progress</span><a href="/docs/quickstart/">Quickstart</a></footer>
+      <main class="docs-main" id="main-content"><article class="document"><header class="page-header" id="overview"><p class="page-kicker">Reference</p><h1>API reference</h1><p class="page-lede">Plain JSON, readable routes, and explicit resource targets. Start with these three example GET contracts.</p></header><p class="contract-note">Proposed API. Parsequerade’s service is not implemented yet.</p><section class="document-section" id="endpoints"><h2>GET endpoints</h2><div class="resource-list"><a class="resource-row" href="/docs/reference/get-v1-apps/"><span class="resource-title">List apps</span><code>GET /apps</code></a><a class="resource-row" href="/docs/reference/get-v1-apps-_id_-builds/"><span class="resource-title">List an app’s builds</span><code>GET /apps/{appId}/builds</code></a><a class="resource-row" href="/docs/reference/get-v1-appstoreversionlocalizations-_id_/"><span class="resource-title">Read a version localization</span><code>GET /apps/{appId}/versions/{versionId}/localizations/{locale}</code></a></div></section><section class="document-section" id="coverage"><h2>Coverage</h2><p>The source review covers 457 GET pages in 84 topics from Apple’s App Store documentation. The remaining pages are being generated from the same reviewed snapshot.</p></section></article></main>
+      <aside class="on-page" aria-label="On this page"><h2>On this page</h2><nav><a class="" href="#overview">API reference</a><a class="" href="#endpoints">GET endpoints</a><a class="" href="#coverage">Coverage</a></nav></aside>
+    </div>
+    <footer class="site-footer"><span>Parsequerade · Proposed API</span><a href="https://github.com/mainbrella/parsequerade">Source on GitHub ↗</a></footer>
   </body>
 </html>
