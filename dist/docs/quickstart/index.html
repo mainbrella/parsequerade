@@ -38,12 +38,38 @@
 
 <section class="document-section" id="status">
   <h2>Status</h2>
-  <p><span class="status-label">Implemented reads</span> This walkthrough uses working read routes. Deployments require operator configuration; <code>asc.example.com</code> and the IDs below are placeholders for your deployment and Apple resources. Mutation, report, and copy routes remain planned.</p>
+  <p><span class="status-label">Implemented reads</span> This walkthrough uses working read routes. Hosted connection setup and revocation are implemented in the Worker and available when the deployment has its hosted storage configured. <code>asc.example.com</code> and the IDs below are placeholders for your deployment and Apple resources. Mutation, report, and copy routes remain planned.</p>
+</section>
+
+<section class="document-section" id="hosted-connection">
+  <h2>Connect to a hosted deployment</h2>
+  <p>Create an App Store Connect team API key with access to the apps you want to read. Send its issuer ID, key ID, and PKCS#8 PEM contents to <code>POST /v1/connections</code>. The JSON body is limited to 8 KiB. Setup validates the P-256 key locally and probes Apple's apps endpoint with a read-only request. On success, the response contains a generated <code>conn_live_</code> connection ID, a base URL, and a one-time <code>pq_</code> facade key. That key can read all apps accessible to the supplied Apple key.</p>
+  <div class="code-example">
+    <div class="code-toolbar"><span class="code-label">Shell</span><button class="code-copy" type="button" data-copy-target="quickstart-hosted-setup" aria-label="Copy hosted connection setup"><span class="copy-label">Copy</span></button></div>
+    <pre id="quickstart-hosted-setup" tabindex="0"><code>P8_FILE="$HOME/Downloads/AuthKey_ABC123DEFG.p8"
+ISSUER_ID='YOUR_ISSUER_UUID'
+KEY_ID='YOUR_KEY_ID'
+CONNECTION_FILE="$(mktemp "${TMPDIR:-/tmp}/parsequerade-connection.XXXXXX")"
+
+jq -n --arg issuerId "$ISSUER_ID" --arg keyId "$KEY_ID" \
+  --rawfile privateKey "$P8_FILE" \
+  '{issuerId: $issuerId, keyId: $keyId, privateKey: $privateKey}' |
+  curl --fail-with-body --silent --show-error \
+    -X POST 'https://asc.example.com/v1/connections' \
+    -H 'Content-Type: application/json' --data-binary @- &gt; "$CONNECTION_FILE"
+
+BASE="$(jq -er '.baseUrl' "$CONNECTION_FILE")"
+ASC_FACADE_KEY="$(jq -er '.apiKey' "$CONNECTION_FILE")"
+
+curl --fail-with-body "$BASE/apps?limit=50" \
+  -H "Authorization: Bearer $ASC_FACADE_KEY"</code></pre>
+  </div>
+  <p>The response is <code>201 Created</code>. Keep the response file and bearer key private; API responses use <code>no-store</code>. When finished, send authenticated <code>DELETE</code> to the returned base URL to remove the stored Apple credentials and revoke the facade key. Revoke the Apple team key separately in App Store Connect if it was created only for this use.</p>
 </section>
 
 <section class="document-section" id="credentials">
-  <h2>Prepare access</h2>
-  <p>From the repository, install dependencies with <code>npm ci</code>. Obtain an Apple team API key with access to the app you want to read, and run the setup command with your issuer ID, key ID, private-key file, and allowed app ID:</p>
+  <h2>Configure your own Worker</h2>
+  <p>Operator configuration remains supported. From the repository, install dependencies with <code>npm ci</code>. Obtain an Apple team API key with access to the app you want to read, and run the setup command with your issuer ID, key ID, private-key file, and allowed app ID:</p>
   <div class="code-example">
     <div class="code-toolbar"><span class="code-label">Shell</span><button class="code-copy" type="button" data-copy-target="quickstart-setup" aria-label="Copy setup command"><span class="copy-label">Copy</span></button></div>
     <pre id="quickstart-setup" tabindex="0"><code>npm run configure -- \
@@ -103,7 +129,7 @@ curl --fail-with-body "$BASE/apps?bundleId=com.example.app&amp;limit=50" \
   <p>See <a class="inline-link" href="/docs/reference/get-v1-appstoreversionlocalizations-_id_/">Read a version localization</a> for the response shape.</p>
 </section>
 </article></main>
-      <aside class="on-page" aria-label="On this page"><h2>On this page</h2><nav><a class="" href="#overview">Quickstart</a><a class="" href="#status">Status</a><a class="" href="#credentials">Prepare access</a><a class="" href="#list-apps">1. List apps</a><a class="" href="#select-version">2. Select a version</a><a class="" href="#read-locale">3. Read an exact locale</a></nav></aside>
+      <aside class="on-page" aria-label="On this page"><h2>On this page</h2><nav><a class="" href="#overview">Quickstart</a><a class="" href="#status">Status</a><a class="" href="#hosted-connection">Connect to a hosted deployment</a><a class="" href="#credentials">Configure your own Worker</a><a class="" href="#list-apps">1. List apps</a><a class="" href="#select-version">2. Select a version</a><a class="" href="#read-locale">3. Read an exact locale</a></nav></aside>
     </div>
     <footer class="site-footer"><span>Parsequerade · Proposed API</span><a href="https://github.com/mainbrella/parsequerade">Source on GitHub ↗</a></footer>
   </body>

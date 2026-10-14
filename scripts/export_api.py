@@ -65,11 +65,57 @@ def outputs():
                        (502, "Invalid upstream response or credentials."), (503, "Unavailable or unconfigured."), (504, "Upstream timeout.")]}},
             "x-apple-path": endpoint["applePath"], "x-implementation-status": "implemented",
         }}
+    paths["/v1/connections"] = {"post": {
+        "operationId": "createHostedConnection",
+        "summary": "Create a hosted connection",
+        "description": "Accept at most 8 KiB of JSON, validate an App Store Connect team key, probe read access, and return a read-only facade key. The submitted private key is stored encrypted; provide it again only when creating a new connection.",
+        "security": [],
+        "requestBody": {"required": True, "description": "The complete JSON body must not exceed 8 KiB.", "content": {"application/json": {
+            "schema": {"$ref": "#/components/schemas/HostedConnectionRequest"},
+        }}},
+        "responses": {
+            "201": {"description": "Hosted connection created.", "headers": {
+                "Location": {"required": True, "description": "The connection base URL.", "schema": {"type": "string", "format": "uri"}},
+            }, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HostedConnection"}}}},
+            **{str(status): {"description": description, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}}
+               for status, description in [(400, "Invalid connection request or credentials."), (408, "Connection request body timed out."),
+                   (413, "Connection request body exceeded 8 KiB."), (415, "Content-Type must be application/json."),
+                   (422, "Apple rejected the supplied credentials."), (429, "Connection setup rate limit exceeded."),
+                   (502, "Invalid upstream response or credentials."), (503, "Hosted connection storage is unavailable or unconfigured."),
+                   (504, "Apple request timed out.")]},
+        },
+        "x-implementation-status": "implemented",
+    }}
+    paths["/v1/connections/{connectionId}"] = {"delete": {
+        "operationId": "deleteHostedConnection",
+        "summary": "Delete a hosted connection",
+        "description": "Remove the stored Apple credentials and revoke the facade key. Authenticate with the connection's facade API key.",
+        "parameters": [{"name": "connectionId", "in": "path", "required": True,
+            "schema": {"type": "string", "pattern": "^conn_live_[a-f0-9]{32}$"}}],
+        "responses": {
+            "204": {"description": "Connection credentials removed and facade key revoked."},
+            "401": {"description": "Facade authentication failed.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}},
+            "503": {"description": "Hosted connection storage is unavailable or unconfigured.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}},
+        },
+        "x-implementation-status": "implemented",
+    }}
     manifest = {"appleSpecification": SOURCE["specification"], "routes": routes}
     openapi = {
-        "openapi": "3.0.3", "info": {"title": "Parsequerade", "version": "0.1.0", "description": "Implemented read-only facade routes. Operator configuration is required."},
+        "openapi": "3.0.3", "info": {"title": "Parsequerade", "version": "0.1.0", "description": "Implemented read-only facade routes and hosted connection setup and revocation. Hosted connections require operator-configured encrypted storage; operator-managed connections remain supported."},
         "servers": [{"url": "/"}], "security": [{"facadeKey": []}], "paths": paths,
         "components": {"securitySchemes": {"facadeKey": {"type": "http", "scheme": "bearer"}}, "schemas": {
+            "HostedConnectionRequest": {"type": "object", "additionalProperties": False,
+                "required": ["issuerId", "keyId", "privateKey"], "properties": {
+                    "issuerId": {"type": "string", "format": "uuid"},
+                    "keyId": {"type": "string", "pattern": "^[A-Z0-9]{10}$"},
+                    "privateKey": {"type": "string", "maxLength": 4096, "description": "P-256 PKCS#8 PEM contents."},
+                }},
+            "HostedConnection": {"type": "object", "additionalProperties": False,
+                "required": ["connectionId", "baseUrl", "apiKey"], "properties": {
+                    "connectionId": {"type": "string", "pattern": "^conn_live_[a-f0-9]{32}$"},
+                    "baseUrl": {"type": "string", "format": "uri"},
+                    "apiKey": {"type": "string", "pattern": "^pq_[A-Za-z0-9_-]{43}$", "description": "One-time bearer key; store it securely."},
+                }},
             "Error": {"type": "object", "required": ["error"], "properties": {"error": {
                 "type": "object", "required": ["code", "message", "requestId", "retryable", "details"],
                 "properties": {"code": {"type": "string"}, "message": {"type": "string"}, "requestId": {"type": "string"},
@@ -91,7 +137,7 @@ def main():
         else:
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(content)
-    print("Validated implemented read contracts and OpenAPI." if args.check else "Exported 12 implemented read contracts and OpenAPI.")
+    print("Validated 12 implemented read contracts and 14 OpenAPI paths." if args.check else "Exported 12 implemented read contracts and 14 OpenAPI paths.")
 
 
 if __name__ == "__main__":

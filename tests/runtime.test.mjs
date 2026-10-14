@@ -4,6 +4,7 @@ import { readFile, rm, mkdtemp, writeFile } from "node:fs/promises";
 import { resolve, join } from "node:path";
 import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
+import { randomBytes } from "node:crypto";
 import { Miniflare, convertV4MiniflareOptions } from "miniflare";
 import { unstable_getMiniflareWorkerOptions } from "wrangler";
 import { makeEnv, request, app, json, jsonResponse, validateJwt, pem, connectionId } from "./helpers.mjs";
@@ -15,7 +16,7 @@ test("bundled Worker runs in workerd with the actual Wrangler asset routing", as
   const env = makeEnv(); delete env.ASSETS;
   let calls = 0;
   const mf = new Miniflare(convertV4MiniflareOptions({ workers: [{ ...workerOptions, modules: true,
-    scriptPath: resolve(".wrangler/test-build/index.js"), bindings: env,
+    scriptPath: resolve(".wrangler/test-build/entry.js"), bindings: env,
     outboundService: async incoming => {
       const url = new URL(incoming.url);
       assert.equal(url.origin, "https://api.appstoreconnect.apple.com"); validateJwt(incoming.headers.get("Authorization"));
@@ -29,7 +30,7 @@ test("bundled Worker runs in workerd with the actual Wrangler asset routing", as
     assert.equal(response.status, 200); assert.match(await response.text(), new RegExp(fragment));
   }
   const spec = await mf.dispatchFetch("http://localhost/docs/openapi.json");
-  assert.equal(spec.status, 200); assert.equal(Object.keys((await spec.json()).paths).length, 12);
+  assert.equal(spec.status, 200); assert.equal(Object.keys((await spec.json()).paths).length, 14);
   const unauthorized = await mf.dispatchFetch("http://localhost/v1/connections/conn_example/apps");
   assert.equal(unauthorized.status, 401); assert.equal((await unauthorized.json()).error.code, "unauthorized");
   const headers = Object.fromEntries(request().headers);
@@ -48,13 +49,52 @@ test("bundled Worker runs in workerd with the actual Wrangler asset routing", as
   }
 });
 
+test("hosted connections survive runtime restarts and revoke keys in workerd", async t => {
+  const directory = await mkdtemp(join(tmpdir(), "parsequerade-hosted-runtime-"));
+  t.after(() => rm(directory, { recursive: true, force: true }));
+  const { workerOptions, externalWorkers } = unstable_getMiniflareWorkerOptions("wrangler.jsonc");
+  delete workerOptions.modulesRules;
+  let calls = 0;
+  const options = convertV4MiniflareOptions({ workers: [{ ...workerOptions, modules: true,
+    scriptPath: resolve(".wrangler/test-build/entry.js"), bindings: { CONNECTION_ENCRYPTION_KEY: randomBytes(32).toString("base64url") },
+    outboundService: async incoming => {
+      assert.equal(new URL(incoming.url).origin, "https://api.appstoreconnect.apple.com");
+      assert.equal(incoming.method, "GET"); validateJwt(incoming.headers.get("Authorization")); calls++;
+      return jsonResponse(json([app()]));
+    },
+  }, ...externalWorkers] });
+  options.resourcePersistencePath = directory;
+  let mf = new Miniflare(options);
+  t.after(() => mf.dispose());
+  const created = await mf.dispatchFetch("http://localhost/v1/connections", { method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ issuerId: "00000000-1111-2222-3333-444444444444", keyId: "ABCDEF1234", privateKey: pem }) });
+  assert.equal(created.status, 201, await created.clone().text());
+  const connection = await created.json();
+  assert.equal(created.headers.get("Location"), connection.baseUrl);
+  assert.match(connection.connectionId, /^conn_live_[a-f0-9]{32}$/);
+  assert.match(connection.apiKey, /^pq_[A-Za-z0-9_-]{43}$/);
+  assert.equal(calls, 1);
+  const headers = { Authorization: `Bearer ${connection.apiKey}` };
+  await mf.dispose();
+  mf = new Miniflare(options);
+  const read = await mf.dispatchFetch(connection.baseUrl + "/apps", { headers });
+  assert.equal(read.status, 200, await read.clone().text());
+  assert.equal((await read.json()).items[0].id, "123"); assert.equal(calls, 2);
+  const write = await mf.dispatchFetch(connection.baseUrl + "/apps/123", { method: "PATCH", headers, body: "{}" });
+  assert.equal(write.status, 405); assert.equal(calls, 2);
+  const removed = await mf.dispatchFetch(connection.baseUrl, { method: "DELETE", headers });
+  assert.equal(removed.status, 204); assert.equal(await removed.text(), "");
+  const revoked = await mf.dispatchFetch(connection.baseUrl + "/apps", { headers });
+  assert.equal(revoked.status, 401); assert.equal(calls, 2);
+});
+
 test("generated .dev.vars loads through Wrangler and workerd without manual escaping", async t => {
   const directory = await mkdtemp(join(tmpdir(), "parsequerade-runtime-"));
   t.after(() => rm(directory, { recursive: true, force: true }));
   await writeFile(join(directory, "AuthKey.p8"), pem, { mode: 0o600 });
   const result = spawnSync(process.execPath, ["scripts/configure.mjs", "--connection", connectionId, "--issuer-id", "00000000-1111-2222-3333-444444444444", "--key-id", "ABCDEF1234", "--private-key", join(directory, "AuthKey.p8"), "--app-id", "123", "--output-dir", directory], { encoding: "utf8" });
   assert.equal(result.status, 0);
-  const bundle = await readFile(".wrangler/test-build/index.js", "utf8");
+  const bundle = await readFile(".wrangler/test-build/entry.js", "utf8");
   await writeFile(join(directory, "index.js"), bundle);
   await writeFile(join(directory, "wrangler.jsonc"), JSON.stringify({ name: "parsequerade-setup-test", main: "./index.js", compatibility_date: "2026-09-13" }));
   const { workerOptions } = unstable_getMiniflareWorkerOptions(join(directory, "wrangler.jsonc"));

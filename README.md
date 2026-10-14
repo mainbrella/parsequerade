@@ -1,18 +1,18 @@
 # Parsequerade
 
-Parsequerade is a JSON REST facade for App Store Connect. The hosted service target is [parsequerade.mainbrella.com](https://parsequerade.mainbrella.com); the current implementation is an operator-deployed Cloudflare Worker alongside a static documentation site. Its core reads turn Apple's resource envelopes, type identifiers, and relationship links into ordinary JSON and predictable resource URLs.
+Parsequerade is a JSON REST facade for App Store Connect. The hosted service domain is [parsequerade.mainbrella.com](https://parsequerade.mainbrella.com); the repository contains its Cloudflare Worker and static documentation site. Its core reads turn Apple's resource envelopes, type identifiers, and relationship links into ordinary JSON and predictable resource URLs.
 
 The goal is to let a client list apps, edit a localized description, update a review contact, or read sales data without signing Apple JWTs, looking up internal child IDs, or assembling relationship payloads.
 
-**Status:** The read-only first slice is implemented: 12 GET routes for apps, app infos, versions, their localization collections and exact locales, age ratings, and review contacts. Authentication, Apple JWTs, ownership checks, bounded pagination, and structured errors are included. Writes, reports, copy workflows, broader reads, and hosted self-service connections remain planned. No authenticated Apple calls or deployment have been performed as part of implementation. See [rest.md](rest.md) for the remaining milestones.
+**Status:** The read-only first slice is implemented: 12 GET routes for apps, app infos, versions, their localization collections and exact locales, age ratings, and review contacts. Public hosted connection onboarding and revocation are also implemented in the Worker. Writes, reports, copy workflows, and broader reads remain planned. See [rest.md](rest.md) for the remaining milestones.
 
-## Try the hosted API (planned)
+## Connect to the hosted API
 
-The intended hosted flow lets you connect your own App Store Connect team key with `curl`, then use a read-only facade key for apps that Apple key can access. Public connection setup and cleanup endpoints still need implementation and deployment; this flow is not available yet.
+When the Worker is deployed with its hosted-connection bindings and encryption secret, you can connect an App Store Connect team key with `curl` and receive a read-only facade key for the apps that Apple key can access. Hosted setup requires a Cloudflare Durable Object binding/migration and a stable `CONNECTION_ENCRYPTION_KEY`; see deployment setup below.
 
 Create an App Store Connect API key at [Users and Access → Integrations → Team Keys](https://appstoreconnect.apple.com/access/integrations/api). Copy the **Issuer ID** and **Key ID**, then download the `.p8` private key file (Apple only lets you download it once). Keep that file private. The optional vendor number is only needed for sales reports, which are not implemented in this read-only slice.
 
-The planned public `POST /v1/connections` endpoint accepts the PEM contents of the private key, not a file path. It validates the key and checks access to Apple apps before returning `201 Created` with a connection ID, base URL, and facade API key. You won't need a preissued facade key or a Cloudflare account. The private key is sent over HTTPS so the service can sign Apple JWTs; the planned service must store it encrypted, keep it out of responses, logs, and static assets, and store only a hash of the facade key. Treat the returned bearer key as a secret.
+`POST /v1/connections` accepts a JSON body of at most 8 KiB with exactly `issuerId`, `keyId`, and `privateKey`; `privateKey` is the PKCS#8 PEM contents, not a file path. The Worker validates the P-256 key locally, then makes a read-only `GET /v1/apps?limit=1` probe against Apple. Success returns `201 Created` with a generated connection ID (`conn_live_` plus 32 hex characters), a connection `baseUrl`, and a facade key (`pq_` plus a random 32-byte base64url value). The reserved `conn_live_` prefix is used for generated hosted IDs. The key grants read-only access to all apps the supplied Apple key can access. You do not need a preissued facade key or a Cloudflare account. The Worker stores the Apple credential encrypted and only a SHA-256 hash of the facade key; API responses are `no-store` and logs redact secrets. Treat both the submitted Apple key and returned bearer key as secrets.
 
 Use `curl` and `jq`. The response is saved in a private temporary file outside the checkout:
 
@@ -30,7 +30,7 @@ jq -n --arg issuerId "$ISSUER_ID" --arg keyId "$KEY_ID" \
     -H 'Content-Type: application/json' --data-binary @- > "$CONNECTION_FILE"
 
 # Example response (values are fictional):
-# {"connectionId":"conn_abc123","baseUrl":"https://parsequerade.mainbrella.com/v1/connections/conn_abc123","apiKey":"pq_live_example_secret"}
+# {"connectionId":"conn_live_0123456789abcdef0123456789abcdef","baseUrl":"https://parsequerade.mainbrella.com/v1/connections/conn_live_0123456789abcdef0123456789abcdef","apiKey":"pq_example_random_base64url_key"}
 
 BASE="$(jq -er '.baseUrl' "$CONNECTION_FILE")"
 ASC_FACADE_KEY="$(jq -er '.apiKey' "$CONNECTION_FILE")"
@@ -43,7 +43,7 @@ curl --fail-with-body "$BASE/apps/1234567890" \
   -H "Authorization: Bearer $ASC_FACADE_KEY"
 ```
 
-When finished, the planned authenticated `DELETE /v1/connections/{connectionId}` endpoint will remove the stored credentials and revoke that facade key, returning `204 No Content`:
+When finished, the authenticated `DELETE /v1/connections/{connectionId}` endpoint removes the stored credentials and revokes that facade key, returning `204 No Content`:
 
 ```sh
 curl --fail-with-body -X DELETE "$BASE" \
@@ -85,19 +85,31 @@ curl --fail-with-body "$BASE/apps?limit=50" \
   -H "Authorization: Bearer $ASC_FACADE_KEY"
 ```
 
-For deployment, update the custom domain in `wrangler.jsonc`, authenticate Wrangler to your Cloudflare account, run `npm run check`, then run:
+For operator deployment, update the custom domain in `wrangler.jsonc`, authenticate Wrangler to your Cloudflare account, run `npm run check`, then run:
 
 ```sh
 npm run deploy -- --secrets-file .parsequerade.secrets.json
 ```
 
-The existing configuration serves `/` and `/docs/` as static assets and sends `/v1/*` to `worker/index.js`. Hosted API requests require HTTPS; local development binds to `127.0.0.1` and permits loopback HTTP. API data and errors use `Cache-Control: private, no-store`; private configuration belongs outside `dist/`. Missing configuration returns `503 service_not_configured`, while the static site remains available.
+The Worker serves `/` and `/docs/` as static assets and sends `/v1/*` to `worker/index.js`. Hosted API requests require HTTPS; local development binds to `127.0.0.1` and permits loopback HTTP. API data and errors use `Cache-Control: private, no-store`; private configuration belongs outside `dist/`. Missing operator configuration returns `503 service_not_configured`; missing hosted-connection storage or encryption configuration returns `503 hosted_connections_not_configured`, while the static site remains available.
 
 Configuration consists of `APPLE_CONNECTIONS_JSON` (connection ID → issuer ID, key ID, credential revision, and private-key secret name), separately named `APPLE_PRIVATE_KEY` or `APPLE_PRIVATE_KEY_*` secrets, `FACADE_API_KEYS_JSON` (key IDs, hashes, and per-connection capability/app grants), and a 32-byte base64url `CURSOR_SIGNING_KEY`. The generated JSON file is an editable example. Grants accept `appIds: "*"` or an explicit list of up to 200 app IDs; an empty list grants no apps. All four values are deployed as Worker secrets.
 
-Revoke a facade key by removing its record or setting `revoked: true`, then publish the updated secrets. Issue a replacement with a new random key and hash. To rotate an Apple key, update its issuer/key ID and private-key secret and increment `credentialRevision`; this invalidates cached JWTs and old cursors. Rotating `CURSOR_SIGNING_KEY` also invalidates existing cursors. The setup helper provisions one connection and client; additional connections and grants can be added explicitly to the configuration.
+Revoke an operator-configured facade key by removing its record or setting `revoked: true`, then publish the updated secrets. Hosted connections are instead revoked with the authenticated DELETE endpoint. To rotate an Apple key, update its issuer/key ID and private-key secret and increment `credentialRevision`; this invalidates cached JWTs and old cursors. Rotating `CURSOR_SIGNING_KEY` also invalidates existing cursors. The setup helper provisions one operator-configured connection and client; additional connections and grants can be added explicitly to the configuration.
 
-Known resource routes currently accept GET only. Mutation methods return `405`; planned routes return JSON `404 route_not_found`. There is no public connection-administration endpoint or arbitrary upstream URL proxy. Permission checks happen before resource reads, and app-scoped list requests constrain Apple's `filter[id]` rather than filtering an unbounded account crawl.
+### Hosted connection deployment
+
+Hosted onboarding needs the `HOSTED_CONNECTIONS` SQLite Durable Object binding and migrations in `wrangler.jsonc`, the `CONNECTION_SETUP_LIMITER` binding (10 setup attempts per minute per IP and Cloudflare location), and a stable 32-byte base64url `CONNECTION_ENCRYPTION_KEY` Worker secret. Generate a private secrets file and deploy it with the Worker:
+
+```sh
+umask 077
+node -e "require('node:fs').writeFileSync('.parsequerade-hosted.secrets.json', JSON.stringify({CONNECTION_ENCRYPTION_KEY: require('node:crypto').randomBytes(32).toString('base64url')}), {flag: 'wx', mode: 0o600})"
+npm run deploy -- --secrets-file .parsequerade-hosted.secrets.json
+```
+
+Keep that key stable: deleting or rotating it without migrating stored records makes existing Apple credentials unreadable. For local Wrangler development, put `CONNECTION_ENCRYPTION_KEY` in `.dev.vars`.
+
+Known resource routes currently accept GET only. Mutation methods return `405`; planned routes return JSON `404 route_not_found`. Public connection creation and authenticated deletion are supported; there is no arbitrary upstream URL proxy. Permission checks happen before resource reads, and app-scoped list requests constrain Apple's `filter[id]` rather than filtering an unbounded account crawl.
 
 Each facade request permits 25 seconds and 32 Apple attempts, with an 8-second attempt timeout, 4 MiB response limit, and 16 MiB total body limit. Safe reads retry up to twice within that budget, respect short `Retry-After` delays, and refresh a rejected cached JWT at most once. A long throttle delay is returned to the caller. Locale/ownership resolvers permit 20 pages. Cursors expire after 15 minutes, permit 100 pages, and bind the caller/key grant, Apple credential revision, path, filters, fields, ordering, and limit. Concurrency is bounded to four Apple reads per connection **within each isolate**; shared connection-wide coordination is deferred to the Durable Object phase. No private resource cache is used in this slice.
 
@@ -109,7 +121,7 @@ Each facade request permits 25 seconds and 32 Apple attempts, with an 8-second a
 
 The static site lives in `dist/`; `/` is the Parsequerade landing page and the documentation starts at `/docs/`. Run `npm install` once, then use `npm run dev` to preview it locally. `npm run deploy` publishes through the existing Wrangler configuration.
 
-The GET reference covers all **457 GET endpoint pages** reached through Apple’s [App Store documentation topic tree](https://developer.apple.com/documentation/appstoreconnectapi/app-store), organized into 84 topics. Pages identify implementation status separately from delivery stage; documentation coverage is broader than runtime coverage. Additional resource reads are extended designs, and older resource shapes have separate proposed `/legacy` routes. The [facade OpenAPI document](dist/docs/openapi.json) covers only the 12 implemented routes.
+The GET reference covers all **457 GET endpoint pages** reached through Apple’s [App Store documentation topic tree](https://developer.apple.com/documentation/appstoreconnectapi/app-store), organized into 84 topics. Pages identify implementation status separately from delivery stage; documentation coverage is broader than runtime coverage. Additional resource reads are extended designs, and older resource shapes have separate proposed `/legacy` routes. The [facade OpenAPI document](dist/docs/openapi.json) covers the 12 implemented read routes and hosted connection creation and deletion.
 
 - `npm run build:docs` exports `api/read-contracts.json` and the facade OpenAPI document, then regenerates the reference and guides offline from the reviewed Apple snapshot, facade mappings, editorial overrides, and guide sources. `api/read-routes.json` explicitly selects implemented adapters.
 - `npm run check` verifies local links, endpoint coverage, examples, contract drift, syntax, API behavior, and local Worker execution. Miniflare is a test-only dependency; the Worker adds no runtime packages.
@@ -266,7 +278,7 @@ Apple's permissions, validation rules, and editable states still apply. The faca
 
 ## Plan
 
-The goal is a hosted self-service flow: each user supplies an Apple team key and receives a facade key scoped to that connection. Until hosted connection setup is implemented and deployed, the current service can be tried only through the self-hosted operator configuration above. Reads return data without changing Apple resources.
+The hosted self-service flow lets each user supply an Apple team key and receive a read-only facade key scoped to that connection. The Worker stores hosted credentials encrypted and supports authenticated connection deletion. Operator configuration remains supported. Reads return data without changing Apple resources.
 
 Writes should name the app, platform, version or app-info resource, and locale they target. The existing `POST /copy-plans` contract previews a selected metadata copy field by field, stores the resolved targets and proposed steps, and performs no Apple writes. Applying that stored plan revalidates it and executes only its approved steps. This preview/apply contract is currently specified for copies in [rest.md](rest.md#6-copying-metadata-is-a-workflow); previewing arbitrary supplied multi-locale changes is a possible extension whose request and response contract still needs to be designed there.
 

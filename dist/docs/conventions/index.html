@@ -37,13 +37,19 @@
 </header>
 
 <div class="intro-content">
-  <p><span class="status-label">Read-only implementation</span> Core app, app-info, version, localization, age-rating, and review-contact reads are implemented. Operators configure and deploy the Worker; additional reads and all mutations have separate milestones.</p>
+  <p><span class="status-label">Read-only implementation</span> Core app, app-info, version, localization, age-rating, and review-contact reads are implemented, along with hosted connection setup and revocation. Operator configuration remains supported. Additional reads and all resource mutations have separate milestones.</p>
 </div>
 
 <section class="document-section" id="base-url-and-authentication">
   <h2>Base URL and authentication</h2>
-  <p>Resource routes are relative to <code>https://asc.example.com/v1/connections/{connectionId}</code>. Send a facade API key as <code>Authorization: Bearer &lt;facade-api-key&gt;</code>. The service owns configured Apple credentials and JWTs; clients never sign Apple JWTs or send Apple relationship envelopes.</p>
-  <p>A connection ID grants no access by itself. Check the caller’s connection and resource permissions on every request, including every cursor page. A missing or invalid facade key maps to <code>401 unauthorized</code>; rejected configured Apple credentials map to <code>502 upstream_authentication_failed</code>.</p>
+  <p>Resource routes are relative to <code>https://asc.example.com/v1/connections/{connectionId}</code>. Send a facade API key as <code>Authorization: Bearer &lt;facade-api-key&gt;</code>. The service owns Apple credentials and JWTs; clients never sign Apple JWTs or send Apple relationship envelopes.</p>
+  <p>A connection ID grants no access by itself. Check the caller’s connection and resource permissions on every request, including every cursor page. A missing or invalid facade key maps to <code>401 unauthorized</code>; rejected Apple credentials map to <code>502 upstream_authentication_failed</code>.</p>
+</section>
+
+<section class="document-section" id="hosted-connections">
+  <h2>Hosted connections</h2>
+  <p>Create a hosted connection with <code>POST /v1/connections</code> and a JSON body containing exactly <code>issuerId</code>, <code>keyId</code>, and <code>privateKey</code>: an issuer UUID, a 10-character uppercase alphanumeric key ID, and a P-256 PKCS#8 PEM. The body limit is 8 KiB. The service validates the key locally, then makes read-only <code>GET /v1/apps?limit=1</code> against Apple. A successful request returns <code>201</code> with a generated connection ID, base URL, and facade API key. Hosted IDs begin with the reserved <code>conn_live_</code> prefix plus 32 hex characters; facade keys use the <code>pq_</code> prefix and a random 32-byte base64url value. The facade key grants read-only access to all apps the Apple key can access. Setup is limited to 10 attempts per minute per IP and Cloudflare location.</p>
+  <p>Authenticate <code>DELETE /v1/connections/{hostedId}</code> with the returned facade key to remove stored Apple credentials and revoke that key; success returns <code>204 No Content</code>. Hosted deployments require a SQLite Durable Object binding and migrations plus a stable 32-byte base64url <code>CONNECTION_ENCRYPTION_KEY</code> secret. Missing hosted storage configuration returns <code>503 hosted_connections_not_configured</code>. The service encrypts stored credentials, hashes facade keys, sends API responses with <code>no-store</code>, and redacts secrets from logs.</p>
 </section>
 
 <section class="document-section" id="resources-and-selection">
@@ -106,7 +112,8 @@
         <tr><th scope="row"><span class="parameter-name">409</span></th><td>Conflict</td><td>Ambiguous selection, duplicate resource, incompatible state, or idempotency conflict.</td></tr>
         <tr><th scope="row"><span class="parameter-name">422</span></th><td><code>validation_failed</code></td><td>Recognized request has invalid fields or an Apple validation failure.</td></tr>
         <tr><th scope="row"><span class="parameter-name">429</span></th><td><code>rate_limited</code></td><td>Facade or Apple limit; respect <code>Retry-After</code> when present.</td></tr>
-        <tr><th scope="row"><span class="parameter-name">502–504</span></th><td>Upstream failure</td><td>Rejected Apple credentials, invalid upstream payload, unavailable service, or timeout. These are not empty results.</td></tr>
+        <tr><th scope="row"><span class="parameter-name">503</span></th><td><code>hosted_connections_not_configured</code></td><td>Hosted connection storage or encryption configuration is missing; other service availability failures may also use this status.</td></tr>
+        <tr><th scope="row"><span class="parameter-name">502 / 504</span></th><td>Upstream failure</td><td>Rejected Apple credentials, invalid upstream payload, or timeout. These are not empty results.</td></tr>
       </tbody>
     </table>
   </div>
@@ -115,10 +122,10 @@
 
 <section class="document-section" id="rollout">
   <h2>Rollout</h2>
-  <p>Core reads and explicit selection are implemented. Known resources accept GET only; mutation methods return <code>405 method_not_allowed</code>. Read-parity endpoints such as builds, users, and bundle IDs come later; reports and multi-step copy workflows are separate milestones. Each endpoint page labels implementation status separately from its delivery stage. Consult the <a class="inline-link" href="/docs/reference/">GET reference</a> or <a class="inline-link" href="/docs/openapi.json">implemented-route OpenAPI</a> for coverage.</p>
+  <p>Core reads, hosted connection setup/revocation, and explicit selection are implemented. Known Apple resource routes accept GET only; mutation methods return <code>405 method_not_allowed</code>. Read-parity endpoints such as builds, users, and bundle IDs come later; reports and multi-step copy workflows are separate milestones. Each endpoint page labels implementation status separately from its delivery stage. Consult the <a class="inline-link" href="/docs/reference/">GET reference</a> or <a class="inline-link" href="/docs/openapi.json">implemented-route OpenAPI</a> for coverage.</p>
 </section>
 </article></main>
-      <aside class="on-page" aria-label="On this page"><h2>On this page</h2><nav><a class="" href="#overview">API conventions</a><a class="" href="#base-url-and-authentication">Base URL and authentication</a><a class="" href="#resources-and-selection">Resources and selection</a><a class="" href="#json-shape">JSON shape</a><a class="" href="#pagination">Pagination</a><a class="" href="#query-parameters">Query parameters</a><a class="" href="#errors">Errors</a><a class="" href="#rollout">Rollout</a></nav></aside>
+      <aside class="on-page" aria-label="On this page"><h2>On this page</h2><nav><a class="" href="#overview">API conventions</a><a class="" href="#base-url-and-authentication">Base URL and authentication</a><a class="" href="#hosted-connections">Hosted connections</a><a class="" href="#resources-and-selection">Resources and selection</a><a class="" href="#json-shape">JSON shape</a><a class="" href="#pagination">Pagination</a><a class="" href="#query-parameters">Query parameters</a><a class="" href="#errors">Errors</a><a class="" href="#rollout">Rollout</a></nav></aside>
     </div>
     <footer class="site-footer"><span>Parsequerade · Proposed API</span><a href="https://github.com/mainbrella/parsequerade">Source on GitHub ↗</a></footer>
   </body>

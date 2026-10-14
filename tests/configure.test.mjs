@@ -41,3 +41,8 @@ test("setup requires an explicit app scope", () => {
   const result = spawnSync(process.execPath, ["scripts/configure.mjs", "--connection", "conn_example"], { encoding: "utf8" });
   assert.equal(result.status, 1); assert.match(result.stderr, /--all-apps/);
 });
+
+test("operator setup reserves generated hosted connection identifiers", () => {
+  const result = spawnSync(process.execPath, ["scripts/configure.mjs", "--connection", "conn_live_0123456789abcdef0123456789abcdef", "--issuer-id", "00000000-1111-2222-3333-444444444444", "--key-id", "ABCDEF1234", "--private-key", "/missing/AuthKey.p8", "--all-apps"], { encoding: "utf8" });
+  assert.equal(result.status, 1); assert.match(result.stderr, /Usage:/);
+});

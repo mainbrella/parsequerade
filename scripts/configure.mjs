@@ -16,7 +16,7 @@ try {
     "all-apps": { type: "boolean" }, "output-dir": { type: "string", default: "." }, help: { type: "boolean" },
   } });
   if (values.help) { console.log(usage); process.exit(0); }
-  if (!values.connection || !identifier.test(values.connection) || !values["issuer-id"] || !values["key-id"] || !values["private-key"] ||
+  if (!values.connection || !identifier.test(values.connection) || values.connection.startsWith("conn_live_") || !values["issuer-id"] || !values["key-id"] || !values["private-key"] ||
       (Boolean(values["all-apps"]) === Boolean(values["app-id"]?.length)) ||
       values["app-id"]?.some(id => !identifier.test(id)) || (values["app-id"]?.length || 0) > 200) throw new Error(usage);
   const privateKey = await readFile(values["private-key"], "utf8");

@@ -3,7 +3,7 @@
   "info": {
     "title": "Parsequerade",
     "version": "0.1.0",
-    "description": "Implemented read-only facade routes. Operator configuration is required."
+    "description": "Implemented read-only facade routes and hosted connection setup and revocation. Hosted connections require operator-configured encrypted storage; operator-managed connections remain supported."
   },
   "servers": [
     {
@@ -3613,6 +3613,182 @@
         "x-apple-path": "/v1/appStoreVersions/{id}/appStoreReviewDetail",
         "x-implementation-status": "implemented"
       }
+    },
+    "/v1/connections": {
+      "post": {
+        "operationId": "createHostedConnection",
+        "summary": "Create a hosted connection",
+        "description": "Accept at most 8 KiB of JSON, validate an App Store Connect team key, probe read access, and return a read-only facade key. The submitted private key is stored encrypted; provide it again only when creating a new connection.",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "description": "The complete JSON body must not exceed 8 KiB.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HostedConnectionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Hosted connection created.",
+            "headers": {
+              "Location": {
+                "required": true,
+                "description": "The connection base URL.",
+                "schema": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HostedConnection"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid connection request or credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "408": {
+            "description": "Connection request body timed out.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Connection request body exceeded 8 KiB.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Content-Type must be application/json.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Apple rejected the supplied credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Connection setup rate limit exceeded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid upstream response or credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Hosted connection storage is unavailable or unconfigured.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Apple request timed out.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-implementation-status": "implemented"
+      }
+    },
+    "/v1/connections/{connectionId}": {
+      "delete": {
+        "operationId": "deleteHostedConnection",
+        "summary": "Delete a hosted connection",
+        "description": "Remove the stored Apple credentials and revoke the facade key. Authenticate with the connection's facade API key.",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^conn_live_[a-f0-9]{32}$"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Connection credentials removed and facade key revoked."
+          },
+          "401": {
+            "description": "Facade authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Hosted connection storage is unavailable or unconfigured.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-implementation-status": "implemented"
+      }
     }
   },
   "components": {
@@ -3623,6 +3799,54 @@
       }
     },
     "schemas": {
+      "HostedConnectionRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "issuerId",
+          "keyId",
+          "privateKey"
+        ],
+        "properties": {
+          "issuerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "keyId": {
+            "type": "string",
+            "pattern": "^[A-Z0-9]{10}$"
+          },
+          "privateKey": {
+            "type": "string",
+            "maxLength": 4096,
+            "description": "P-256 PKCS#8 PEM contents."
+          }
+        }
+      },
+      "HostedConnection": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "connectionId",
+          "baseUrl",
+          "apiKey"
+        ],
+        "properties": {
+          "connectionId": {
+            "type": "string",
+            "pattern": "^conn_live_[a-f0-9]{32}$"
+          },
+          "baseUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "apiKey": {
+            "type": "string",
+            "pattern": "^pq_[A-Za-z0-9_-]{43}$",
+            "description": "One-time bearer key; store it securely."
+          }
+        }
+      },
       "Error": {
         "type": "object",
         "required": [

@@ -3,7 +3,12 @@
   "name": "mainbrella-parsequerade",
   "compatibility_date": "2026-09-13",
   "workers_dev": false,
-  "main": "./worker/index.js",
+  "main": "./worker/entry.js",
+  "durable_objects": {
+    "bindings": [{ "name": "HOSTED_CONNECTIONS", "class_name": "HostedConnection" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["HostedConnection"] }],
+  "ratelimits": [{ "name": "CONNECTION_SETUP_LIMITER", "namespace_id": "1001", "simple": { "limit": 10, "period": 60 } }],
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
