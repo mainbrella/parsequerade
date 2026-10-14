@@ -23,3 +23,9 @@ fi
 jq -e '.connectionId and .baseUrl and .apiKey' "$CONNECTION_FILE" > /dev/null
 trap - EXIT
 printf 'Connection created. Credentials saved to %s\n' "$CONNECTION_FILE"
+
+BASE="$(jq -er '.baseUrl' "$CONNECTION_FILE")"
+ASC_FACADE_KEY="$(jq -er '.apiKey' "$CONNECTION_FILE")"
+curl --fail-with-body --silent --show-error --connect-timeout 10 --max-time 40 \
+  "$BASE/apps?limit=50" \
+  -H "Authorization: Bearer $ASC_FACADE_KEY" | jq .
