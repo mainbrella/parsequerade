@@ -1,6 +1,6 @@
 # Parsequerade
 
-Parsequerade is a planned JSON REST facade for App Store Connect. It takes Apple's resource envelopes, type identifiers, and relationship links and presents a smaller API of plain objects and predictable resource URLs.
+Parsequerade is a planned, self-hosted JSON REST facade for App Store Connect. It would turn Apple's resource envelopes, type identifiers, and relationship links into ordinary JSON and predictable resource URLs, let clients preview metadata copies, and record the outcome of each write.
 
 The goal is to let a client list apps, edit a localized description, update a review contact, or read sales data without signing Apple JWTs, looking up internal child IDs, or assembling relationship payloads.
 
@@ -8,11 +8,15 @@ The goal is to let a client list apps, edit a localized description, update a re
 
 ## Why a facade?
 
-Apple already provides a REST API that returns JSON. The difficulty is its resource and relationship model. For example, Apple's [List apps endpoint](https://developer.apple.com/documentation/appstoreconnectapi/get-v1-apps) wraps app fields in `data` and `attributes`, adds a resource `type`, and exposes related resources through separate links.
+Apple already provides a REST API that returns JSON. The difficulty is its resource and relationship model. For example, even Apple's [List apps endpoint](https://developer.apple.com/documentation/appstoreconnectapi/get-v1-apps) asks readers to understand query parameters such as `fields[apps]`, which can mix ordinary app attributes with related resources. The reference makes routine app-listing tasks harder to discover because readers must first learn Apple's resource graph; it does not mean every listed field is required or that every resource can be changed.
+
+![Apple's List apps API documentation showing the long fields[apps] parameter list of app attributes and related resources.](docs/images/app-store-connect-api-docs.png)
 
 An app's metadata also spans several resources. App names and privacy URLs belong to app-info localizations. Descriptions and release notes belong to version localizations. A review contact is another resource associated with a version. Editing one field can require finding the right parent, following a relationship, resolving a child ID, and then constructing a typed update body.
 
 Parsequerade moves that translation into one service. Clients work with app IDs, explicit app-info or version IDs, locale strings, and ordinary JSON fields.
+
+The planned shape has some overlap with [applelink](https://github.com/tramlinehq/applelink), which already offers flat JSON and multi-request release recipes. Parsequerade's design focuses on server-owned Apple credentials, explicit resource targets, and durable plans and results that callers can inspect.
 
 ## Before and after
 
@@ -144,3 +148,11 @@ Writes start with the specific fields listed in the plan. Reading a field does n
 - **Copy workflows.** Preview selected metadata changes before execution, then expose progress and per-step outcomes. Multi-request copies can partially succeed; cancellation does not undo completed writes.
 
 Apple's permissions, validation rules, and editable states still apply. The facade gives clients a consistent way to address resources and inspect outcomes while keeping Apple's authentication, graph traversal, and report parsing inside the service.
+
+## Plan
+
+The design is for a self-hosted service: operators configure Apple credentials, while clients use a facade key scoped to a connection. Reads return data without changing Apple resources.
+
+Writes should name the app, platform, version or app-info resource, and locale they target. The existing `POST /copy-plans` contract previews a selected metadata copy field by field, stores the resolved targets and proposed steps, and performs no Apple writes. Applying that stored plan revalidates it and executes only its approved steps. This preview/apply contract is currently specified for copies in [rest.md](rest.md#6-copying-metadata-is-a-workflow); previewing arbitrary supplied multi-locale changes is a possible extension whose request and response contract still needs to be designed there.
+
+Execution records would persist each step's confirmed success, failure, or unknown outcome when a request may have reached Apple but its result cannot be confirmed. The overall result would distinguish partial success from a completed workflow. After a restart, dispatched steps must be reconciled before retrying, so callers can inspect what completed without treating a multi-request workflow as a transaction.
