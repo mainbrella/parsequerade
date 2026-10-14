@@ -1,12 +1,60 @@
 # Parsequerade
 
-Parsequerade is an operator-deployed JSON REST facade for App Store Connect, running on Cloudflare Workers alongside a static documentation site. Its core reads turn Apple's resource envelopes, type identifiers, and relationship links into ordinary JSON and predictable resource URLs.
+Parsequerade is a JSON REST facade for App Store Connect. The hosted service target is [parsequerade.mainbrella.com](https://parsequerade.mainbrella.com); the current implementation is an operator-deployed Cloudflare Worker alongside a static documentation site. Its core reads turn Apple's resource envelopes, type identifiers, and relationship links into ordinary JSON and predictable resource URLs.
 
 The goal is to let a client list apps, edit a localized description, update a review contact, or read sales data without signing Apple JWTs, looking up internal child IDs, or assembling relationship payloads.
 
-**Status:** The read-only first slice is implemented: 12 GET routes for apps, app infos, versions, their localization collections and exact locales, age ratings, and review contacts. Authentication, Apple JWTs, ownership checks, bounded pagination, and structured errors are included. Writes, reports, copy workflows, and broader reads remain planned. Setup and deployment require your own Apple team key and Cloudflare account; no authenticated Apple calls or deployment have been performed as part of implementation. See [rest.md](rest.md) for the remaining milestones.
+**Status:** The read-only first slice is implemented: 12 GET routes for apps, app infos, versions, their localization collections and exact locales, age ratings, and review contacts. Authentication, Apple JWTs, ownership checks, bounded pagination, and structured errors are included. Writes, reports, copy workflows, broader reads, and hosted self-service connections remain planned. No authenticated Apple calls or deployment have been performed as part of implementation. See [rest.md](rest.md) for the remaining milestones.
 
-## Configure and run
+## Try the hosted API (planned)
+
+The intended hosted flow lets you connect your own App Store Connect team key with `curl`, then use a read-only facade key for apps that Apple key can access. Public connection setup and cleanup endpoints still need implementation and deployment; this flow is not available yet.
+
+Create an App Store Connect API key at [Users and Access → Integrations → Team Keys](https://appstoreconnect.apple.com/access/integrations/api). Copy the **Issuer ID** and **Key ID**, then download the `.p8` private key file (Apple only lets you download it once). Keep that file private. The optional vendor number is only needed for sales reports, which are not implemented in this read-only slice.
+
+The planned public `POST /v1/connections` endpoint accepts the PEM contents of the private key, not a file path. It validates the key and checks access to Apple apps before returning `201 Created` with a connection ID, base URL, and facade API key. You won't need a preissued facade key or a Cloudflare account. The private key is sent over HTTPS so the service can sign Apple JWTs; the planned service must store it encrypted, keep it out of responses, logs, and static assets, and store only a hash of the facade key. Treat the returned bearer key as a secret.
+
+Use `curl` and `jq`. The response is saved in a private temporary file outside the checkout:
+
+```sh
+P8_FILE="$HOME/Downloads/AuthKey_ABC123DEFG.p8"
+ISSUER_ID='YOUR_ISSUER_UUID'
+KEY_ID='YOUR_KEY_ID'
+CONNECTION_FILE="$(mktemp "${TMPDIR:-/tmp}/parsequerade-connection.XXXXXX")"
+
+jq -n --arg issuerId "$ISSUER_ID" --arg keyId "$KEY_ID" \
+  --rawfile privateKey "$P8_FILE" \
+  '{issuerId: $issuerId, keyId: $keyId, privateKey: $privateKey}' |
+  curl --fail-with-body --silent --show-error \
+    -X POST 'https://parsequerade.mainbrella.com/v1/connections' \
+    -H 'Content-Type: application/json' --data-binary @- > "$CONNECTION_FILE"
+
+# Example response (values are fictional):
+# {"connectionId":"conn_abc123","baseUrl":"https://parsequerade.mainbrella.com/v1/connections/conn_abc123","apiKey":"pq_live_example_secret"}
+
+BASE="$(jq -er '.baseUrl' "$CONNECTION_FILE")"
+ASC_FACADE_KEY="$(jq -er '.apiKey' "$CONNECTION_FILE")"
+
+curl --fail-with-body "$BASE/apps?limit=50" \
+  -H "Authorization: Bearer $ASC_FACADE_KEY"
+
+# Optional: read one app using an ID from the list response.
+curl --fail-with-body "$BASE/apps/1234567890" \
+  -H "Authorization: Bearer $ASC_FACADE_KEY"
+```
+
+When finished, the planned authenticated `DELETE /v1/connections/{connectionId}` endpoint will remove the stored credentials and revoke that facade key, returning `204 No Content`:
+
+```sh
+curl --fail-with-body -X DELETE "$BASE" \
+  -H "Authorization: Bearer $ASC_FACADE_KEY"
+rm -- "$CONNECTION_FILE"
+unset ASC_FACADE_KEY
+```
+
+Revoke the Apple team key separately in App Store Connect if you created it only for this trial.
+
+## Self-host or develop locally
 
 Use Node.js 22 or newer and Python 3. Install dependencies with `npm ci`, then configure an Apple team key and the app IDs this client may read:
 
@@ -151,7 +199,7 @@ The client can read `response.items[0].name` directly. Single-resource reads ret
 First, list versions with `GET /apps/{appId}/versions` and choose the intended version. Then address its locale directly:
 
 ```sh
-BASE='https://asc.example.com/v1/connections/conn_example'
+BASE='https://parsequerade.mainbrella.com/v1/connections/conn_example'
 
 curl -X PATCH "$BASE/apps/1234567890/versions/version_123/localizations/en-US" \
   -H "Authorization: Bearer $ASC_FACADE_KEY" \
@@ -160,7 +208,7 @@ curl -X PATCH "$BASE/apps/1234567890/versions/version_123/localizations/en-US" \
   -d '{"description":"Keep your notes organized.","supportUrl":"https://example.com/support"}'
 ```
 
-`asc.example.com` is a placeholder for your future deployment. The service would resolve `en-US` to the Apple localization ID, check its ownership, and send Apple's required payload internally:
+This proposed write route is not implemented yet. The service would resolve `en-US` to the Apple localization ID, check its ownership, and send Apple's required payload internally:
 
 ```json
 {
@@ -179,10 +227,10 @@ Clients would receive the updated flat localization object. A missing locale ret
 
 ## The proposed API
 
-Each Apple connection has a base URL:
+Each configured Apple connection has a base URL:
 
 ```text
-https://asc.example.com/v1/connections/{connectionId}
+https://parsequerade.mainbrella.com/v1/connections/{connectionId}
 ```
 
 Requests use a facade API key. The service owns the configured Apple credentials and JWT lifecycle, and checks the caller's permissions for each connection and resource.
@@ -218,7 +266,7 @@ Apple's permissions, validation rules, and editable states still apply. The faca
 
 ## Plan
 
-The design is for a self-hosted service: operators configure Apple credentials, while clients use a facade key scoped to a connection. Reads return data without changing Apple resources.
+The goal is a hosted self-service flow: each user supplies an Apple team key and receives a facade key scoped to that connection. Until hosted connection setup is implemented and deployed, the current service can be tried only through the self-hosted operator configuration above. Reads return data without changing Apple resources.
 
 Writes should name the app, platform, version or app-info resource, and locale they target. The existing `POST /copy-plans` contract previews a selected metadata copy field by field, stores the resolved targets and proposed steps, and performs no Apple writes. Applying that stored plan revalidates it and executes only its approved steps. This preview/apply contract is currently specified for copies in [rest.md](rest.md#6-copying-metadata-is-a-workflow); previewing arbitrary supplied multi-locale changes is a possible extension whose request and response contract still needs to be designed there.
 
