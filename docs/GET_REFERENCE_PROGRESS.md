@@ -1,6 +1,8 @@
 # App Store GET reference progress
 
-The reference is being expanded to cover every GET endpoint reached through the topic tree of [Apple’s App Store API documentation](https://developer.apple.com/documentation/appstoreconnectapi/app-store). The site describes Parsequerade’s proposed JSON REST facade; the service itself remains unimplemented.
+The reference covers every GET endpoint reached through the topic tree of [Apple’s App Store API documentation](https://developer.apple.com/documentation/appstoreconnectapi/app-store). The site describes Parsequerade’s implemented core reads and proposed extended facade contracts.
+
+**Current status (2026-10-14):** The reference generation and validation work below is complete. A read-only Cloudflare Worker now implements 12 core routes; endpoint pages and the coverage manifest identify implemented versus planned adapters, and `/docs/openapi.json` covers implemented routes only. The remaining backend rollout is tracked in `rest.md`. The notes below preserve the original documentation work log.
 
 ## Saved work
 

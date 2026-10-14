@@ -120,47 +120,48 @@ export function createAppleTransport({ fetch: fetcher = globalThis.fetch, now = 
       });
       state.active = (state.active || 0) + 1;
       try {
-      let refreshed = false;
-      for (let attempt = 0; attempt < 3; attempt++) {
-        if (++budget.requests > POLICY.requests || budget.deadline <= now()) {
-          throw new ApiError(504, "upstream_budget_exceeded", "The bounded Apple read could not finish.", { retryable: true });
-        }
-        const jwt = await token(config, state);
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), Math.min(POLICY.attemptMs, Math.max(1, budget.deadline - now())));
-        let response, payload, error;
-        const timeout = new Promise((_, reject) => controller.signal.addEventListener("abort", () => reject(
-          new ApiError(504, "upstream_timeout", "Apple did not respond within the read deadline.", { retryable: true })), { once: true }));
-        try {
-          await Promise.race([(async () => {
-            response = await fetcher(url.toString(), { method: "GET", redirect: "manual", signal: controller.signal,
-              headers: { Authorization: `Bearer ${jwt}`, Accept: "application/json" } });
-            if (controller.signal.aborted) throw new ApiError(504, "upstream_timeout", "Apple did not respond within the read deadline.", { retryable: true });
-            if (response.status >= 300 && response.status < 400) throw invalidUpstream();
-            payload = await limitedJson(response, budget, controller.signal);
-          })(), timeout]);
-          if (response.ok) {
-            if (!isObject(payload) || !Object.hasOwn(payload, "data")) throw invalidUpstream();
-            return payload;
+        let refreshed = false;
+        for (let attempt = 0; attempt < 3; attempt++) {
+          if (++budget.requests > POLICY.requests || budget.deadline <= now()) {
+            throw new ApiError(504, "upstream_budget_exceeded", "The bounded Apple read could not finish.", { retryable: true });
           }
-          error = upstreamError(response.status, payload, response.headers, now(), route);
-        } catch (caught) {
-          error = caught instanceof ApiError ? caught : new ApiError(503, "upstream_unavailable", "The Apple read could not complete.", { retryable: true });
-        } finally {
-          clearTimeout(timer);
-          if (response?.body && !response.bodyUsed) { void response.body.cancel().catch(() => {}); }
+          const jwt = await token(config, state);
+          if (budget.deadline <= now()) throw new ApiError(504, "upstream_budget_exceeded", "The bounded Apple read could not finish.", { retryable: true });
+          const controller = new AbortController();
+          const timer = setTimeout(() => controller.abort(), Math.min(POLICY.attemptMs, Math.max(1, budget.deadline - now())));
+          let response, payload, error;
+          const timeout = new Promise((_, reject) => controller.signal.addEventListener("abort", () => reject(
+            new ApiError(504, "upstream_timeout", "Apple did not respond within the read deadline.", { retryable: true })), { once: true }));
+          try {
+            await Promise.race([(async () => {
+              response = await fetcher(url.toString(), { method: "GET", redirect: "manual", signal: controller.signal,
+                headers: { Authorization: `Bearer ${jwt}`, Accept: "application/json" } });
+              if (controller.signal.aborted) throw new ApiError(504, "upstream_timeout", "Apple did not respond within the read deadline.", { retryable: true });
+              if (response.status >= 300 && response.status < 400) throw invalidUpstream();
+              payload = await limitedJson(response, budget, controller.signal);
+            })(), timeout]);
+            if (response.ok) {
+              if (!isObject(payload) || !Object.hasOwn(payload, "data")) throw invalidUpstream();
+              return payload;
+            }
+            error = upstreamError(response.status, payload, response.headers, now(), route);
+          } catch (caught) {
+            error = caught instanceof ApiError ? caught : new ApiError(503, "upstream_unavailable", "The Apple read could not complete.", { retryable: true });
+          } finally {
+            clearTimeout(timer);
+            if (response?.body && !response.bodyUsed) { void response.body.cancel().catch(() => {}); }
+          }
+          if (response?.status === 401 && !refreshed && attempt < 2) {
+            if (state.token === jwt) state.token = null;
+            refreshed = true;
+            continue;
+          }
+          const transient = error.retryable && [429, 503, 504].includes(error.status);
+          if (!transient || attempt === 2) throw error;
+          const delay = error.headers["Retry-After"] !== undefined ? Number(error.headers["Retry-After"]) * 1000 : Math.round(200 * 2 ** attempt + random() * 200);
+          if (delay > 2000 || now() + delay >= budget.deadline) throw error;
+          await sleep(delay);
         }
-        if (response?.status === 401 && !refreshed && attempt < 2) {
-          if (state.token === jwt) state.token = null;
-          refreshed = true;
-          continue;
-        }
-        const transient = error.retryable && [429, 503, 504].includes(error.status);
-        if (!transient || attempt === 2) throw error;
-        const delay = error.headers["Retry-After"] !== undefined ? Number(error.headers["Retry-After"]) * 1000 : Math.round(200 * 2 ** attempt + random() * 200);
-        if (delay > 2000 || now() + delay >= budget.deadline) throw error;
-        await sleep(delay);
-      }
       } finally { state.active--; }
     },
   };

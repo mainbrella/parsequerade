@@ -371,10 +371,10 @@ def build_reference(entries, contracts, topics, domains):
     source += '<p>' + link("/docs/coverage.json", "Download the source coverage manifest") + ' · ' + link("/docs/conventions/", "Read API conventions") + "</p>"
     body += section("sources", "Sources", source)
     toc.append(("sources", "Sources"))
-    write_page("/docs/reference/", "API reference", "Complete proposed Parsequerade GET reference for Apple’s App Store documentation.", body, entries, toc, "Reference", topics, domains)
+    write_page("/docs/reference/", "API reference", "Parsequerade GET reference with implemented and proposed routes for Apple’s App Store documentation.", body, entries, toc, "Reference", topics, domains)
     for topic in topics:
         members = [e for e in entries if e["topic"] == topic["slug"]]
-        body = header(topic["title"], f"{len(members)} proposed GET contracts for this resource, including related data and IDs.", "Reference")
+        body = header(topic["title"], f"{len(members)} GET contracts for this resource, including related data and IDs. Endpoint pages identify implemented and proposed adapters.", "Reference")
         toc = [("overview", topic["title"])]
         groups = [("resources", "Resource reads", lambda e: not contracts[e["url"].strip("/").split("/")[-1]]["legacy"] and contracts[e["url"].strip("/").split("/")[-1]]["shape"]["kind"] not in ("ids", "id")), ("ids", "Related IDs", lambda e: not contracts[e["url"].strip("/").split("/")[-1]]["legacy"] and contracts[e["url"].strip("/").split("/")[-1]]["shape"]["kind"] in ("ids", "id")), ("legacy", "Legacy reads", lambda e: contracts[e["url"].strip("/").split("/")[-1]]["legacy"])]
         for identifier, title, predicate in groups:
@@ -384,7 +384,7 @@ def build_reference(entries, contracts, topics, domains):
                 toc.append((identifier, title))
         body += section("source", "Source", '<p>' + link(topic["source"], "Apple’s " + topic["title"] + " documentation ↗") + ' · ' + link("/docs/reference/", "All GET topics") + "</p>")
         toc.append(("source", "Source"))
-        write_page(topic_url(topic), topic["title"], "Proposed GET routes for " + topic["title"] + ".", body, entries, toc, "Reference", topics, domains)
+        write_page(topic_url(topic), topic["title"], "GET contracts for " + topic["title"] + ".", body, entries, toc, "Reference", topics, domains)
     coverage = {"source": SOURCE["source"], "reviewedAt": SOURCE["reviewedAt"], "specification": SOURCE["specification"], "counts": SOURCE["counts"], "endpoints": [{"slug": slug, "source": ENDPOINTS[slug]["source"], "sourceSha256": ENDPOINTS[slug]["sourceSha256"], "applePath": ENDPOINTS[slug]["applePath"], "facadeRoute": c["route"], "stage": c["stage"], "implementationStatus": c["implementationStatus"], "legacy": c["legacy"], "page": page_url(slug)} for slug, c in contracts.items()]}
     (DIST / "docs/coverage.json").write_text(json.dumps(coverage, indent=2) + "\n")
 

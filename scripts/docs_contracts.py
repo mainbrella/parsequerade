@@ -253,6 +253,12 @@ def response_shape(endpoint, contract):
         for name in listing_nullable.get(model_name, set()):
             if name in fields:
                 fields[name] = {**fields[name], "nullable": True}
+        if contract["route"] in IMPLEMENTED_ROUTES:
+            # Apple's optional read attributes can be null. The runtime preserves that
+            # distinction instead of coercing null into omission or a fabricated value.
+            for name in attributes:
+                if name in fields:
+                    fields[name] = {**fields[name], "nullable": True}
         relationships = resolve(model["properties"].get("relationships", {})).get("properties", {})
         for name, relationship in relationships.items():
             data = resolve(relationship).get("properties", {}).get("data", {})

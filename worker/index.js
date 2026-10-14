@@ -19,6 +19,9 @@ export function createWorker(dependencies = {}) {
       const audit = { requestId, method: request.method };
       let response;
       try {
+        if (url.protocol !== "https:" && !["localhost", "127.0.0.1", "[::1]"].includes(url.hostname)) {
+          throw new ApiError(400, "https_required", "Use HTTPS for the deployed API.");
+        }
         if (url.pathname.length + url.search.length > 12288) throw new ApiError(400, "invalid_request", "The request URL exceeds the size limit.");
         const base = /^\/v1\/connections\/([^/]+)(\/.*)?$/.exec(url.pathname);
         if (!base) throw notFound("route_not_found");

@@ -270,42 +270,54 @@
                           },
                           "accessibilityUrl": {
                             "type": "string",
-                            "format": "uri"
+                            "format": "uri",
+                            "nullable": true
                           },
                           "name": {
-                            "type": "string"
+                            "type": "string",
+                            "nullable": true
                           },
                           "bundleId": {
-                            "type": "string"
+                            "type": "string",
+                            "nullable": true
                           },
                           "sku": {
-                            "type": "string"
+                            "type": "string",
+                            "nullable": true
                           },
                           "primaryLocale": {
-                            "type": "string"
+                            "type": "string",
+                            "nullable": true
                           },
                           "isOrEverWasMadeForKids": {
-                            "type": "boolean"
+                            "type": "boolean",
+                            "nullable": true
                           },
                           "subscriptionStatusUrl": {
                             "type": "string",
-                            "format": "uri"
+                            "format": "uri",
+                            "nullable": true
                           },
                           "subscriptionStatusUrlVersion": {
-                            "type": "string"
+                            "type": "string",
+                            "nullable": true
                           },
                           "subscriptionStatusUrlForSandbox": {
                             "type": "string",
-                            "format": "uri"
+                            "format": "uri",
+                            "nullable": true
                           },
                           "subscriptionStatusUrlVersionForSandbox": {
-                            "type": "string"
+                            "type": "string",
+                            "nullable": true
                           },
                           "contentRightsDeclaration": {
-                            "type": "string"
+                            "type": "string",
+                            "nullable": true
                           },
                           "streamlinedPurchasingEnabled": {
-                            "type": "boolean"
+                            "type": "boolean",
+                            "nullable": true
                           },
                           "appStoreIconId": {
                             "type": "string",
@@ -555,42 +567,54 @@
                     },
                     "accessibilityUrl": {
                       "type": "string",
-                      "format": "uri"
+                      "format": "uri",
+                      "nullable": true
                     },
                     "name": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "bundleId": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "sku": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "primaryLocale": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "isOrEverWasMadeForKids": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "nullable": true
                     },
                     "subscriptionStatusUrl": {
                       "type": "string",
-                      "format": "uri"
+                      "format": "uri",
+                      "nullable": true
                     },
                     "subscriptionStatusUrlVersion": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "subscriptionStatusUrlForSandbox": {
                       "type": "string",
-                      "format": "uri"
+                      "format": "uri",
+                      "nullable": true
                     },
                     "subscriptionStatusUrlVersionForSandbox": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "contentRightsDeclaration": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "streamlinedPurchasingEnabled": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "nullable": true
                     },
                     "appStoreIconId": {
                       "type": "string",
@@ -838,7 +862,8 @@
                             "type": "string"
                           },
                           "state": {
-                            "type": "string"
+                            "type": "string",
+                            "nullable": true
                           },
                           "ageRatingDeclarationId": {
                             "type": "string",
@@ -1088,7 +1113,8 @@
                       "type": "string"
                     },
                     "state": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "ageRatingDeclarationId": {
                       "type": "string",
@@ -1366,10 +1392,12 @@
                             "type": "string"
                           },
                           "locale": {
-                            "type": "string"
+                            "type": "string",
+                            "nullable": true
                           },
                           "name": {
-                            "type": "string"
+                            "type": "string",
+                            "nullable": true
                           },
                           "subtitle": {
                             "type": "string",
@@ -1384,7 +1412,8 @@
                             "nullable": true
                           },
                           "privacyPolicyText": {
-                            "type": "string"
+                            "type": "string",
+                            "nullable": true
                           }
                         },
                         "required": [
@@ -1623,10 +1652,12 @@
                       "type": "string"
                     },
                     "locale": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "name": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "subtitle": {
                       "type": "string",
@@ -1641,7 +1672,8 @@
                       "nullable": true
                     },
                     "privacyPolicyText": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     }
                   },
                   "required": [
@@ -1879,92 +1911,121 @@
                       "type": "string"
                     },
                     "advertising": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "nullable": true
                     },
                     "alcoholTobaccoOrDrugUseOrReferences": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "contests": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "gambling": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "nullable": true
                     },
                     "gamblingSimulated": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "gunsOrOtherWeapons": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "healthOrWellnessTopics": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "nullable": true
                     },
                     "kidsAgeBand": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "lootBox": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "nullable": true
                     },
                     "medicalOrTreatmentInformation": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "messagingAndChat": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "nullable": true
                     },
                     "parentalControls": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "nullable": true
                     },
                     "profanityOrCrudeHumor": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "ageAssurance": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "nullable": true
                     },
                     "sexualContentGraphicAndNudity": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "sexualContentOrNudity": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "socialMedia": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "nullable": true
                     },
                     "socialMediaAgeRestricted": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "nullable": true
                     },
                     "horrorOrFearThemes": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "matureOrSuggestiveThemes": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "unrestrictedWebAccess": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "nullable": true
                     },
                     "userGeneratedContent": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "nullable": true
                     },
                     "violenceCartoonOrFantasy": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "violenceRealisticProlongedGraphicOrSadistic": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "violenceRealistic": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "ageRatingOverrideV2": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "koreaAgeRatingOverride": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "gracRatingClassificationNumber": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "developerAgeRatingInfoUrl": {
                       "type": "string",
-                      "format": "uri"
+                      "format": "uri",
+                      "nullable": true
                     }
                   },
                   "required": [
@@ -2269,33 +2330,42 @@
                             "type": "string"
                           },
                           "platform": {
-                            "type": "string"
+                            "type": "string",
+                            "nullable": true
                           },
                           "versionString": {
-                            "type": "string"
+                            "type": "string",
+                            "nullable": true
                           },
                           "appVersionState": {
-                            "type": "string"
+                            "type": "string",
+                            "nullable": true
                           },
                           "copyright": {
-                            "type": "string"
+                            "type": "string",
+                            "nullable": true
                           },
                           "reviewType": {
-                            "type": "string"
+                            "type": "string",
+                            "nullable": true
                           },
                           "releaseType": {
-                            "type": "string"
+                            "type": "string",
+                            "nullable": true
                           },
                           "earliestReleaseDate": {
                             "type": "string",
-                            "format": "date-time"
+                            "format": "date-time",
+                            "nullable": true
                           },
                           "downloadable": {
-                            "type": "boolean"
+                            "type": "boolean",
+                            "nullable": true
                           },
                           "createdDate": {
                             "type": "string",
-                            "format": "date-time"
+                            "format": "date-time",
+                            "nullable": true
                           },
                           "buildId": {
                             "type": "string",
@@ -2557,33 +2627,42 @@
                       "type": "string"
                     },
                     "platform": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "versionString": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "appVersionState": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "copyright": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "reviewType": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "releaseType": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "earliestReleaseDate": {
                       "type": "string",
-                      "format": "date-time"
+                      "format": "date-time",
+                      "nullable": true
                     },
                     "downloadable": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "nullable": true
                     },
                     "createdDate": {
                       "type": "string",
-                      "format": "date-time"
+                      "format": "date-time",
+                      "nullable": true
                     },
                     "buildId": {
                       "type": "string",
@@ -2870,7 +2949,8 @@
                             "nullable": true
                           },
                           "locale": {
-                            "type": "string"
+                            "type": "string",
+                            "nullable": true
                           },
                           "keywords": {
                             "type": "string",
@@ -3136,7 +3216,8 @@
                       "nullable": true
                     },
                     "locale": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "keywords": {
                       "type": "string",
@@ -3375,16 +3456,20 @@
                       "type": "string"
                     },
                     "contactFirstName": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "contactLastName": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "contactPhone": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     },
                     "contactEmail": {
-                      "type": "string"
+                      "type": "string",
+                      "nullable": true
                     }
                   },
                   "required": [

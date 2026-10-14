@@ -6,7 +6,9 @@ export function base64url(bytes) {
 
 export function unbase64url(value) {
   if (!/^[A-Za-z0-9_-]+$/.test(value)) throw new Error("Invalid base64url");
-  return Uint8Array.from(atob(value.replaceAll("-", "+").replaceAll("_", "/")), c => c.charCodeAt(0));
+  const decoded = Uint8Array.from(atob(value.replaceAll("-", "+").replaceAll("_", "/")), c => c.charCodeAt(0));
+  if (base64url(decoded) !== value) throw new Error("Noncanonical base64url");
+  return decoded;
 }
 
 export function bytes(value) { return encoder.encode(value); }

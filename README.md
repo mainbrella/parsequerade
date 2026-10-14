@@ -43,7 +43,7 @@ For deployment, update the custom domain in `wrangler.jsonc`, authenticate Wrang
 npm run deploy -- --secrets-file .parsequerade.secrets.json
 ```
 
-The existing configuration serves `/` and `/docs/` as static assets and sends `/v1/*` to `worker/index.js`. API data and errors use `Cache-Control: private, no-store`; private configuration belongs outside `dist/`. Missing configuration returns `503 service_not_configured`, while the static site remains available.
+The existing configuration serves `/` and `/docs/` as static assets and sends `/v1/*` to `worker/index.js`. Hosted API requests require HTTPS; local development binds to `127.0.0.1` and permits loopback HTTP. API data and errors use `Cache-Control: private, no-store`; private configuration belongs outside `dist/`. Missing configuration returns `503 service_not_configured`, while the static site remains available.
 
 Configuration consists of `APPLE_CONNECTIONS_JSON` (connection ID → issuer ID, key ID, credential revision, and private-key secret name), separately named `APPLE_PRIVATE_KEY` or `APPLE_PRIVATE_KEY_*` secrets, `FACADE_API_KEYS_JSON` (key IDs, hashes, and per-connection capability/app grants), and a 32-byte base64url `CURSOR_SIGNING_KEY`. The generated JSON file is an editable example. Grants accept `appIds: "*"` or an explicit list of up to 200 app IDs; an empty list grants no apps. All four values are deployed as Worker secrets.
 

@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { createWorker } from "../worker/index.js";
 import { routes } from "../worker/resources.js";
 import { CURSOR_TTL_MS } from "../worker/pagination.js";
-import { base, connectionId, facadeKey, makeEnv, request, app, appInfo, version, localization, resource, json, jsonResponse, validateJwt } from "./helpers.mjs";
+import { connectionId, facadeKey, makeEnv, request, app, appInfo, version, localization, resource, json, jsonResponse, validateJwt, sha } from "./helpers.mjs";
 
 function fixture(responses, env = makeEnv(), extra = {}) {
   const calls = [], logs = [];
@@ -62,7 +62,7 @@ test("all twelve routes return the documented flat resource and parent context",
     const body = await result.json();
     const value = route.collection ? body.items[0] : body;
     assert.equal(value.id, item.id);
-    if (!route.handler.startsWith("app") || !["app", "apps"].includes(route.handler)) assert.equal(value.appId, "123");
+    if (!["app", "apps"].includes(route.handler)) assert.equal(value.appId, "123");
     assert.equal(value.demoAccountPassword, undefined); assert.equal(value.notes, undefined);
     if (route.handler === "ageRating") { assert.equal(value.gambling, false); assert.equal(value.ageRatingOverrideV2, "FUTURE_READ_VALUE"); }
     assert.equal(f.calls.length, responses.length);
@@ -155,6 +155,16 @@ test("cursors cannot move across connections, routes or changed app grants", asy
   assert.equal(f.calls.length, 1);
 });
 
+test("rotating the facade key invalidates old credentials and their cursors", async () => {
+  const f = fixture([json([app()], "/v1/apps?cursor=next")]);
+  const cursor = encodeURIComponent((await (await f.get("/apps")).json()).nextCursor);
+  const replacement = "pq_" + "A".repeat(43);
+  const keys = JSON.parse(f.env.FACADE_API_KEYS_JSON); keys[0].sha256 = sha(replacement); f.env.FACADE_API_KEYS_JSON = JSON.stringify(keys);
+  assert.equal((await f.get(`/apps?cursor=${cursor}`)).status, 401);
+  assert.equal((await f.get(`/apps?cursor=${cursor}`, { headers: { Authorization: `Bearer ${replacement}` } })).status, 400);
+  assert.equal(f.calls.length, 1);
+});
+
 test("foreign, looping, duplicate-query and scope-changing next links fail", async t => {
   for (const link of ["https://evil.example/v1/apps?cursor=x", "/v1/users?cursor=x", "/v1/apps?cursor=x&cursor=y", "/v1/apps?cursor=x&filter[id]=789", "/v1/apps?limit=99&cursor=x", "/v1/apps?cursor=x#fragment"]) {
     await t.test(link, async () => { const f = fixture([json([app()], link)], makeEnv(["123"])); assert.equal((await f.get("/apps")).status, 502); assert.equal(f.calls.length, 1); });
@@ -198,10 +208,42 @@ test("JWTs are reused, refreshed once on rejection, and isolated on credential c
   assert.notEqual(f.calls[3].init.headers.Authorization, f.calls[4].init.headers.Authorization);
 });
 
+test("JWTs refresh before expiry even without an Apple rejection", async () => {
+  let time = Date.now();
+  const f = fixture([json(app()), json(app())], makeEnv(), { now: () => time });
+  assert.equal((await f.get("/apps/123")).status, 200);
+  time += 550000;
+  assert.equal((await f.get("/apps/123")).status, 200);
+  assert.notEqual(f.calls[0].init.headers.Authorization, f.calls[1].init.headers.Authorization);
+  const claim = index => JSON.parse(Buffer.from(f.calls[index].init.headers.Authorization.split(".")[1], "base64url"));
+  assert.equal(claim(1).exp - claim(0).exp, 550);
+});
+
 test("invalid payloads, redirects and excessive bodies never become successful empty data", async t => {
-  for (const response of [new Response("<html>error</html>", { headers: { "Content-Type": "text/html" } }), jsonResponse({}), jsonResponse(json({ type: "apps", id: "123", attributes: [] })), jsonResponse(json([app(), app()])), jsonResponse(json([app()], null), 200, { "Content-Length": "5000000" }), new Response(null, { status: 302, headers: { Location: "https://evil.example" } }), jsonResponse(json(app("wrong")))]) {
-    await t.test("reject malformed response", async () => { const f = fixture([response]); const collection = response.headers.get("Content-Length") || response.status === 302 || response === undefined; const result = await f.get(collection ? "/apps" : "/apps/123"); assert.equal(result.status, 502); });
+  for (const [name, path, response] of [
+    ["HTML", "/apps", new Response("<html>error</html>", { headers: { "Content-Type": "text/html" } })],
+    ["missing data", "/apps", jsonResponse({})],
+    ["missing collection links", "/apps", jsonResponse({ data: [] })],
+    ["malformed attributes", "/apps/123", jsonResponse(json({ type: "apps", id: "123", attributes: [] }))],
+    ["duplicate IDs", "/apps", jsonResponse(json([app(), app()]))],
+    ["page exceeds limit", "/apps?limit=1", jsonResponse(json([app(), app("456")]))],
+    ["excessive content length", "/apps", jsonResponse(json([app()]), 200, { "Content-Length": "5000000" })],
+    ["redirect", "/apps", new Response(null, { status: 302, headers: { Location: "https://evil.example" } })],
+    ["wrong single ID", "/apps/123", jsonResponse(json(app("wrong")))],
+  ]) {
+    await t.test(name, async () => { const f = fixture([response]); assert.equal((await f.get(path)).status, 502); });
   }
+});
+
+test("streamed responses are bounded even without a Content-Length header", async () => {
+  let cancelled = false;
+  const response = new Response(new ReadableStream({
+    start(controller) { controller.enqueue(new Uint8Array(4 * 1024 * 1024 + 1)); },
+    cancel() { cancelled = true; },
+  }), { headers: { "Content-Type": "application/json" } });
+  const f = fixture([response]); const result = await f.get("/apps");
+  assert.equal(result.status, 502); assert.equal((await result.json()).error.code, "upstream_invalid_response");
+  assert.equal(cancelled, true); assert.equal(f.calls.length, 1);
 });
 
 test("resolver page budgets fail explicitly instead of selecting from incomplete data", async () => {
@@ -239,4 +281,14 @@ test("unconfigured API fails closed while static assets stay public", async () =
   }
   const bad = fixture([], { ...makeEnv(), APPLE_PRIVATE_KEY: "invalid" });
   assert.equal((await bad.get("/apps")).status, 503); assert.equal(bad.calls.length, 0);
+});
+
+test("hosted API requires HTTPS while loopback development can use HTTP", async () => {
+  const f = fixture([json([app()])]);
+  const headers = { Authorization: `Bearer ${facadeKey}` };
+  const insecure = await f.worker.fetch(new Request(`http://facade.example/v1/connections/${connectionId}/apps`, { headers }), f.env);
+  assert.equal(insecure.status, 400); assert.equal((await insecure.json()).error.code, "https_required");
+  assert.equal(f.calls.length, 0);
+  const local = await f.worker.fetch(new Request(`http://127.0.0.1/v1/connections/${connectionId}/apps`, { headers }), f.env);
+  assert.equal(local.status, 200); assert.equal(f.calls.length, 1);
 });

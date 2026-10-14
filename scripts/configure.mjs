@@ -3,7 +3,7 @@ import { parseArgs } from "node:util";
 import { randomBytes, createHash, createPrivateKey } from "node:crypto";
 import { readFile, writeFile, mkdir, access } from "node:fs/promises";
 import { resolve, join } from "node:path";
-import { connectionConfig, identifier } from "../worker/auth.js";
+import { authenticate, connectionConfig, identifier } from "../worker/auth.js";
 
 const usage = `Usage: npm run configure -- --connection conn_main --issuer-id UUID --key-id KEYID12345 --private-key /path/AuthKey.p8 --app-id APPID
 Repeat --app-id for several apps, or explicitly use --all-apps. Optional: --output-dir DIR.
@@ -34,7 +34,10 @@ try {
       grants: [{ connectionId: values.connection, capabilities: ["read"], appIds: values["all-apps"] ? "*" : [...new Set(values["app-id"])] }] }]),
     CURSOR_SIGNING_KEY: randomBytes(32).toString("base64url"),
   };
-  try { connectionConfig(secrets, values.connection); } catch { throw new Error("Check the issuer UUID, 10-character Apple key ID, and connection identifier."); }
+  try {
+    connectionConfig(secrets, values.connection);
+    await authenticate(new Request("https://configuration.local", { headers: { Authorization: `Bearer ${clientKey}` } }), secrets, values.connection);
+  } catch { throw new Error("Check the issuer UUID, 10-character Apple key ID, connection identifier, and configuration size (5 KiB per secret)."); }
   const directory = resolve(values["output-dir"]);
   const targets = [".dev.vars", ".parsequerade.secrets.json", ".parsequerade-client-key"].map(name => join(directory, name));
   for (const target of targets) {

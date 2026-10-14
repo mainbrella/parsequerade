@@ -43,6 +43,9 @@ test("bundled Worker runs in workerd with the actual Wrangler asset routing", as
   assert.equal(missingApi.status, 404); assert.match(missingApi.headers.get("Content-Type"), /application\/json/);
   const missingSite = await mf.dispatchFetch("http://localhost/missing-page");
   assert.equal(missingSite.status, 404); assert.match(missingSite.headers.get("Content-Type"), /text\/html/);
+  for (const path of ["/.index.html.swp", "/.assetsignore", "/worker/index.js", "/.parsequerade.secrets.json"]) {
+    assert.equal((await mf.dispatchFetch("http://localhost" + path)).status, 404);
+  }
 });
 
 test("generated .dev.vars loads through Wrangler and workerd without manual escaping", async t => {

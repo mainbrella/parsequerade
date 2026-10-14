@@ -4,7 +4,7 @@
   "scripts": {
     "build:docs": "python3 scripts/export_api.py && python3 scripts/build_docs.py",
     "sync:docs": "python3 scripts/sync_apple_docs.py --refresh",
-    "dev": "wrangler dev",
+    "dev": "wrangler dev --ip 127.0.0.1",
     "deploy": "wrangler deploy",
     "configure": "node scripts/configure.mjs",
     "test": "node --test tests/worker.test.mjs tests/configure.test.mjs && npm run test:runtime",
@@ -15,5 +15,8 @@
     "miniflare": "5.20261012.0-beta",
     "wrangler": "^4.128.0"
   },
-  "license": "GPL-3.0-or-later"
+  "license": "GPL-3.0-or-later",
+  "engines": {
+    "node": ">=22"
+  }
 }

@@ -196,6 +196,9 @@ class ResponseExampleParser(HTMLParser):
 
 def check_generated():
     source = contracts.SOURCE
+    runtime = json.loads((contracts.ROOT / "api/read-contracts.json").read_text())
+    implemented = {r["route"] for r in runtime["routes"]}
+    coverage = {e["slug"]: e for e in json.loads((DIST / "docs/coverage.json").read_text())["endpoints"]}
     entries = json.loads((DIST / "docs/reference-index.json").read_text())
     by_url = {entry.get("url"): entry for entry in entries}
     need(len(by_url) == len(entries), "search index contains duplicate URLs")
@@ -209,7 +212,14 @@ def check_generated():
         path = DIST / url.lstrip("/") / "index.html"
         need(path.is_file(), f"missing endpoint page {path}")
         parser = ResponseExampleParser()
-        parser.feed(path.read_text())
+        html = path.read_text()
+        parser.feed(html)
+        contract = contracts.make_contract(endpoint)
+        status = "implemented" if contract["route"] in implemented else "planned"
+        need(contract["implementationStatus"] == status, f"{path}: implementation status differs from runtime")
+        need(coverage[endpoint["slug"]]["implementationStatus"] == status, f"{path}: coverage status differs from runtime")
+        need(('>Implemented</span>' if status == "implemented" else '>Proposed</span>') in html,
+             f"{path}: rendered implementation label differs from runtime")
         need(bool(parser.parts), f"{path}: missing response-json example")
         try:
             rendered = json.loads("".join(parser.parts))
