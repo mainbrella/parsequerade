@@ -3,10 +3,158 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Parsequerade." />
-    <meta name="theme-color" content="#08090a" />
-    <title>Parsequerade</title>
-    <style>html, body { background: #08090a; min-height: 100%; margin: 0; }</style>
+    <meta name="description" content="Parsequerade: a developer-friendly JSON REST facade for App Store Connect. Simple routes, flat objects, and less complexity." />
+    <meta name="theme-color" content="#090d17" />
+    <link rel="icon" href="/parsequerade.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/parsequerade.css" />
+    <title>Parsequerade — A Sane JSON Facade</title>
   </head>
-  <body></body>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <svg class="svg-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <linearGradient id="mask-gradient" x1="0" y1="0" x2="0.7" y2="1">
+          <stop stop-color="#e3d9ff" /><stop offset=".5" stop-color="#a387ff" /><stop offset="1" stop-color="#6c3ff5" />
+        </linearGradient>
+        <symbol id="icon-mask" viewBox="0 0 52 36">
+          <path fill="url(#mask-gradient)" d="M2 6C10 12 16 3 26 9c10-6 16 3 24-3-1 12-3 24-14 25-5 1-8-3-10-6-2 3-5 7-10 6C5 30 3 18 2 6Z" />
+          <path fill="#101124" d="M10 17c4-3 9-3 13 0-1 5-9 8-13 0Zm19 0c4-3 9-3 13 0-4 8-12 5-13 0Z" />
+          <path fill="none" stroke="#e7e0ff" stroke-opacity=".65" d="M3 7c8 5 15-3 23 3 8-6 15 2 23-3" />
+        </symbol>
+        <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M4 12h15m-6-6 6 6-6 6" /></symbol>
+        <symbol id="icon-github" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="M12 .8a11.2 11.2 0 0 0-3.54 21.83c.56.1.76-.24.76-.54v-2.08c-3.12.68-3.78-1.32-3.78-1.32-.51-1.3-1.25-1.65-1.25-1.65-1.02-.69.08-.68.08-.68 1.13.08 1.73 1.16 1.73 1.16 1 1.72 2.63 1.22 3.27.93.1-.73.39-1.22.71-1.5-2.49-.29-5.11-1.25-5.11-5.54 0-1.23.44-2.22 1.15-3.01-.12-.28-.5-1.42.11-2.95 0 0 .94-.3 3.08 1.15a10.8 10.8 0 0 1 5.6 0c2.14-1.45 3.08-1.15 3.08-1.15.61 1.53.23 2.67.12 2.95.71.79 1.14 1.78 1.14 3.01 0 4.3-2.63 5.25-5.13 5.53.4.35.76 1.03.76 2.08v3.17c0 .3.2.65.77.54A11.2 11.2 0 0 0 12 .8Z" /></symbol>
+        <symbol id="icon-book" viewBox="0 0 24 24"><path d="M12 5v15M3 4c3-1 6 0 9 2 3-2 6-3 9-2v15c-3-1-6 0-9 2-3-2-6-3-9-2Z" /></symbol>
+        <symbol id="icon-check" viewBox="0 0 24 24"><path d="m5 12 4 4 10-11" /></symbol>
+        <symbol id="icon-terminal" viewBox="0 0 24 24"><path d="m4 6 6 6-6 6m9 0h7" /></symbol>
+        <symbol id="icon-file" viewBox="0 0 24 24"><path d="M5 3h9l5 5v13H5Zm9 0v6h5M9 13h6m-6 4h6" /></symbol>
+        <symbol id="icon-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><ellipse cx="12" cy="12" rx="4" ry="9" /><path d="M3 12h18M5 7h14M5 17h14" /></symbol>
+        <symbol id="icon-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V6a4 4 0 0 1 8 0v4" /></symbol>
+        <symbol id="icon-chart" viewBox="0 0 24 24"><path d="M4 15h3v6H4Zm7-6h3v12h-3Zm7-6h3v18h-3Z" fill="currentColor" stroke="none" /></symbol>
+        <symbol id="icon-shield" viewBox="0 0 24 24"><path d="m12 2 8 3v7c0 5-8 10-8 10S4 17 4 12V5Z" /></symbol>
+        <symbol id="icon-copy" viewBox="0 0 24 24"><rect x="8" y="7" width="11" height="14" rx="2" /><path d="M15 7V3H4v14h4" /></symbol>
+        <symbol id="icon-code" viewBox="0 0 24 24"><path d="m7 7-5 5 5 5m10-10 5 5-5 5M14 4l-4 16" /></symbol>
+        <symbol id="icon-note-arrow" viewBox="0 0 60 52"><path d="M3 44C30 47 40 27 51 6m-12 4 13-5 2 14" /></symbol>
+      </defs>
+    </svg>
+
+    <header class="site-header shell">
+      <a class="brand" href="/" aria-label="Parsequerade home">
+        <svg class="brand-mask" aria-hidden="true"><use href="#icon-mask" /></svg>
+        <span>Parsequerade</span>
+      </a>
+      <button class="menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="main-navigation"><span></span><span></span></button>
+      <nav id="main-navigation" aria-label="Main navigation">
+        <a href="#features">Features</a>
+        <a href="/docs/reference/">Docs</a>
+        <a href="#why">Why Parsequerade</a>
+        <a href="#examples">Examples</a>
+        <a href="https://github.com/mainbrella/parsequerade#plan">Pricing</a>
+      </nav>
+      <div class="header-actions">
+        <a class="github-link" href="https://github.com/mainbrella/parsequerade" aria-label="Parsequerade on GitHub"><svg class="icon" aria-hidden="true"><use href="#icon-github" /></svg></a>
+        <a class="button button-small" href="/docs/quickstart/">Get Started <svg class="icon" aria-hidden="true"><use href="#icon-arrow" /></svg></a>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="hero shell" id="why" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow">Less complexity. More building.</p>
+          <h1 id="hero-title">A sane JSON facade<br />for <span>App Store Connect</span></h1>
+          <p class="hero-description">Parsequerade hides Apple's resource graphs, relationships, child IDs, JWT handling, and awkward JSON:API envelopes behind a clean developer-friendly REST API.</p>
+          <div class="hero-actions">
+            <a class="button" href="/docs/reference/"><svg class="icon" aria-hidden="true"><use href="#icon-book" /></svg>Read the API<svg class="icon" aria-hidden="true"><use href="#icon-arrow" /></svg></a>
+            <a class="button button-secondary" href="https://github.com/mainbrella/parsequerade"><svg class="icon" aria-hidden="true"><use href="#icon-github" /></svg>View on GitHub</a>
+          </div>
+          <ul class="trust-list" aria-label="Built for developers">
+            <li><svg class="icon" aria-hidden="true"><use href="#icon-check" /></svg>Developer focused</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#icon-check" /></svg>Production ready</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#icon-check" /></svg>Open source friendly</li>
+          </ul>
+        </div>
+
+        <div class="comparison" aria-label="Compare Apple's API with Parsequerade">
+          <article class="api-panel raw-panel">
+            <header class="panel-heading">
+              <svg class="apple-logo" viewBox="0 0 24 28" aria-hidden="true"><path fill="currentColor" d="M17.4 0c.1 2-1.2 4.3-2.5 5.5-1.3 1.2-2.9 1.8-4.5 1.6-.2-1.9 1.2-4.1 2.4-5.2C14.1.7 15.9.1 17.4 0ZM22 20.1c-.6 1.5-.9 2.1-1.7 3.4-1.1 1.7-2.6 3.9-4.6 3.9-1.8 0-2.3-1.2-4.7-1.2-2.3 0-2.9 1.2-4.7 1.2-1.9 0-3.4-2-4.5-3.7C-1.3 18.9-1 11.5 3.5 9.1c2.1-1.2 4.4-.4 6.1.1 1.7.6 2.2.6 3.8 0 1.4-.5 3.9-1.5 6.2-.2 1.3.7 2.1 1.6 2.9 2.7-4.1 2.3-3.5 8.1.5 8.4Z" /></svg>
+              <div><h2>Apple's raw API</h2><p>Complex. Verbose. Hard to work with.</p></div>
+            </header>
+            <div class="code-window">
+              <div class="endpoint raw-endpoint"><span class="method">GET</span><code>/v1/apps?fields[apps]=name,bundleId,...<br />&amp;include=appStoreVersions,appStoreVersionLocalizations<br />&amp;filter[bundleId]=com.example.notes<br />&amp;limit=20&amp;sort=-createdDate</code></div>
+              <pre class="code-block raw-code" aria-label="Apple JSON response"><code><span class="code-line">{</span><span class="code-line">  <span class="key">"data"</span>: [{</span><span class="code-line">    <span class="key">"type"</span>: <span class="string">"apps"</span>,</span><span class="code-line">    <span class="key">"id"</span>: <span class="string">"123456789"</span>,</span><span class="code-line">    <span class="key">"attributes"</span>: {</span><span class="code-line">      <span class="key">"name"</span>: <span class="string">"Example Notes"</span>,</span><span class="code-line">      <span class="key">"bundleId"</span>: <span class="string">"com.example.notes"</span>,</span><span class="code-line">      <span class="key">"primaryLocale"</span>: <span class="string">"en-US"</span></span><span class="code-line">    },</span><span class="code-line">    <span class="key">"relationships"</span>: {</span><span class="code-line">      <span class="key">"appStoreVersions"</span>: {</span><span class="code-line">        <span class="key">"data"</span>: [{<span class="key">"type"</span>: <span class="string">"appStoreVersions"</span>,</span><span class="code-line">          <span class="key">"id"</span>: <span class="string">"987654321"</span>}]</span><span class="code-line">      }</span><span class="code-line">    }</span><span class="code-line">  }],</span><span class="code-line">  <span class="key">"links"</span>: {</span><span class="code-line">    <span class="key">"next"</span>: <span class="string">"https://api.appstoreconnect.apple.com/..."</span></span><span class="code-line">  }</span><span class="code-line">}</span></code></pre>
+            </div>
+          </article>
+          <svg class="comparison-arrow icon" aria-hidden="true"><use href="#icon-arrow" /></svg>
+          <article class="api-panel facade-panel">
+            <header class="panel-heading">
+              <svg class="panel-mask" aria-hidden="true"><use href="#icon-mask" /></svg>
+              <div><h2>With Parsequerade</h2><p>Clean. Simple. Built for developers.</p></div>
+            </header>
+            <div class="code-window facade-window">
+              <div class="endpoint"><span class="method">PATCH</span><code>/apps/{appId}/versions/{versionId}/localizations/en-US</code></div>
+              <div class="tabs" role="tablist" aria-label="Localization example" data-tabs="localization">
+                <button type="button" role="tab" id="localization-request-tab" aria-selected="true" aria-controls="localization-request" data-tab="request">Request</button>
+                <button type="button" role="tab" id="localization-response-tab" aria-selected="false" aria-controls="localization-response" tabindex="-1" data-tab="response">Response</button>
+                <button type="button" role="tab" id="localization-curl-tab" aria-selected="false" aria-controls="localization-curl" tabindex="-1" data-tab="curl">cURL</button>
+              </div>
+              <pre class="code-block localization-code" id="localization-request" role="tabpanel" aria-labelledby="localization-request-tab" tabindex="0"><code><span class="code-line">{</span><span class="code-line">  <span class="key">"name"</span>: <span class="string">"Example Notes"</span>,</span><span class="code-line">  <span class="key">"subtitle"</span>: <span class="string">"Take better notes"</span>,</span><span class="code-line">  <span class="key">"description"</span>: <span class="string">"A simple, powerful note taking app."</span>,</span><span class="code-line">  <span class="key">"keywords"</span>: <span class="string">"notes,productivity,writing"</span></span><span class="code-line">}</span></code></pre>
+              <pre class="code-block localization-code" id="localization-response" role="tabpanel" aria-labelledby="localization-response-tab" tabindex="0" hidden><code></code></pre>
+              <pre class="code-block localization-code" id="localization-curl" role="tabpanel" aria-labelledby="localization-curl-tab" tabindex="0" hidden><code></code></pre>
+              <div class="response-heading" role="tablist" aria-label="Localization response" data-tabs="result">
+                <button type="button" role="tab" id="result-response-tab" aria-selected="true" aria-controls="result-response" data-tab="response">Response</button>
+                <button type="button" role="tab" id="result-headers-tab" aria-selected="false" aria-controls="result-headers" tabindex="-1" data-tab="headers">Headers</button>
+                <span class="status-code">200 OK</span>
+              </div>
+              <pre class="code-block result-code" id="result-response" role="tabpanel" aria-labelledby="result-response-tab" tabindex="0"><code><span class="code-line">{</span><span class="code-line">  <span class="key">"id"</span>: <span class="string">"loc_123"</span>,</span><span class="code-line">  <span class="key">"appId"</span>: <span class="string">"123456789"</span>,</span><span class="code-line">  <span class="key">"versionId"</span>: <span class="string">"987654321"</span>,</span><span class="code-line">  <span class="key">"locale"</span>: <span class="string">"en-US"</span>,</span><span class="code-line">  <span class="key">"name"</span>: <span class="string">"Example Notes"</span>,</span><span class="code-line">  <span class="key">"subtitle"</span>: <span class="string">"Take better notes"</span>,</span><span class="code-line">  <span class="key">"description"</span>: <span class="string">"A simple, powerful note taking app."</span>,</span><span class="code-line">  <span class="key">"keywords"</span>: <span class="string">"notes,productivity,writing"</span>,</span><span class="code-line">  <span class="key">"updatedAt"</span>: <span class="string">"2024-01-15T10:24:00Z"</span></span><span class="code-line">}</span></code></pre>
+              <pre class="code-block result-code" id="result-headers" role="tabpanel" aria-labelledby="result-headers-tab" tabindex="0" hidden><code><span class="code-line">Content-Type: application/json</span><span class="code-line">Cache-Control: no-store</span><span class="code-line">X-Request-Id: req_example_123</span></code></pre>
+            </div>
+            <div class="handwritten result-note" aria-hidden="true">Same result.<br />90% less code.<svg class="note-arrow"><use href="#icon-note-arrow" /></svg></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="feature-strip" id="features" aria-label="Parsequerade features">
+        <ul class="features shell">
+          <li><span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#icon-terminal" /></svg></span><div><h2>Simple REST routes</h2><p>Intuitive endpoints that<br />just make sense.</p></div></li>
+          <li><span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#icon-file" /></svg></span><div><h2>Flat JSON objects</h2><p>No more nested<br />relationships or child IDs.</p></div></li>
+          <li><span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#icon-globe" /></svg></span><div><h2>Locale-aware endpoints</h2><p>Work with localizations<br />without the complexity.</p></div></li>
+          <li><span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#icon-lock" /></svg></span><div><h2>Server-managed Apple auth</h2><p>We handle JWTs, tokens<br />and key rotation.</p></div></li>
+          <li><span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#icon-chart" /></svg></span><div><h2>Readable sales reports</h2><p>Get clean, actionable<br />data — not a maze.</p></div></li>
+          <li><span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#icon-shield" /></svg></span><div><h2>Safe workflows &amp; idempotency</h2><p>Built-in safeguards for<br />reliable automation.</p></div></li>
+        </ul>
+      </section>
+
+      <section class="example shell" id="examples" aria-labelledby="example-title">
+        <div class="example-copy">
+          <p class="eyebrow"><svg class="icon" aria-hidden="true"><use href="#icon-code" /></svg>Example</p>
+          <h2 id="example-title">Real APIs for real developers</h2>
+          <p>Get started in seconds. Here's a simple example to list your apps using Parsequerade.</p>
+          <div class="handwritten example-note" aria-hidden="true">Clean requests.<br />Useful responses.<br />That's it.<svg class="note-arrow"><use href="#icon-note-arrow" /></svg></div>
+        </div>
+        <div class="example-request code-window">
+          <div class="example-toolbar">
+            <div class="tabs" role="tablist" aria-label="List apps example" data-tabs="example">
+              <button type="button" role="tab" id="example-request-tab" aria-selected="true" aria-controls="example-request" data-tab="request">Request</button>
+              <button type="button" role="tab" id="example-response-tab" aria-selected="false" aria-controls="example-response" tabindex="-1" data-tab="response">Response</button>
+              <button type="button" role="tab" id="example-curl-tab" aria-selected="false" aria-controls="example-curl" tabindex="-1" data-tab="curl">cURL</button>
+            </div>
+            <div class="code-tools">
+              <label class="sr-only" for="code-language">Request language</label>
+              <select id="code-language"><option value="shell">Shell</option><option value="javascript">JavaScript</option><option value="python">Python</option></select>
+              <button class="copy-button" type="button" aria-label="Copy example code"><svg class="icon" aria-hidden="true"><use href="#icon-copy" /></svg></button>
+            </div>
+          </div>
+          <pre class="code-block example-code" id="example-request" role="tabpanel" aria-labelledby="example-request-tab" tabindex="0"><code><span class="code-line"><span class="command">curl</span> https://api.parsequerade.com/apps?bundleId=com.example.notes \</span><span class="code-line">  -H <span class="string">"Authorization: Bearer YOUR_API_KEY"</span></span></code></pre>
+          <pre class="code-block example-code" id="example-response" role="tabpanel" aria-labelledby="example-response-tab" tabindex="0" hidden><code></code></pre>
+          <pre class="code-block example-code" id="example-curl" role="tabpanel" aria-labelledby="example-curl-tab" tabindex="0" hidden><code></code></pre>
+          <p class="copy-status sr-only" role="status" aria-live="polite"></p>
+        </div>
+        <div class="example-response code-window">
+          <pre class="code-block" aria-label="List apps JSON response"><code><span class="code-line">{</span><span class="code-line">  <span class="key">"data"</span>: [{</span><span class="code-line">    <span class="key">"id"</span>: <span class="string">"123456789"</span>,</span><span class="code-line">    <span class="key">"name"</span>: <span class="string">"Example Notes"</span>,</span><span class="code-line">    <span class="key">"bundleId"</span>: <span class="string">"com.example.notes"</span>,</span><span class="code-line">    <span class="key">"primaryLocale"</span>: <span class="string">"en-US"</span>,</span><span class="code-line">    <span class="key">"latestVersion"</span>: <span class="string">"1.2.3"</span>,</span><span class="code-line">    <span class="key">"status"</span>: <span class="string">"READY_FOR_SALE"</span>,</span><span class="code-line">    <span class="key">"iconUrl"</span>: <span class="string">"https://cdn.parsequerade.com/apps/123/icon.png"</span></span><span class="code-line">  }]</span><span class="code-line">}</span></code></pre>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer"><p>Build more. Parse less.</p><a href="/">Parsequerade</a></footer>
+    <script type="module" src="/parsequerade.js"></script>
+  </body>
 </html>
