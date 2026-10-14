@@ -1,0 +1,59 @@
+<header class="page-header" id="overview">
+  <p class="page-kicker">Getting started</p>
+  <h1>Quickstart</h1>
+  <p class="page-lede">Follow a proposed read flow from an app list to one explicitly selected version and locale.</p>
+</header>
+
+<section class="document-section" id="status">
+  <h2>Status</h2>
+  <p><span class="status-label">Proposed</span> The service is not implemented. <code>asc.example.com</code> and the IDs below are placeholders; these commands describe the planned contract and will not reach an available Parsequerade service.</p>
+</section>
+
+<section class="document-section" id="credentials">
+  <h2>Prepare access</h2>
+  <p>Set <code>ASC_FACADE_KEY</code> to a facade API key issued for a configured connection. The service would use that connection’s Apple credentials on the caller’s behalf; clients would not create Apple JWTs.</p>
+  <p>Requests use this connection-scoped base URL:</p>
+  <div class="code-example">
+    <div class="code-toolbar"><span class="code-label">Shell</span><button class="code-copy" type="button" data-copy-target="quickstart-base" aria-label="Copy base URL"><span class="copy-label">Copy</span></button></div>
+    <pre id="quickstart-base" tabindex="0"><code>BASE='https://asc.example.com/v1/connections/conn_example'</code></pre>
+  </div>
+</section>
+
+<section class="document-section" id="list-apps">
+  <h2>1. List apps</h2>
+  <p>Start with a bounded page. Narrow the list with a supported filter such as <code>bundleId</code> when you know it.</p>
+  <div class="code-example">
+    <div class="code-toolbar"><span class="code-label">cURL</span><button class="code-copy" type="button" data-copy-target="quickstart-apps" aria-label="Copy list apps request"><span class="copy-label">Copy</span></button></div>
+    <pre id="quickstart-apps" tabindex="0"><code>curl --fail-with-body "$BASE/apps?limit=50" \
+  -H "Authorization: Bearer $ASC_FACADE_KEY"
+
+curl --fail-with-body "$BASE/apps?bundleId=com.example.app&amp;limit=50" \
+  -H "Authorization: Bearer $ASC_FACADE_KEY"</code></pre>
+  </div>
+  <p>The collection response would contain plain objects in <code>items</code> and an opaque <code>nextCursor</code>. Select the intended app ID from the result; the service does not choose the first match for you.</p>
+</section>
+
+<section class="document-section" id="select-version">
+  <h2>2. Select a version</h2>
+  <p>Use the app ID from the list, then choose the returned version ID that matches the platform and state you intend to read.</p>
+  <div class="code-example">
+    <div class="code-toolbar"><span class="code-label">cURL</span><button class="code-copy" type="button" data-copy-target="quickstart-versions" aria-label="Copy list versions request"><span class="copy-label">Copy</span></button></div>
+    <pre id="quickstart-versions" tabindex="0"><code>curl --fail-with-body \
+  "$BASE/apps/1234567890/versions?platform=IOS&amp;state=PREPARE_FOR_SUBMISSION" \
+  -H "Authorization: Bearer $ASC_FACADE_KEY"</code></pre>
+  </div>
+  <p>Replace <code>1234567890</code> with an app ID you received. The state filter is explicit; no draft-to-live fallback is implied. See <a class="inline-link" href="/docs/reference/get-v1-apps-_id_-appstoreversions/">List versions</a> for its proposed response fields.</p>
+</section>
+
+<section class="document-section" id="read-locale">
+  <h2>3. Read an exact locale</h2>
+  <p>Use the selected version ID and the exact locale you need. This example reads <code>en-US</code> from <code>version_123</code>.</p>
+  <div class="code-example">
+    <div class="code-toolbar"><span class="code-label">cURL</span><button class="code-copy" type="button" data-copy-target="quickstart-localization" aria-label="Copy localization request"><span class="copy-label">Copy</span></button></div>
+    <pre id="quickstart-localization" tabindex="0"><code>curl --fail-with-body \
+  "$BASE/apps/1234567890/versions/version_123/localizations/en-US" \
+  -H "Authorization: Bearer $ASC_FACADE_KEY"</code></pre>
+  </div>
+  <p>The route resolves that locale under the selected version and returns one flat object. If the exact locale does not exist, the planned response is <code>404 localization_not_found</code>; request another locale or use the version-localizations collection to inspect available locales. It does not substitute the primary locale.</p>
+  <p>See <a class="inline-link" href="/docs/reference/get-v1-appstoreversionlocalizations-_id_/">Read a version localization</a> for the response shape.</p>
+</section>
