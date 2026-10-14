@@ -97,7 +97,7 @@ button { color: inherit; }
 .on-page a { border-left: 2px solid transparent; color: var(--subtle); font-size: 12px; line-height: 1.5; margin-left: -15px; padding-left: 13px; }
 .on-page a:hover { color: var(--text); }
 .on-page a.is-current { border-left-color: var(--accent); color: var(--accent-hover); }
-.site-footer { border-top: 1px solid var(--line); color: var(--subtle); display: flex; font-size: 12px; justify-content: space-between; letter-spacing: 0; padding: 18px 28px; }
+.site-footer { border-top: 1px solid var(--line); color: var(--subtle); display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 12px; justify-content: space-between; letter-spacing: 0; padding: 18px 28px; }
 .site-footer a:hover { color: var(--text); }
 .not-found { margin: 13vh auto; max-width: 600px; padding: 0 24px; }
 .not-found .inline-link { display: inline-block; margin-top: 24px; }
