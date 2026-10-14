@@ -1,0 +1,2059 @@
+{
+  "appleSpecification": {
+    "url": "https://developer.apple.com/sample-code/app-store-connect/app-store-connect-openapi-specification.zip",
+    "version": "4.5.1",
+    "sha256": "7b826ae9ca3e45b0e7df2643cbb811c9930632640944db11a8af4586fab9db46"
+  },
+  "routes": [
+    {
+      "slug": "get-v1-apps",
+      "handler": "apps",
+      "route": "/apps",
+      "applePath": "/v1/apps",
+      "type": "apps",
+      "collection": true,
+      "attributes": {
+        "accessibilityUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "name": {
+          "type": "string"
+        },
+        "bundleId": {
+          "type": "string"
+        },
+        "sku": {
+          "type": "string"
+        },
+        "primaryLocale": {
+          "type": "string"
+        },
+        "isOrEverWasMadeForKids": {
+          "type": "boolean"
+        },
+        "subscriptionStatusUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "subscriptionStatusUrlVersion": {
+          "type": "string"
+        },
+        "subscriptionStatusUrlForSandbox": {
+          "type": "string",
+          "format": "uri"
+        },
+        "subscriptionStatusUrlVersionForSandbox": {
+          "type": "string"
+        },
+        "contentRightsDeclaration": {
+          "type": "string"
+        },
+        "streamlinedPurchasingEnabled": {
+          "type": "boolean"
+        }
+      },
+      "relationships": {
+        "appStoreIcon": {
+          "field": "appStoreIconId",
+          "type": "buildIcons"
+        },
+        "ciProduct": {
+          "field": "ciProductId",
+          "type": "ciProducts"
+        },
+        "betaLicenseAgreement": {
+          "field": "betaLicenseAgreementId",
+          "type": "betaLicenseAgreements"
+        },
+        "betaAppReviewDetail": {
+          "field": "betaAppReviewDetailId",
+          "type": "betaAppReviewDetails"
+        },
+        "endUserLicenseAgreement": {
+          "field": "endUserLicenseAgreementId",
+          "type": "endUserLicenseAgreements"
+        },
+        "subscriptionGracePeriod": {
+          "field": "subscriptionGracePeriodId",
+          "type": "subscriptionGracePeriods"
+        },
+        "gameCenterDetail": {
+          "field": "gameCenterDetailId",
+          "type": "gameCenterDetails"
+        }
+      },
+      "parameters": [
+        {
+          "name": "name",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "required": false,
+          "appleName": "filter[name]"
+        },
+        {
+          "name": "bundleId",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "required": false,
+          "appleName": "filter[bundleId]"
+        },
+        {
+          "name": "sku",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "required": false,
+          "appleName": "filter[sku]"
+        },
+        {
+          "name": "versionPlatform",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "IOS",
+                "MAC_OS",
+                "TV_OS",
+                "VISION_OS"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "filter[appStoreVersions.platform]"
+        },
+        {
+          "name": "versionState",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "ACCEPTED",
+                "DEVELOPER_REJECTED",
+                "IN_REVIEW",
+                "INVALID_BINARY",
+                "METADATA_REJECTED",
+                "PENDING_APPLE_RELEASE",
+                "PENDING_DEVELOPER_RELEASE",
+                "PREPARE_FOR_SUBMISSION",
+                "PROCESSING_FOR_DISTRIBUTION",
+                "READY_FOR_DISTRIBUTION",
+                "READY_FOR_REVIEW",
+                "REJECTED",
+                "REPLACED_WITH_NEW_VERSION",
+                "WAITING_FOR_EXPORT_COMPLIANCE",
+                "WAITING_FOR_REVIEW"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "filter[appStoreVersions.appVersionState]"
+        },
+        {
+          "name": "reviewState",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "READY_FOR_REVIEW",
+                "WAITING_FOR_REVIEW",
+                "IN_REVIEW",
+                "UNRESOLVED_ISSUES",
+                "CANCELING",
+                "COMPLETING",
+                "COMPLETE"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "filter[reviewSubmissions.state]"
+        },
+        {
+          "name": "reviewPlatform",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "IOS",
+                "MAC_OS",
+                "TV_OS",
+                "VISION_OS"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "filter[reviewSubmissions.platform]"
+        },
+        {
+          "name": "versionId",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "required": false,
+          "appleName": "filter[appStoreVersions]"
+        },
+        {
+          "name": "id",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "required": false,
+          "appleName": "filter[id]"
+        },
+        {
+          "name": "sort",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "name",
+                "-name",
+                "bundleId",
+                "-bundleId",
+                "sku",
+                "-sku"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "sort"
+        },
+        {
+          "name": "fields",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "accessibilityUrl",
+                "name",
+                "bundleId",
+                "sku",
+                "primaryLocale",
+                "isOrEverWasMadeForKids",
+                "subscriptionStatusUrl",
+                "subscriptionStatusUrlVersion",
+                "subscriptionStatusUrlForSandbox",
+                "subscriptionStatusUrlVersionForSandbox",
+                "contentRightsDeclaration",
+                "streamlinedPurchasingEnabled"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "fields[apps]"
+        },
+        {
+          "name": "limit",
+          "schema": {
+            "type": "integer",
+            "maximum": 200
+          },
+          "required": false,
+          "appleName": "limit",
+          "default": 50
+        },
+        {
+          "name": "cursor",
+          "schema": {
+            "type": "string"
+          },
+          "required": false,
+          "appleName": null
+        }
+      ],
+      "responseSchema": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "accessibilityUrl": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "bundleId": {
+                  "type": "string"
+                },
+                "sku": {
+                  "type": "string"
+                },
+                "primaryLocale": {
+                  "type": "string"
+                },
+                "isOrEverWasMadeForKids": {
+                  "type": "boolean"
+                },
+                "subscriptionStatusUrl": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "subscriptionStatusUrlVersion": {
+                  "type": "string"
+                },
+                "subscriptionStatusUrlForSandbox": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "subscriptionStatusUrlVersionForSandbox": {
+                  "type": "string"
+                },
+                "contentRightsDeclaration": {
+                  "type": "string"
+                },
+                "streamlinedPurchasingEnabled": {
+                  "type": "boolean"
+                },
+                "appStoreIconId": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "ciProductId": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "betaLicenseAgreementId": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "betaAppReviewDetailId": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "endUserLicenseAgreementId": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "subscriptionGracePeriodId": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "gameCenterDetailId": {
+                  "type": "string",
+                  "nullable": true
+                }
+              },
+              "required": [
+                "id"
+              ]
+            }
+          },
+          "nextCursor": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ]
+      }
+    },
+    {
+      "slug": "get-v1-apps-_id_",
+      "handler": "app",
+      "route": "/apps/{appId}",
+      "applePath": "/v1/apps/{id}",
+      "type": "apps",
+      "collection": false,
+      "attributes": {
+        "accessibilityUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "name": {
+          "type": "string"
+        },
+        "bundleId": {
+          "type": "string"
+        },
+        "sku": {
+          "type": "string"
+        },
+        "primaryLocale": {
+          "type": "string"
+        },
+        "isOrEverWasMadeForKids": {
+          "type": "boolean"
+        },
+        "subscriptionStatusUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "subscriptionStatusUrlVersion": {
+          "type": "string"
+        },
+        "subscriptionStatusUrlForSandbox": {
+          "type": "string",
+          "format": "uri"
+        },
+        "subscriptionStatusUrlVersionForSandbox": {
+          "type": "string"
+        },
+        "contentRightsDeclaration": {
+          "type": "string"
+        },
+        "streamlinedPurchasingEnabled": {
+          "type": "boolean"
+        }
+      },
+      "relationships": {
+        "appStoreIcon": {
+          "field": "appStoreIconId",
+          "type": "buildIcons"
+        },
+        "ciProduct": {
+          "field": "ciProductId",
+          "type": "ciProducts"
+        },
+        "betaLicenseAgreement": {
+          "field": "betaLicenseAgreementId",
+          "type": "betaLicenseAgreements"
+        },
+        "betaAppReviewDetail": {
+          "field": "betaAppReviewDetailId",
+          "type": "betaAppReviewDetails"
+        },
+        "endUserLicenseAgreement": {
+          "field": "endUserLicenseAgreementId",
+          "type": "endUserLicenseAgreements"
+        },
+        "subscriptionGracePeriod": {
+          "field": "subscriptionGracePeriodId",
+          "type": "subscriptionGracePeriods"
+        },
+        "gameCenterDetail": {
+          "field": "gameCenterDetailId",
+          "type": "gameCenterDetails"
+        }
+      },
+      "parameters": [
+        {
+          "name": "fields",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "accessibilityUrl",
+                "name",
+                "bundleId",
+                "sku",
+                "primaryLocale",
+                "isOrEverWasMadeForKids",
+                "subscriptionStatusUrl",
+                "subscriptionStatusUrlVersion",
+                "subscriptionStatusUrlForSandbox",
+                "subscriptionStatusUrlVersionForSandbox",
+                "contentRightsDeclaration",
+                "streamlinedPurchasingEnabled"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "fields[apps]"
+        }
+      ],
+      "responseSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "accessibilityUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "name": {
+            "type": "string"
+          },
+          "bundleId": {
+            "type": "string"
+          },
+          "sku": {
+            "type": "string"
+          },
+          "primaryLocale": {
+            "type": "string"
+          },
+          "isOrEverWasMadeForKids": {
+            "type": "boolean"
+          },
+          "subscriptionStatusUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "subscriptionStatusUrlVersion": {
+            "type": "string"
+          },
+          "subscriptionStatusUrlForSandbox": {
+            "type": "string",
+            "format": "uri"
+          },
+          "subscriptionStatusUrlVersionForSandbox": {
+            "type": "string"
+          },
+          "contentRightsDeclaration": {
+            "type": "string"
+          },
+          "streamlinedPurchasingEnabled": {
+            "type": "boolean"
+          },
+          "appStoreIconId": {
+            "type": "string",
+            "nullable": true
+          },
+          "ciProductId": {
+            "type": "string",
+            "nullable": true
+          },
+          "betaLicenseAgreementId": {
+            "type": "string",
+            "nullable": true
+          },
+          "betaAppReviewDetailId": {
+            "type": "string",
+            "nullable": true
+          },
+          "endUserLicenseAgreementId": {
+            "type": "string",
+            "nullable": true
+          },
+          "subscriptionGracePeriodId": {
+            "type": "string",
+            "nullable": true
+          },
+          "gameCenterDetailId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "slug": "get-v1-apps-_id_-appinfos",
+      "handler": "appInfos",
+      "route": "/apps/{appId}/app-infos",
+      "applePath": "/v1/apps/{id}/appInfos",
+      "type": "appInfos",
+      "collection": true,
+      "attributes": {
+        "state": {
+          "type": "string"
+        }
+      },
+      "relationships": {
+        "ageRatingDeclaration": {
+          "field": "ageRatingDeclarationId",
+          "type": "ageRatingDeclarations"
+        },
+        "primaryCategory": {
+          "field": "primaryCategoryId",
+          "type": "appCategories"
+        },
+        "primarySubcategoryOne": {
+          "field": "primarySubcategoryOneId",
+          "type": "appCategories"
+        },
+        "primarySubcategoryTwo": {
+          "field": "primarySubcategoryTwoId",
+          "type": "appCategories"
+        },
+        "secondaryCategory": {
+          "field": "secondaryCategoryId",
+          "type": "appCategories"
+        },
+        "secondarySubcategoryOne": {
+          "field": "secondarySubcategoryOneId",
+          "type": "appCategories"
+        },
+        "secondarySubcategoryTwo": {
+          "field": "secondarySubcategoryTwoId",
+          "type": "appCategories"
+        }
+      },
+      "parameters": [
+        {
+          "name": "fields",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "state"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "fields[appInfos]"
+        },
+        {
+          "name": "limit",
+          "schema": {
+            "type": "integer",
+            "maximum": 200
+          },
+          "required": false,
+          "appleName": "limit",
+          "default": 50
+        },
+        {
+          "name": "cursor",
+          "schema": {
+            "type": "string"
+          },
+          "required": false,
+          "appleName": null
+        }
+      ],
+      "responseSchema": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "appId": {
+                  "type": "string"
+                },
+                "state": {
+                  "type": "string"
+                },
+                "ageRatingDeclarationId": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "primaryCategoryId": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "primarySubcategoryOneId": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "primarySubcategoryTwoId": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "secondaryCategoryId": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "secondarySubcategoryOneId": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "secondarySubcategoryTwoId": {
+                  "type": "string",
+                  "nullable": true
+                }
+              },
+              "required": [
+                "id",
+                "appId"
+              ]
+            }
+          },
+          "nextCursor": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ]
+      }
+    },
+    {
+      "slug": "get-v1-appinfos-_id_",
+      "handler": "appInfo",
+      "route": "/apps/{appId}/app-infos/{appInfoId}",
+      "applePath": "/v1/appInfos/{id}",
+      "type": "appInfos",
+      "collection": false,
+      "attributes": {
+        "state": {
+          "type": "string"
+        }
+      },
+      "relationships": {
+        "ageRatingDeclaration": {
+          "field": "ageRatingDeclarationId",
+          "type": "ageRatingDeclarations"
+        },
+        "primaryCategory": {
+          "field": "primaryCategoryId",
+          "type": "appCategories"
+        },
+        "primarySubcategoryOne": {
+          "field": "primarySubcategoryOneId",
+          "type": "appCategories"
+        },
+        "primarySubcategoryTwo": {
+          "field": "primarySubcategoryTwoId",
+          "type": "appCategories"
+        },
+        "secondaryCategory": {
+          "field": "secondaryCategoryId",
+          "type": "appCategories"
+        },
+        "secondarySubcategoryOne": {
+          "field": "secondarySubcategoryOneId",
+          "type": "appCategories"
+        },
+        "secondarySubcategoryTwo": {
+          "field": "secondarySubcategoryTwoId",
+          "type": "appCategories"
+        }
+      },
+      "parameters": [
+        {
+          "name": "fields",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "state"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "fields[appInfos]"
+        }
+      ],
+      "responseSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "appId": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "ageRatingDeclarationId": {
+            "type": "string",
+            "nullable": true
+          },
+          "primaryCategoryId": {
+            "type": "string",
+            "nullable": true
+          },
+          "primarySubcategoryOneId": {
+            "type": "string",
+            "nullable": true
+          },
+          "primarySubcategoryTwoId": {
+            "type": "string",
+            "nullable": true
+          },
+          "secondaryCategoryId": {
+            "type": "string",
+            "nullable": true
+          },
+          "secondarySubcategoryOneId": {
+            "type": "string",
+            "nullable": true
+          },
+          "secondarySubcategoryTwoId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "appId"
+        ]
+      }
+    },
+    {
+      "slug": "get-v1-appinfos-_id_-appinfolocalizations",
+      "handler": "appInfoLocalizations",
+      "route": "/apps/{appId}/app-infos/{appInfoId}/localizations",
+      "applePath": "/v1/appInfos/{id}/appInfoLocalizations",
+      "type": "appInfoLocalizations",
+      "collection": true,
+      "attributes": {
+        "locale": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "subtitle": {
+          "type": "string"
+        },
+        "privacyPolicyUrl": {
+          "type": "string"
+        },
+        "privacyChoicesUrl": {
+          "type": "string"
+        },
+        "privacyPolicyText": {
+          "type": "string"
+        }
+      },
+      "relationships": {},
+      "parameters": [
+        {
+          "name": "locale",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "required": false,
+          "appleName": "filter[locale]"
+        },
+        {
+          "name": "fields",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "locale",
+                "name",
+                "subtitle",
+                "privacyPolicyUrl",
+                "privacyChoicesUrl",
+                "privacyPolicyText"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "fields[appInfoLocalizations]"
+        },
+        {
+          "name": "limit",
+          "schema": {
+            "type": "integer",
+            "maximum": 200
+          },
+          "required": false,
+          "appleName": "limit",
+          "default": 50
+        },
+        {
+          "name": "cursor",
+          "schema": {
+            "type": "string"
+          },
+          "required": false,
+          "appleName": null
+        }
+      ],
+      "responseSchema": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "appId": {
+                  "type": "string"
+                },
+                "appInfoId": {
+                  "type": "string"
+                },
+                "locale": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "subtitle": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "privacyPolicyUrl": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "privacyChoicesUrl": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "privacyPolicyText": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "appId",
+                "appInfoId"
+              ]
+            }
+          },
+          "nextCursor": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ]
+      }
+    },
+    {
+      "slug": "get-v1-appinfolocalizations-_id_",
+      "handler": "appInfoLocalization",
+      "route": "/apps/{appId}/app-infos/{appInfoId}/localizations/{locale}",
+      "applePath": "/v1/appInfoLocalizations/{id}",
+      "type": "appInfoLocalizations",
+      "collection": false,
+      "attributes": {
+        "locale": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "subtitle": {
+          "type": "string"
+        },
+        "privacyPolicyUrl": {
+          "type": "string"
+        },
+        "privacyChoicesUrl": {
+          "type": "string"
+        },
+        "privacyPolicyText": {
+          "type": "string"
+        }
+      },
+      "relationships": {},
+      "parameters": [
+        {
+          "name": "fields",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "locale",
+                "name",
+                "subtitle",
+                "privacyPolicyUrl",
+                "privacyChoicesUrl",
+                "privacyPolicyText"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "fields[appInfoLocalizations]"
+        }
+      ],
+      "responseSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "appId": {
+            "type": "string"
+          },
+          "appInfoId": {
+            "type": "string"
+          },
+          "locale": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "subtitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "privacyPolicyUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "privacyChoicesUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "privacyPolicyText": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "appId",
+          "appInfoId"
+        ]
+      }
+    },
+    {
+      "slug": "get-v1-appinfos-_id_-ageratingdeclaration",
+      "handler": "ageRating",
+      "route": "/apps/{appId}/app-infos/{appInfoId}/age-rating",
+      "applePath": "/v1/appInfos/{id}/ageRatingDeclaration",
+      "type": "ageRatingDeclarations",
+      "collection": false,
+      "attributes": {
+        "advertising": {
+          "type": "boolean"
+        },
+        "alcoholTobaccoOrDrugUseOrReferences": {
+          "type": "string"
+        },
+        "contests": {
+          "type": "string"
+        },
+        "gambling": {
+          "type": "boolean"
+        },
+        "gamblingSimulated": {
+          "type": "string"
+        },
+        "gunsOrOtherWeapons": {
+          "type": "string"
+        },
+        "healthOrWellnessTopics": {
+          "type": "boolean"
+        },
+        "kidsAgeBand": {
+          "type": "string"
+        },
+        "lootBox": {
+          "type": "boolean"
+        },
+        "medicalOrTreatmentInformation": {
+          "type": "string"
+        },
+        "messagingAndChat": {
+          "type": "boolean"
+        },
+        "parentalControls": {
+          "type": "boolean"
+        },
+        "profanityOrCrudeHumor": {
+          "type": "string"
+        },
+        "ageAssurance": {
+          "type": "boolean"
+        },
+        "sexualContentGraphicAndNudity": {
+          "type": "string"
+        },
+        "sexualContentOrNudity": {
+          "type": "string"
+        },
+        "socialMedia": {
+          "type": "boolean"
+        },
+        "socialMediaAgeRestricted": {
+          "type": "boolean"
+        },
+        "horrorOrFearThemes": {
+          "type": "string"
+        },
+        "matureOrSuggestiveThemes": {
+          "type": "string"
+        },
+        "unrestrictedWebAccess": {
+          "type": "boolean"
+        },
+        "userGeneratedContent": {
+          "type": "boolean"
+        },
+        "violenceCartoonOrFantasy": {
+          "type": "string"
+        },
+        "violenceRealisticProlongedGraphicOrSadistic": {
+          "type": "string"
+        },
+        "violenceRealistic": {
+          "type": "string"
+        },
+        "ageRatingOverrideV2": {
+          "type": "string"
+        },
+        "koreaAgeRatingOverride": {
+          "type": "string"
+        },
+        "gracRatingClassificationNumber": {
+          "type": "string"
+        },
+        "developerAgeRatingInfoUrl": {
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "relationships": {},
+      "parameters": [
+        {
+          "name": "fields",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "advertising",
+                "alcoholTobaccoOrDrugUseOrReferences",
+                "contests",
+                "gambling",
+                "gamblingSimulated",
+                "gunsOrOtherWeapons",
+                "healthOrWellnessTopics",
+                "kidsAgeBand",
+                "lootBox",
+                "medicalOrTreatmentInformation",
+                "messagingAndChat",
+                "parentalControls",
+                "profanityOrCrudeHumor",
+                "ageAssurance",
+                "sexualContentGraphicAndNudity",
+                "sexualContentOrNudity",
+                "socialMedia",
+                "socialMediaAgeRestricted",
+                "horrorOrFearThemes",
+                "matureOrSuggestiveThemes",
+                "unrestrictedWebAccess",
+                "userGeneratedContent",
+                "violenceCartoonOrFantasy",
+                "violenceRealisticProlongedGraphicOrSadistic",
+                "violenceRealistic",
+                "ageRatingOverrideV2",
+                "koreaAgeRatingOverride",
+                "gracRatingClassificationNumber",
+                "developerAgeRatingInfoUrl"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "fields[ageRatingDeclarations]"
+        }
+      ],
+      "responseSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "appId": {
+            "type": "string"
+          },
+          "appInfoId": {
+            "type": "string"
+          },
+          "advertising": {
+            "type": "boolean"
+          },
+          "alcoholTobaccoOrDrugUseOrReferences": {
+            "type": "string"
+          },
+          "contests": {
+            "type": "string"
+          },
+          "gambling": {
+            "type": "boolean"
+          },
+          "gamblingSimulated": {
+            "type": "string"
+          },
+          "gunsOrOtherWeapons": {
+            "type": "string"
+          },
+          "healthOrWellnessTopics": {
+            "type": "boolean"
+          },
+          "kidsAgeBand": {
+            "type": "string"
+          },
+          "lootBox": {
+            "type": "boolean"
+          },
+          "medicalOrTreatmentInformation": {
+            "type": "string"
+          },
+          "messagingAndChat": {
+            "type": "boolean"
+          },
+          "parentalControls": {
+            "type": "boolean"
+          },
+          "profanityOrCrudeHumor": {
+            "type": "string"
+          },
+          "ageAssurance": {
+            "type": "boolean"
+          },
+          "sexualContentGraphicAndNudity": {
+            "type": "string"
+          },
+          "sexualContentOrNudity": {
+            "type": "string"
+          },
+          "socialMedia": {
+            "type": "boolean"
+          },
+          "socialMediaAgeRestricted": {
+            "type": "boolean"
+          },
+          "horrorOrFearThemes": {
+            "type": "string"
+          },
+          "matureOrSuggestiveThemes": {
+            "type": "string"
+          },
+          "unrestrictedWebAccess": {
+            "type": "boolean"
+          },
+          "userGeneratedContent": {
+            "type": "boolean"
+          },
+          "violenceCartoonOrFantasy": {
+            "type": "string"
+          },
+          "violenceRealisticProlongedGraphicOrSadistic": {
+            "type": "string"
+          },
+          "violenceRealistic": {
+            "type": "string"
+          },
+          "ageRatingOverrideV2": {
+            "type": "string"
+          },
+          "koreaAgeRatingOverride": {
+            "type": "string"
+          },
+          "gracRatingClassificationNumber": {
+            "type": "string"
+          },
+          "developerAgeRatingInfoUrl": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "id",
+          "appId",
+          "appInfoId"
+        ]
+      }
+    },
+    {
+      "slug": "get-v1-apps-_id_-appstoreversions",
+      "handler": "versions",
+      "route": "/apps/{appId}/versions",
+      "applePath": "/v1/apps/{id}/appStoreVersions",
+      "type": "appStoreVersions",
+      "collection": true,
+      "attributes": {
+        "platform": {
+          "type": "string"
+        },
+        "versionString": {
+          "type": "string"
+        },
+        "appVersionState": {
+          "type": "string"
+        },
+        "copyright": {
+          "type": "string"
+        },
+        "reviewType": {
+          "type": "string"
+        },
+        "releaseType": {
+          "type": "string"
+        },
+        "earliestReleaseDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "downloadable": {
+          "type": "boolean"
+        },
+        "createdDate": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "relationships": {
+        "build": {
+          "field": "buildId",
+          "type": "builds"
+        },
+        "appStoreVersionPhasedRelease": {
+          "field": "appStoreVersionPhasedReleaseId",
+          "type": "appStoreVersionPhasedReleases"
+        },
+        "gameCenterAppVersion": {
+          "field": "gameCenterAppVersionId",
+          "type": "gameCenterAppVersions"
+        },
+        "routingAppCoverage": {
+          "field": "routingAppCoverageId",
+          "type": "routingAppCoverages"
+        },
+        "appStoreReviewDetail": {
+          "field": "appStoreReviewDetailId",
+          "type": "appStoreReviewDetails"
+        },
+        "appStoreVersionSubmission": {
+          "field": "appStoreVersionSubmissionId",
+          "type": "appStoreVersionSubmissions"
+        },
+        "appClipDefaultExperience": {
+          "field": "experienceId",
+          "type": "appClipDefaultExperiences"
+        },
+        "alternativeDistributionPackage": {
+          "field": "alternativeDistributionPackageId",
+          "type": "alternativeDistributionPackages"
+        }
+      },
+      "parameters": [
+        {
+          "name": "platform",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "IOS",
+                "MAC_OS",
+                "TV_OS",
+                "VISION_OS"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "filter[platform]"
+        },
+        {
+          "name": "versionString",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "required": false,
+          "appleName": "filter[versionString]"
+        },
+        {
+          "name": "state",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "ACCEPTED",
+                "DEVELOPER_REJECTED",
+                "IN_REVIEW",
+                "INVALID_BINARY",
+                "METADATA_REJECTED",
+                "PENDING_APPLE_RELEASE",
+                "PENDING_DEVELOPER_RELEASE",
+                "PREPARE_FOR_SUBMISSION",
+                "PROCESSING_FOR_DISTRIBUTION",
+                "READY_FOR_DISTRIBUTION",
+                "READY_FOR_REVIEW",
+                "REJECTED",
+                "REPLACED_WITH_NEW_VERSION",
+                "WAITING_FOR_EXPORT_COMPLIANCE",
+                "WAITING_FOR_REVIEW"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "filter[appVersionState]"
+        },
+        {
+          "name": "id",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "required": false,
+          "appleName": "filter[id]"
+        },
+        {
+          "name": "fields",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "platform",
+                "versionString",
+                "appVersionState",
+                "copyright",
+                "reviewType",
+                "releaseType",
+                "earliestReleaseDate",
+                "downloadable",
+                "createdDate"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "fields[appStoreVersions]"
+        },
+        {
+          "name": "limit",
+          "schema": {
+            "type": "integer",
+            "maximum": 200
+          },
+          "required": false,
+          "appleName": "limit",
+          "default": 50
+        },
+        {
+          "name": "cursor",
+          "schema": {
+            "type": "string"
+          },
+          "required": false,
+          "appleName": null
+        }
+      ],
+      "responseSchema": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "appId": {
+                  "type": "string"
+                },
+                "platform": {
+                  "type": "string"
+                },
+                "versionString": {
+                  "type": "string"
+                },
+                "appVersionState": {
+                  "type": "string"
+                },
+                "copyright": {
+                  "type": "string"
+                },
+                "reviewType": {
+                  "type": "string"
+                },
+                "releaseType": {
+                  "type": "string"
+                },
+                "earliestReleaseDate": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "downloadable": {
+                  "type": "boolean"
+                },
+                "createdDate": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "buildId": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "appStoreVersionPhasedReleaseId": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "gameCenterAppVersionId": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "routingAppCoverageId": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "appStoreReviewDetailId": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "appStoreVersionSubmissionId": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "experienceId": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "alternativeDistributionPackageId": {
+                  "type": "string",
+                  "nullable": true
+                }
+              },
+              "required": [
+                "id",
+                "appId"
+              ]
+            }
+          },
+          "nextCursor": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ]
+      }
+    },
+    {
+      "slug": "get-v1-appstoreversions-_id_",
+      "handler": "version",
+      "route": "/apps/{appId}/versions/{versionId}",
+      "applePath": "/v1/appStoreVersions/{id}",
+      "type": "appStoreVersions",
+      "collection": false,
+      "attributes": {
+        "platform": {
+          "type": "string"
+        },
+        "versionString": {
+          "type": "string"
+        },
+        "appVersionState": {
+          "type": "string"
+        },
+        "copyright": {
+          "type": "string"
+        },
+        "reviewType": {
+          "type": "string"
+        },
+        "releaseType": {
+          "type": "string"
+        },
+        "earliestReleaseDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "downloadable": {
+          "type": "boolean"
+        },
+        "createdDate": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "relationships": {
+        "build": {
+          "field": "buildId",
+          "type": "builds"
+        },
+        "appStoreVersionPhasedRelease": {
+          "field": "appStoreVersionPhasedReleaseId",
+          "type": "appStoreVersionPhasedReleases"
+        },
+        "gameCenterAppVersion": {
+          "field": "gameCenterAppVersionId",
+          "type": "gameCenterAppVersions"
+        },
+        "routingAppCoverage": {
+          "field": "routingAppCoverageId",
+          "type": "routingAppCoverages"
+        },
+        "appStoreReviewDetail": {
+          "field": "appStoreReviewDetailId",
+          "type": "appStoreReviewDetails"
+        },
+        "appStoreVersionSubmission": {
+          "field": "appStoreVersionSubmissionId",
+          "type": "appStoreVersionSubmissions"
+        },
+        "appClipDefaultExperience": {
+          "field": "experienceId",
+          "type": "appClipDefaultExperiences"
+        },
+        "alternativeDistributionPackage": {
+          "field": "alternativeDistributionPackageId",
+          "type": "alternativeDistributionPackages"
+        }
+      },
+      "parameters": [
+        {
+          "name": "fields",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "platform",
+                "versionString",
+                "appVersionState",
+                "copyright",
+                "reviewType",
+                "releaseType",
+                "earliestReleaseDate",
+                "downloadable",
+                "createdDate"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "fields[appStoreVersions]"
+        }
+      ],
+      "responseSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "appId": {
+            "type": "string"
+          },
+          "platform": {
+            "type": "string"
+          },
+          "versionString": {
+            "type": "string"
+          },
+          "appVersionState": {
+            "type": "string"
+          },
+          "copyright": {
+            "type": "string"
+          },
+          "reviewType": {
+            "type": "string"
+          },
+          "releaseType": {
+            "type": "string"
+          },
+          "earliestReleaseDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "downloadable": {
+            "type": "boolean"
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "buildId": {
+            "type": "string",
+            "nullable": true
+          },
+          "appStoreVersionPhasedReleaseId": {
+            "type": "string",
+            "nullable": true
+          },
+          "gameCenterAppVersionId": {
+            "type": "string",
+            "nullable": true
+          },
+          "routingAppCoverageId": {
+            "type": "string",
+            "nullable": true
+          },
+          "appStoreReviewDetailId": {
+            "type": "string",
+            "nullable": true
+          },
+          "appStoreVersionSubmissionId": {
+            "type": "string",
+            "nullable": true
+          },
+          "experienceId": {
+            "type": "string",
+            "nullable": true
+          },
+          "alternativeDistributionPackageId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "appId"
+        ]
+      }
+    },
+    {
+      "slug": "get-v1-appstoreversions-_id_-appstoreversionlocalizations",
+      "handler": "versionLocalizations",
+      "route": "/apps/{appId}/versions/{versionId}/localizations",
+      "applePath": "/v1/appStoreVersions/{id}/appStoreVersionLocalizations",
+      "type": "appStoreVersionLocalizations",
+      "collection": true,
+      "attributes": {
+        "description": {
+          "type": "string"
+        },
+        "locale": {
+          "type": "string"
+        },
+        "keywords": {
+          "type": "string"
+        },
+        "marketingUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "promotionalText": {
+          "type": "string"
+        },
+        "supportUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "whatsNew": {
+          "type": "string"
+        }
+      },
+      "relationships": {},
+      "parameters": [
+        {
+          "name": "locale",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "required": false,
+          "appleName": "filter[locale]"
+        },
+        {
+          "name": "fields",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "description",
+                "locale",
+                "keywords",
+                "marketingUrl",
+                "promotionalText",
+                "supportUrl",
+                "whatsNew"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "fields[appStoreVersionLocalizations]"
+        },
+        {
+          "name": "limit",
+          "schema": {
+            "type": "integer",
+            "maximum": 200
+          },
+          "required": false,
+          "appleName": "limit",
+          "default": 50
+        },
+        {
+          "name": "cursor",
+          "schema": {
+            "type": "string"
+          },
+          "required": false,
+          "appleName": null
+        }
+      ],
+      "responseSchema": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "appId": {
+                  "type": "string"
+                },
+                "versionId": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "locale": {
+                  "type": "string"
+                },
+                "keywords": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "marketingUrl": {
+                  "type": "string",
+                  "format": "uri",
+                  "nullable": true
+                },
+                "promotionalText": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "supportUrl": {
+                  "type": "string",
+                  "format": "uri",
+                  "nullable": true
+                },
+                "whatsNew": {
+                  "type": "string",
+                  "nullable": true
+                }
+              },
+              "required": [
+                "id",
+                "appId",
+                "versionId"
+              ]
+            }
+          },
+          "nextCursor": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ]
+      }
+    },
+    {
+      "slug": "get-v1-appstoreversionlocalizations-_id_",
+      "handler": "versionLocalization",
+      "route": "/apps/{appId}/versions/{versionId}/localizations/{locale}",
+      "applePath": "/v1/appStoreVersionLocalizations/{id}",
+      "type": "appStoreVersionLocalizations",
+      "collection": false,
+      "attributes": {
+        "description": {
+          "type": "string"
+        },
+        "locale": {
+          "type": "string"
+        },
+        "keywords": {
+          "type": "string"
+        },
+        "marketingUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "promotionalText": {
+          "type": "string"
+        },
+        "supportUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "whatsNew": {
+          "type": "string"
+        }
+      },
+      "relationships": {},
+      "parameters": [
+        {
+          "name": "fields",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "description",
+                "locale",
+                "keywords",
+                "marketingUrl",
+                "promotionalText",
+                "supportUrl",
+                "whatsNew"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "fields[appStoreVersionLocalizations]"
+        }
+      ],
+      "responseSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "appId": {
+            "type": "string"
+          },
+          "versionId": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "locale": {
+            "type": "string"
+          },
+          "keywords": {
+            "type": "string",
+            "nullable": true
+          },
+          "marketingUrl": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true
+          },
+          "promotionalText": {
+            "type": "string",
+            "nullable": true
+          },
+          "supportUrl": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true
+          },
+          "whatsNew": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "appId",
+          "versionId"
+        ]
+      }
+    },
+    {
+      "slug": "get-v1-appstoreversions-_id_-appstorereviewdetail",
+      "handler": "reviewContact",
+      "route": "/apps/{appId}/versions/{versionId}/review-contact",
+      "applePath": "/v1/appStoreVersions/{id}/appStoreReviewDetail",
+      "type": "appStoreReviewDetails",
+      "collection": false,
+      "attributes": {
+        "contactFirstName": {
+          "type": "string"
+        },
+        "contactLastName": {
+          "type": "string"
+        },
+        "contactPhone": {
+          "type": "string"
+        },
+        "contactEmail": {
+          "type": "string"
+        }
+      },
+      "relationships": {},
+      "parameters": [
+        {
+          "name": "fields",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "contactFirstName",
+                "contactLastName",
+                "contactPhone",
+                "contactEmail"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "fields[appStoreReviewDetails]"
+        }
+      ],
+      "responseSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "appId": {
+            "type": "string"
+          },
+          "versionId": {
+            "type": "string"
+          },
+          "contactFirstName": {
+            "type": "string"
+          },
+          "contactLastName": {
+            "type": "string"
+          },
+          "contactPhone": {
+            "type": "string"
+          },
+          "contactEmail": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "appId",
+          "versionId"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,3592 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Parsequerade",
+    "version": "0.1.0",
+    "description": "Implemented read-only facade routes. Operator configuration is required."
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "security": [
+    {
+      "facadeKey": []
+    }
+  ],
+  "paths": {
+    "/v1/connections/{connectionId}/apps": {
+      "get": {
+        "operationId": "apps",
+        "summary": "List apps",
+        "description": "Find apps by bundle ID, name, or SKU. Get plain app objects with a cursor for the next page.",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "style": "form",
+            "explode": false
+          },
+          {
+            "name": "bundleId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "style": "form",
+            "explode": false
+          },
+          {
+            "name": "sku",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "style": "form",
+            "explode": false
+          },
+          {
+            "name": "versionPlatform",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "IOS",
+                  "MAC_OS",
+                  "TV_OS",
+                  "VISION_OS"
+                ]
+              }
+            },
+            "style": "form",
+            "explode": false
+          },
+          {
+            "name": "versionState",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "ACCEPTED",
+                  "DEVELOPER_REJECTED",
+                  "IN_REVIEW",
+                  "INVALID_BINARY",
+                  "METADATA_REJECTED",
+                  "PENDING_APPLE_RELEASE",
+                  "PENDING_DEVELOPER_RELEASE",
+                  "PREPARE_FOR_SUBMISSION",
+                  "PROCESSING_FOR_DISTRIBUTION",
+                  "READY_FOR_DISTRIBUTION",
+                  "READY_FOR_REVIEW",
+                  "REJECTED",
+                  "REPLACED_WITH_NEW_VERSION",
+                  "WAITING_FOR_EXPORT_COMPLIANCE",
+                  "WAITING_FOR_REVIEW"
+                ]
+              }
+            },
+            "style": "form",
+            "explode": false
+          },
+          {
+            "name": "reviewState",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "READY_FOR_REVIEW",
+                  "WAITING_FOR_REVIEW",
+                  "IN_REVIEW",
+                  "UNRESOLVED_ISSUES",
+                  "CANCELING",
+                  "COMPLETING",
+                  "COMPLETE"
+                ]
+              }
+            },
+            "style": "form",
+            "explode": false
+          },
+          {
+            "name": "reviewPlatform",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "IOS",
+                  "MAC_OS",
+                  "TV_OS",
+                  "VISION_OS"
+                ]
+              }
+            },
+            "style": "form",
+            "explode": false
+          },
+          {
+            "name": "versionId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "style": "form",
+            "explode": false
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "style": "form",
+            "explode": false
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "name",
+                  "-name",
+                  "bundleId",
+                  "-bundleId",
+                  "sku",
+                  "-sku"
+                ]
+              }
+            },
+            "style": "form",
+            "explode": false
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "accessibilityUrl",
+                  "name",
+                  "bundleId",
+                  "sku",
+                  "primaryLocale",
+                  "isOrEverWasMadeForKids",
+                  "subscriptionStatusUrl",
+                  "subscriptionStatusUrlVersion",
+                  "subscriptionStatusUrlForSandbox",
+                  "subscriptionStatusUrlVersionForSandbox",
+                  "contentRightsDeclaration",
+                  "streamlinedPurchasingEnabled"
+                ]
+              }
+            },
+            "style": "form",
+            "explode": false
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "default": 50
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Flat resource or bounded collection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "accessibilityUrl": {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "bundleId": {
+                            "type": "string"
+                          },
+                          "sku": {
+                            "type": "string"
+                          },
+                          "primaryLocale": {
+                            "type": "string"
+                          },
+                          "isOrEverWasMadeForKids": {
+                            "type": "boolean"
+                          },
+                          "subscriptionStatusUrl": {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          "subscriptionStatusUrlVersion": {
+                            "type": "string"
+                          },
+                          "subscriptionStatusUrlForSandbox": {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          "subscriptionStatusUrlVersionForSandbox": {
+                            "type": "string"
+                          },
+                          "contentRightsDeclaration": {
+                            "type": "string"
+                          },
+                          "streamlinedPurchasingEnabled": {
+                            "type": "boolean"
+                          },
+                          "appStoreIconId": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "ciProductId": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "betaLicenseAgreementId": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "betaAppReviewDetailId": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "endUserLicenseAgreementId": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "subscriptionGracePeriodId": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "gameCenterDetailId": {
+                            "type": "string",
+                            "nullable": true
+                          }
+                        },
+                        "required": [
+                          "id"
+                        ]
+                      }
+                    },
+                    "nextCursor": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "nextCursor"
+                  ]
+                },
+                "example": {
+                  "items": [
+                    {
+                      "id": "1234567890",
+                      "name": "Example Notes",
+                      "bundleId": "com.example.notes",
+                      "sku": "example-ios",
+                      "primaryLocale": "en-US",
+                      "contentRightsDeclaration": "DOES_NOT_USE_THIRD_PARTY_CONTENT"
+                    }
+                  ],
+                  "nextCursor": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query or cursor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Facade authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Facade or Apple permission denied.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource or locale not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Only GET is implemented.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ambiguous locale.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Apple validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited; respect Retry-After.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid upstream response or credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Unavailable or unconfigured.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Upstream timeout.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-apple-path": "/v1/apps",
+        "x-implementation-status": "implemented"
+      }
+    },
+    "/v1/connections/{connectionId}/apps/{appId}": {
+      "get": {
+        "operationId": "app",
+        "summary": "Read app information",
+        "description": "Read app information as a flat JSON object.",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "appId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "accessibilityUrl",
+                  "name",
+                  "bundleId",
+                  "sku",
+                  "primaryLocale",
+                  "isOrEverWasMadeForKids",
+                  "subscriptionStatusUrl",
+                  "subscriptionStatusUrlVersion",
+                  "subscriptionStatusUrlForSandbox",
+                  "subscriptionStatusUrlVersionForSandbox",
+                  "contentRightsDeclaration",
+                  "streamlinedPurchasingEnabled"
+                ]
+              }
+            },
+            "style": "form",
+            "explode": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Flat resource or bounded collection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "accessibilityUrl": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "bundleId": {
+                      "type": "string"
+                    },
+                    "sku": {
+                      "type": "string"
+                    },
+                    "primaryLocale": {
+                      "type": "string"
+                    },
+                    "isOrEverWasMadeForKids": {
+                      "type": "boolean"
+                    },
+                    "subscriptionStatusUrl": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "subscriptionStatusUrlVersion": {
+                      "type": "string"
+                    },
+                    "subscriptionStatusUrlForSandbox": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "subscriptionStatusUrlVersionForSandbox": {
+                      "type": "string"
+                    },
+                    "contentRightsDeclaration": {
+                      "type": "string"
+                    },
+                    "streamlinedPurchasingEnabled": {
+                      "type": "boolean"
+                    },
+                    "appStoreIconId": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "ciProductId": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "betaLicenseAgreementId": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "betaAppReviewDetailId": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "endUserLicenseAgreementId": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "subscriptionGracePeriodId": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "gameCenterDetailId": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ]
+                },
+                "example": {
+                  "id": "1234567890",
+                  "accessibilityUrl": "https://example.com/asset",
+                  "name": "Example Notes",
+                  "bundleId": "com.example.notes",
+                  "sku": "example-ios",
+                  "primaryLocale": "en-US"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query or cursor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Facade authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Facade or Apple permission denied.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource or locale not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Only GET is implemented.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ambiguous locale.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Apple validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited; respect Retry-After.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid upstream response or credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Unavailable or unconfigured.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Upstream timeout.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-apple-path": "/v1/apps/{id}",
+        "x-implementation-status": "implemented"
+      }
+    },
+    "/v1/connections/{connectionId}/apps/{appId}/app-infos": {
+      "get": {
+        "operationId": "appInfos",
+        "summary": "List all app infos for an app",
+        "description": "Read a page of app info resources as flat JSON objects.",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "appId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "state"
+                ]
+              }
+            },
+            "style": "form",
+            "explode": false
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "default": 50
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Flat resource or bounded collection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "appId": {
+                            "type": "string"
+                          },
+                          "state": {
+                            "type": "string"
+                          },
+                          "ageRatingDeclarationId": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "primaryCategoryId": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "primarySubcategoryOneId": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "primarySubcategoryTwoId": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "secondaryCategoryId": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "secondarySubcategoryOneId": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "secondarySubcategoryTwoId": {
+                            "type": "string",
+                            "nullable": true
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "appId"
+                        ]
+                      }
+                    },
+                    "nextCursor": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "nextCursor"
+                  ]
+                },
+                "example": {
+                  "items": [
+                    {
+                      "id": "app_info_123",
+                      "appId": "1234567890",
+                      "state": "PREPARE_FOR_SUBMISSION",
+                      "ageRatingDeclarationId": "age_rating_declaration_123",
+                      "primaryCategoryId": "UTILITIES",
+                      "primarySubcategoryOneId": "primary_subcategory_one_123"
+                    }
+                  ],
+                  "nextCursor": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query or cursor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Facade authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Facade or Apple permission denied.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource or locale not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Only GET is implemented.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ambiguous locale.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Apple validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited; respect Retry-After.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid upstream response or credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Unavailable or unconfigured.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Upstream timeout.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-apple-path": "/v1/apps/{id}/appInfos",
+        "x-implementation-status": "implemented"
+      }
+    },
+    "/v1/connections/{connectionId}/apps/{appId}/app-infos/{appInfoId}": {
+      "get": {
+        "operationId": "appInfo",
+        "summary": "Read app info information",
+        "description": "Read app info information as a flat JSON object.",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "appId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "appInfoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "state"
+                ]
+              }
+            },
+            "style": "form",
+            "explode": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Flat resource or bounded collection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "appId": {
+                      "type": "string"
+                    },
+                    "state": {
+                      "type": "string"
+                    },
+                    "ageRatingDeclarationId": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "primaryCategoryId": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "primarySubcategoryOneId": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "primarySubcategoryTwoId": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "secondaryCategoryId": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "secondarySubcategoryOneId": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "secondarySubcategoryTwoId": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "appId"
+                  ]
+                },
+                "example": {
+                  "id": "app_info_123",
+                  "appId": "1234567890",
+                  "state": "PREPARE_FOR_SUBMISSION",
+                  "ageRatingDeclarationId": "age_rating_declaration_123",
+                  "primaryCategoryId": "UTILITIES",
+                  "primarySubcategoryOneId": "primary_subcategory_one_123"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query or cursor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Facade authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Facade or Apple permission denied.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource or locale not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Only GET is implemented.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ambiguous locale.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Apple validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited; respect Retry-After.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid upstream response or credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Unavailable or unconfigured.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Upstream timeout.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-apple-path": "/v1/appInfos/{id}",
+        "x-implementation-status": "implemented"
+      }
+    },
+    "/v1/connections/{connectionId}/apps/{appId}/app-infos/{appInfoId}/localizations": {
+      "get": {
+        "operationId": "appInfoLocalizations",
+        "summary": "List all app info localizations for an app info",
+        "description": "Read a page of app info localization resources as flat JSON objects.",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "appId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "appInfoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "style": "form",
+            "explode": false
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "locale",
+                  "name",
+                  "subtitle",
+                  "privacyPolicyUrl",
+                  "privacyChoicesUrl",
+                  "privacyPolicyText"
+                ]
+              }
+            },
+            "style": "form",
+            "explode": false
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "default": 50
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Flat resource or bounded collection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "appId": {
+                            "type": "string"
+                          },
+                          "appInfoId": {
+                            "type": "string"
+                          },
+                          "locale": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "subtitle": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "privacyPolicyUrl": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "privacyChoicesUrl": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "privacyPolicyText": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "appId",
+                          "appInfoId"
+                        ]
+                      }
+                    },
+                    "nextCursor": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "nextCursor"
+                  ]
+                },
+                "example": {
+                  "items": [
+                    {
+                      "id": "app_info_localization_123",
+                      "appId": "1234567890",
+                      "appInfoId": "app_info_123",
+                      "locale": "en-US",
+                      "name": "Example Notes",
+                      "subtitle": "Notes that stay with you"
+                    }
+                  ],
+                  "nextCursor": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query or cursor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Facade authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Facade or Apple permission denied.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource or locale not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Only GET is implemented.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ambiguous locale.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Apple validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited; respect Retry-After.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid upstream response or credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Unavailable or unconfigured.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Upstream timeout.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-apple-path": "/v1/appInfos/{id}/appInfoLocalizations",
+        "x-implementation-status": "implemented"
+      }
+    },
+    "/v1/connections/{connectionId}/apps/{appId}/app-infos/{appInfoId}/localizations/{locale}": {
+      "get": {
+        "operationId": "appInfoLocalization",
+        "summary": "Read app info localization information",
+        "description": "Read app info localization information as a flat JSON object. Address an exact locale; the service resolves its localization ID.",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "appId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "appInfoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "locale",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "locale",
+                  "name",
+                  "subtitle",
+                  "privacyPolicyUrl",
+                  "privacyChoicesUrl",
+                  "privacyPolicyText"
+                ]
+              }
+            },
+            "style": "form",
+            "explode": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Flat resource or bounded collection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "appId": {
+                      "type": "string"
+                    },
+                    "appInfoId": {
+                      "type": "string"
+                    },
+                    "locale": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "subtitle": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "privacyPolicyUrl": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "privacyChoicesUrl": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "privacyPolicyText": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "appId",
+                    "appInfoId"
+                  ]
+                },
+                "example": {
+                  "id": "app_info_localization_123",
+                  "appId": "1234567890",
+                  "appInfoId": "app_info_123",
+                  "locale": "en-US",
+                  "name": "Example Notes",
+                  "subtitle": "Notes that stay with you"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query or cursor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Facade authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Facade or Apple permission denied.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource or locale not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Only GET is implemented.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ambiguous locale.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Apple validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited; respect Retry-After.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid upstream response or credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Unavailable or unconfigured.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Upstream timeout.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-apple-path": "/v1/appInfoLocalizations/{id}",
+        "x-implementation-status": "implemented"
+      }
+    },
+    "/v1/connections/{connectionId}/apps/{appId}/app-infos/{appInfoId}/age-rating": {
+      "get": {
+        "operationId": "ageRating",
+        "summary": "Read the age-rating declaration",
+        "description": "Read age rating declaration information as a flat JSON object.",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "appId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "appInfoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "advertising",
+                  "alcoholTobaccoOrDrugUseOrReferences",
+                  "contests",
+                  "gambling",
+                  "gamblingSimulated",
+                  "gunsOrOtherWeapons",
+                  "healthOrWellnessTopics",
+                  "kidsAgeBand",
+                  "lootBox",
+                  "medicalOrTreatmentInformation",
+                  "messagingAndChat",
+                  "parentalControls",
+                  "profanityOrCrudeHumor",
+                  "ageAssurance",
+                  "sexualContentGraphicAndNudity",
+                  "sexualContentOrNudity",
+                  "socialMedia",
+                  "socialMediaAgeRestricted",
+                  "horrorOrFearThemes",
+                  "matureOrSuggestiveThemes",
+                  "unrestrictedWebAccess",
+                  "userGeneratedContent",
+                  "violenceCartoonOrFantasy",
+                  "violenceRealisticProlongedGraphicOrSadistic",
+                  "violenceRealistic",
+                  "ageRatingOverrideV2",
+                  "koreaAgeRatingOverride",
+                  "gracRatingClassificationNumber",
+                  "developerAgeRatingInfoUrl"
+                ]
+              }
+            },
+            "style": "form",
+            "explode": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Flat resource or bounded collection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "appId": {
+                      "type": "string"
+                    },
+                    "appInfoId": {
+                      "type": "string"
+                    },
+                    "advertising": {
+                      "type": "boolean"
+                    },
+                    "alcoholTobaccoOrDrugUseOrReferences": {
+                      "type": "string"
+                    },
+                    "contests": {
+                      "type": "string"
+                    },
+                    "gambling": {
+                      "type": "boolean"
+                    },
+                    "gamblingSimulated": {
+                      "type": "string"
+                    },
+                    "gunsOrOtherWeapons": {
+                      "type": "string"
+                    },
+                    "healthOrWellnessTopics": {
+                      "type": "boolean"
+                    },
+                    "kidsAgeBand": {
+                      "type": "string"
+                    },
+                    "lootBox": {
+                      "type": "boolean"
+                    },
+                    "medicalOrTreatmentInformation": {
+                      "type": "string"
+                    },
+                    "messagingAndChat": {
+                      "type": "boolean"
+                    },
+                    "parentalControls": {
+                      "type": "boolean"
+                    },
+                    "profanityOrCrudeHumor": {
+                      "type": "string"
+                    },
+                    "ageAssurance": {
+                      "type": "boolean"
+                    },
+                    "sexualContentGraphicAndNudity": {
+                      "type": "string"
+                    },
+                    "sexualContentOrNudity": {
+                      "type": "string"
+                    },
+                    "socialMedia": {
+                      "type": "boolean"
+                    },
+                    "socialMediaAgeRestricted": {
+                      "type": "boolean"
+                    },
+                    "horrorOrFearThemes": {
+                      "type": "string"
+                    },
+                    "matureOrSuggestiveThemes": {
+                      "type": "string"
+                    },
+                    "unrestrictedWebAccess": {
+                      "type": "boolean"
+                    },
+                    "userGeneratedContent": {
+                      "type": "boolean"
+                    },
+                    "violenceCartoonOrFantasy": {
+                      "type": "string"
+                    },
+                    "violenceRealisticProlongedGraphicOrSadistic": {
+                      "type": "string"
+                    },
+                    "violenceRealistic": {
+                      "type": "string"
+                    },
+                    "ageRatingOverrideV2": {
+                      "type": "string"
+                    },
+                    "koreaAgeRatingOverride": {
+                      "type": "string"
+                    },
+                    "gracRatingClassificationNumber": {
+                      "type": "string"
+                    },
+                    "developerAgeRatingInfoUrl": {
+                      "type": "string",
+                      "format": "uri"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "appId",
+                    "appInfoId"
+                  ]
+                },
+                "example": {
+                  "id": "age_rating_declaration_123",
+                  "appId": "1234567890",
+                  "appInfoId": "app_info_123",
+                  "advertising": false,
+                  "alcoholTobaccoOrDrugUseOrReferences": "NONE",
+                  "contests": "NONE"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query or cursor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Facade authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Facade or Apple permission denied.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource or locale not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Only GET is implemented.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ambiguous locale.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Apple validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited; respect Retry-After.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid upstream response or credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Unavailable or unconfigured.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Upstream timeout.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-apple-path": "/v1/appInfos/{id}/ageRatingDeclaration",
+        "x-implementation-status": "implemented"
+      }
+    },
+    "/v1/connections/{connectionId}/apps/{appId}/versions": {
+      "get": {
+        "operationId": "versions",
+        "summary": "List all App Store versions for an app",
+        "description": "Read a page of app store version resources as flat JSON objects.",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "appId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "platform",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "IOS",
+                  "MAC_OS",
+                  "TV_OS",
+                  "VISION_OS"
+                ]
+              }
+            },
+            "style": "form",
+            "explode": false
+          },
+          {
+            "name": "versionString",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "style": "form",
+            "explode": false
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "ACCEPTED",
+                  "DEVELOPER_REJECTED",
+                  "IN_REVIEW",
+                  "INVALID_BINARY",
+                  "METADATA_REJECTED",
+                  "PENDING_APPLE_RELEASE",
+                  "PENDING_DEVELOPER_RELEASE",
+                  "PREPARE_FOR_SUBMISSION",
+                  "PROCESSING_FOR_DISTRIBUTION",
+                  "READY_FOR_DISTRIBUTION",
+                  "READY_FOR_REVIEW",
+                  "REJECTED",
+                  "REPLACED_WITH_NEW_VERSION",
+                  "WAITING_FOR_EXPORT_COMPLIANCE",
+                  "WAITING_FOR_REVIEW"
+                ]
+              }
+            },
+            "style": "form",
+            "explode": false
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "style": "form",
+            "explode": false
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "platform",
+                  "versionString",
+                  "appVersionState",
+                  "copyright",
+                  "reviewType",
+                  "releaseType",
+                  "earliestReleaseDate",
+                  "downloadable",
+                  "createdDate"
+                ]
+              }
+            },
+            "style": "form",
+            "explode": false
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "default": 50
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Flat resource or bounded collection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "appId": {
+                            "type": "string"
+                          },
+                          "platform": {
+                            "type": "string"
+                          },
+                          "versionString": {
+                            "type": "string"
+                          },
+                          "appVersionState": {
+                            "type": "string"
+                          },
+                          "copyright": {
+                            "type": "string"
+                          },
+                          "reviewType": {
+                            "type": "string"
+                          },
+                          "releaseType": {
+                            "type": "string"
+                          },
+                          "earliestReleaseDate": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "downloadable": {
+                            "type": "boolean"
+                          },
+                          "createdDate": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "buildId": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "appStoreVersionPhasedReleaseId": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "gameCenterAppVersionId": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "routingAppCoverageId": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "appStoreReviewDetailId": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "appStoreVersionSubmissionId": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "experienceId": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "alternativeDistributionPackageId": {
+                            "type": "string",
+                            "nullable": true
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "appId"
+                        ]
+                      }
+                    },
+                    "nextCursor": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "nextCursor"
+                  ]
+                },
+                "example": {
+                  "items": [
+                    {
+                      "id": "version_123",
+                      "appId": "1234567890",
+                      "platform": "IOS",
+                      "versionString": "1.2.3",
+                      "appVersionState": "PREPARE_FOR_SUBMISSION",
+                      "copyright": "2026 Example Company"
+                    }
+                  ],
+                  "nextCursor": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query or cursor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Facade authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Facade or Apple permission denied.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource or locale not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Only GET is implemented.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ambiguous locale.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Apple validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited; respect Retry-After.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid upstream response or credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Unavailable or unconfigured.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Upstream timeout.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-apple-path": "/v1/apps/{id}/appStoreVersions",
+        "x-implementation-status": "implemented"
+      }
+    },
+    "/v1/connections/{connectionId}/apps/{appId}/versions/{versionId}": {
+      "get": {
+        "operationId": "version",
+        "summary": "Read App Store version information",
+        "description": "Read app store version information as a flat JSON object.",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "appId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "versionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "platform",
+                  "versionString",
+                  "appVersionState",
+                  "copyright",
+                  "reviewType",
+                  "releaseType",
+                  "earliestReleaseDate",
+                  "downloadable",
+                  "createdDate"
+                ]
+              }
+            },
+            "style": "form",
+            "explode": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Flat resource or bounded collection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "appId": {
+                      "type": "string"
+                    },
+                    "platform": {
+                      "type": "string"
+                    },
+                    "versionString": {
+                      "type": "string"
+                    },
+                    "appVersionState": {
+                      "type": "string"
+                    },
+                    "copyright": {
+                      "type": "string"
+                    },
+                    "reviewType": {
+                      "type": "string"
+                    },
+                    "releaseType": {
+                      "type": "string"
+                    },
+                    "earliestReleaseDate": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "downloadable": {
+                      "type": "boolean"
+                    },
+                    "createdDate": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "buildId": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "appStoreVersionPhasedReleaseId": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "gameCenterAppVersionId": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "routingAppCoverageId": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "appStoreReviewDetailId": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "appStoreVersionSubmissionId": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "experienceId": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "alternativeDistributionPackageId": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "appId"
+                  ]
+                },
+                "example": {
+                  "id": "version_123",
+                  "appId": "1234567890",
+                  "platform": "IOS",
+                  "versionString": "1.2.3",
+                  "appVersionState": "PREPARE_FOR_SUBMISSION",
+                  "copyright": "2026 Example Company"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query or cursor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Facade authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Facade or Apple permission denied.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource or locale not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Only GET is implemented.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ambiguous locale.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Apple validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited; respect Retry-After.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid upstream response or credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Unavailable or unconfigured.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Upstream timeout.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-apple-path": "/v1/appStoreVersions/{id}",
+        "x-implementation-status": "implemented"
+      }
+    },
+    "/v1/connections/{connectionId}/apps/{appId}/versions/{versionId}/localizations": {
+      "get": {
+        "operationId": "versionLocalizations",
+        "summary": "List all App Store version localizations for an App Store version",
+        "description": "Read a page of app store version localization resources as flat JSON objects.",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "appId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "versionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "style": "form",
+            "explode": false
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "description",
+                  "locale",
+                  "keywords",
+                  "marketingUrl",
+                  "promotionalText",
+                  "supportUrl",
+                  "whatsNew"
+                ]
+              }
+            },
+            "style": "form",
+            "explode": false
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "default": 50
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Flat resource or bounded collection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "appId": {
+                            "type": "string"
+                          },
+                          "versionId": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "locale": {
+                            "type": "string"
+                          },
+                          "keywords": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "marketingUrl": {
+                            "type": "string",
+                            "format": "uri",
+                            "nullable": true
+                          },
+                          "promotionalText": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "supportUrl": {
+                            "type": "string",
+                            "format": "uri",
+                            "nullable": true
+                          },
+                          "whatsNew": {
+                            "type": "string",
+                            "nullable": true
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "appId",
+                          "versionId"
+                        ]
+                      }
+                    },
+                    "nextCursor": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "nextCursor"
+                  ]
+                },
+                "example": {
+                  "items": [
+                    {
+                      "id": "app_store_version_localization_123",
+                      "appId": "1234567890",
+                      "versionId": "version_123",
+                      "description": "Keep your notes organized.",
+                      "locale": "en-US",
+                      "keywords": "notes,productivity,writing"
+                    }
+                  ],
+                  "nextCursor": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query or cursor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Facade authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Facade or Apple permission denied.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource or locale not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Only GET is implemented.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ambiguous locale.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Apple validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited; respect Retry-After.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid upstream response or credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Unavailable or unconfigured.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Upstream timeout.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-apple-path": "/v1/appStoreVersions/{id}/appStoreVersionLocalizations",
+        "x-implementation-status": "implemented"
+      }
+    },
+    "/v1/connections/{connectionId}/apps/{appId}/versions/{versionId}/localizations/{locale}": {
+      "get": {
+        "operationId": "versionLocalization",
+        "summary": "Read a version localization",
+        "description": "Read the store listing for an exact version and locale. Address the locale directly; Parsequerade resolves Apple’s localization ID.",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "appId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "versionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "locale",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "description",
+                  "locale",
+                  "keywords",
+                  "marketingUrl",
+                  "promotionalText",
+                  "supportUrl",
+                  "whatsNew"
+                ]
+              }
+            },
+            "style": "form",
+            "explode": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Flat resource or bounded collection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "appId": {
+                      "type": "string"
+                    },
+                    "versionId": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "locale": {
+                      "type": "string"
+                    },
+                    "keywords": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "marketingUrl": {
+                      "type": "string",
+                      "format": "uri",
+                      "nullable": true
+                    },
+                    "promotionalText": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "supportUrl": {
+                      "type": "string",
+                      "format": "uri",
+                      "nullable": true
+                    },
+                    "whatsNew": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "appId",
+                    "versionId"
+                  ]
+                },
+                "example": {
+                  "id": "localization_456",
+                  "appId": "1234567890",
+                  "versionId": "version_123",
+                  "locale": "en-US",
+                  "description": "Keep your notes organized.",
+                  "keywords": "notes,productivity,writing",
+                  "marketingUrl": null,
+                  "supportUrl": "https://example.com/support",
+                  "promotionalText": "A clearer place for your ideas.",
+                  "whatsNew": "Faster search and improved offline editing."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query or cursor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Facade authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Facade or Apple permission denied.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource or locale not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Only GET is implemented.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ambiguous locale.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Apple validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited; respect Retry-After.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid upstream response or credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Unavailable or unconfigured.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Upstream timeout.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-apple-path": "/v1/appStoreVersionLocalizations/{id}",
+        "x-implementation-status": "implemented"
+      }
+    },
+    "/v1/connections/{connectionId}/apps/{appId}/versions/{versionId}/review-contact": {
+      "get": {
+        "operationId": "reviewContact",
+        "summary": "Read the App Store review details resource information of an App Store version",
+        "description": "Read app store review detail information as a flat JSON object.",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "appId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "versionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "contactFirstName",
+                  "contactLastName",
+                  "contactPhone",
+                  "contactEmail"
+                ]
+              }
+            },
+            "style": "form",
+            "explode": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Flat resource or bounded collection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "appId": {
+                      "type": "string"
+                    },
+                    "versionId": {
+                      "type": "string"
+                    },
+                    "contactFirstName": {
+                      "type": "string"
+                    },
+                    "contactLastName": {
+                      "type": "string"
+                    },
+                    "contactPhone": {
+                      "type": "string"
+                    },
+                    "contactEmail": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "appId",
+                    "versionId"
+                  ]
+                },
+                "example": {
+                  "id": "app_store_review_detail_123",
+                  "appId": "1234567890",
+                  "versionId": "version_123",
+                  "contactFirstName": "Alex",
+                  "contactLastName": "Example",
+                  "contactPhone": "+1 415 555 0100"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query or cursor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Facade authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Facade or Apple permission denied.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource or locale not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Only GET is implemented.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ambiguous locale.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Apple validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited; respect Retry-After.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid upstream response or credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Unavailable or unconfigured.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Upstream timeout.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-apple-path": "/v1/appStoreVersions/{id}/appStoreReviewDetail",
+        "x-implementation-status": "implemented"
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "facadeKey": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "object",
+            "required": [
+              "code",
+              "message",
+              "requestId",
+              "retryable",
+              "details"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "requestId": {
+                "type": "string"
+              },
+              "retryable": {
+                "type": "boolean"
+              },
+              "details": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "field": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
