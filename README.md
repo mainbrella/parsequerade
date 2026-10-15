@@ -1,18 +1,22 @@
 # Parsequerade
 
-Parsequerade is a JSON REST facade for App Store Connect. The hosted service domain is [parsequerade.mainbrella.com](https://parsequerade.mainbrella.com); the repository contains its Cloudflare Worker and static documentation site. Its core reads turn Apple's resource envelopes, type identifiers, and relationship links into ordinary JSON and predictable resource URLs.
+Parsequerade simplifies App Store Connect into flat JSON and predictable resource operations. **The [Rust SDK](sdks/rust/README.md) and [TypeScript SDK](sdks/typescript/README.md) are the recommended way to use it.** They run the facade inside your program and send requests directly to Apple, handling JWT signing, resource lookup, and response translation locally.
 
-The goal is to let a client list apps, edit a localized description, update a review contact, or read sales data without signing Apple JWTs, looking up internal child IDs, or assembling relationship payloads.
+The hosted REST API at [parsequerade.mainbrella.com](https://parsequerade.mainbrella.com) is also available, but its extra network hop adds latency and can make it noticeably slower. Hosted requests travel from your app through Cloudflare to Apple; SDK requests go straight from your app to Apple. Use an SDK for application integrations, especially when latency matters. The hosted API remains useful for `curl`, quick experiments, or clients that need a remote REST service.
 
-**Status:** The first slice is implemented: 12 GET routes for apps, app infos, versions, their localization collections and exact locales, age ratings, and review contacts. Public hosted connection onboarding and revocation are also implemented in the Worker. The scoped age-rating POST is implemented. Other writes, reports, copy workflows, and broader reads remain planned. See [rest.md](rest.md) for the remaining milestones.
+The goal is to let a client list apps, edit a localized description, update a review contact, or read sales data without implementing Apple JWT signing, looking up internal child IDs, or assembling relationship payloads.
 
-## Use the facade directly from Rust or TypeScript
+**Status:** Both SDKs and the hosted API support 12 reads for apps, app infos, versions, their localization collections and exact locales, age ratings, and review contacts, plus the scoped age-rating update. The Worker also supports hosted connection onboarding and revocation. Other writes, reports, copy workflows, and broader reads remain planned. See [rest.md](rest.md) for the remaining milestones.
+
+## Start with an SDK (recommended)
 
 The [Rust SDK](sdks/rust/README.md) and [TypeScript SDK](sdks/typescript/README.md) implement the same 12 reads and age-rating update inside your program. They send requests directly to Apple, removing the Cloudflare proxy hop while retaining flat resources, facade query names, exact-locale lookup, ownership checks, pagination, and stable errors. JWT signing and caching happen locally with your Apple team key; no hosted connection or facade API key is needed.
 
 The Rust crate at `sdks/rust` can be used as a Cargo path dependency. The Node.js 22+ ESM package at `sdks/typescript` is named `@parsequerade/sdk` and bundles the Worker's facade code without runtime dependencies. Both SDKs generate types from the same reviewed contracts. See the [Rust example](sdks/rust/examples/list_apps.rs) and [TypeScript package example](sdks/typescript/examples/list-apps.mjs) for authentication and pagination. Neither SDK is published to its package registry yet. Scoped operations can still require multiple Apple calls to resolve and verify their targets.
 
-## Connect to the hosted API
+## Use the hosted API (optional)
+
+This is the slower, proxied path: your app → Cloudflare → Apple. Choose it when a remote REST endpoint is useful enough to accept the added latency. SDK users can skip this section and the Worker deployment setup; they only need their Apple team key and the SDK's installation instructions.
 
 When the Worker is deployed with its hosted-connection bindings and encryption secret, you can connect an App Store Connect team key with `curl` and receive a read-only facade key for the apps that Apple key can access. Hosted setup requires a Cloudflare Durable Object binding/migration and a stable `CONNECTION_ENCRYPTION_KEY`; see deployment setup below.
 
@@ -157,7 +161,7 @@ Apple already provides a REST API that returns JSON. The difficulty is its resou
 
 An app's metadata also spans several resources. App names and privacy URLs belong to app-info localizations. Descriptions and release notes belong to version localizations. A review contact is another resource associated with a version. Editing one field can require finding the right parent, following a relationship, resolving a child ID, and then constructing a typed update body.
 
-Parsequerade moves that translation into one service. Clients work with app IDs, explicit app-info or version IDs, locale strings, and ordinary JSON fields.
+Parsequerade handles that translation inside your SDK or the hosted Worker. Clients work with app IDs, explicit app-info or version IDs, locale strings, and ordinary JSON fields.
 
 The planned shape has some overlap with [applelink](https://github.com/tramlinehq/applelink), which already offers flat JSON and multi-request release recipes. Parsequerade's design focuses on server-owned Apple credentials, explicit resource targets, and durable plans and results that callers can inspect.
 
@@ -280,7 +284,7 @@ Routes below are relative to that base. This is a summary; [rest.md](rest.md#res
 
 Writes start with the specific fields listed in the plan. Reading a field does not make it writable. Uploads, submission, pricing, and broader TestFlight management need separate contract work.
 
-## What the service handles
+## What the facade handles
 
 - **Resource translation.** Flatten `attributes`, build Apple's typed request envelopes, and translate supported relationship edits. For example, `{"primaryCategoryId":"UTILITIES"}` becomes a category relationship update.
 - **Target selection.** Resolve localization and review-contact IDs internally. Require explicit app-info and version targets for writes; never silently pick the first version or substitute another locale.
@@ -290,9 +294,11 @@ Writes start with the specific fields listed in the plan. Reading a field does n
 - **Write tracking.** Require idempotency keys and record write attempts. If a dispatched write times out, expose its uncertain outcome for reconciliation instead of blindly repeating it.
 - **Copy workflows.** Preview selected metadata changes before execution, then expose progress and per-step outcomes. Multi-request copies can partially succeed; cancellation does not undo completed writes.
 
-Apple's permissions, validation rules, and editable states still apply. The facade gives clients a consistent way to address resources and inspect outcomes while keeping Apple's authentication, graph traversal, and report parsing inside the service.
+Apple's permissions, validation rules, and editable states still apply. The facade gives clients a consistent way to address resources and inspect outcomes while handling Apple's authentication and graph traversal in the SDK or hosted Worker. Report parsing remains planned.
 
 ## Plan
+
+The SDKs are the main integration path. They preserve the facade while avoiding the hosted proxy hop; the hosted API remains an optional way to access it over REST.
 
 The hosted self-service flow lets each user supply an Apple team key and receive a facade key scoped to that connection, read-only unless write access is explicitly requested. The Worker stores hosted credentials encrypted and supports authenticated connection deletion. Operator configuration remains supported. Reads return data without changing Apple resources.
 
