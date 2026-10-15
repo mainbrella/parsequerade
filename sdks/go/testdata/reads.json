@@ -1,0 +1,497 @@
+[
+  {
+    "handler": "apps",
+    "collection": true,
+    "path": "/apps",
+    "item": {
+      "type": "apps",
+      "id": "123",
+      "attributes": {
+        "name": "Example Notes",
+        "bundleId": "com.example.notes"
+      }
+    },
+    "responses": [
+      {
+        "data": [
+          {
+            "type": "apps",
+            "id": "123",
+            "attributes": {
+              "name": "Example Notes",
+              "bundleId": "com.example.notes"
+            }
+          }
+        ],
+        "links": {
+          "next": null
+        }
+      }
+    ]
+  },
+  {
+    "handler": "app",
+    "collection": false,
+    "path": "/apps/123",
+    "item": {
+      "type": "apps",
+      "id": "123",
+      "attributes": {
+        "name": "Example Notes",
+        "bundleId": "com.example.notes"
+      }
+    },
+    "responses": [
+      {
+        "data": {
+          "type": "apps",
+          "id": "123",
+          "attributes": {
+            "name": "Example Notes",
+            "bundleId": "com.example.notes"
+          }
+        },
+        "links": {
+          "next": null
+        }
+      }
+    ]
+  },
+  {
+    "handler": "appInfos",
+    "collection": true,
+    "path": "/apps/123/app-infos",
+    "item": {
+      "type": "appInfos",
+      "id": "info_1",
+      "attributes": {
+        "state": "PREPARE_FOR_SUBMISSION"
+      }
+    },
+    "responses": [
+      {
+        "data": [
+          {
+            "type": "appInfos",
+            "id": "info_1",
+            "attributes": {
+              "state": "PREPARE_FOR_SUBMISSION"
+            }
+          }
+        ],
+        "links": {
+          "next": null
+        }
+      }
+    ]
+  },
+  {
+    "handler": "appInfo",
+    "collection": false,
+    "path": "/apps/123/app-infos/info_1",
+    "item": {
+      "type": "appInfos",
+      "id": "info_1",
+      "attributes": {
+        "state": "PREPARE_FOR_SUBMISSION"
+      }
+    },
+    "responses": [
+      {
+        "data": [
+          {
+            "type": "appInfos",
+            "id": "info_1",
+            "attributes": {
+              "state": "PREPARE_FOR_SUBMISSION"
+            }
+          }
+        ],
+        "links": {
+          "next": null
+        }
+      },
+      {
+        "data": {
+          "type": "appInfos",
+          "id": "info_1",
+          "attributes": {
+            "state": "PREPARE_FOR_SUBMISSION"
+          }
+        },
+        "links": {
+          "next": null
+        }
+      }
+    ]
+  },
+  {
+    "handler": "appInfoLocalizations",
+    "collection": true,
+    "path": "/apps/123/app-infos/info_1/localizations",
+    "item": {
+      "type": "appInfoLocalizations",
+      "id": "locale_1",
+      "attributes": {
+        "locale": "en-US",
+        "name": "Example Notes",
+        "privacyPolicyUrl": null
+      }
+    },
+    "responses": [
+      {
+        "data": [
+          {
+            "type": "appInfos",
+            "id": "info_1",
+            "attributes": {
+              "state": "PREPARE_FOR_SUBMISSION"
+            }
+          }
+        ],
+        "links": {
+          "next": null
+        }
+      },
+      {
+        "data": [
+          {
+            "type": "appInfoLocalizations",
+            "id": "locale_1",
+            "attributes": {
+              "locale": "en-US",
+              "name": "Example Notes",
+              "privacyPolicyUrl": null
+            }
+          }
+        ],
+        "links": {
+          "next": null
+        }
+      }
+    ]
+  },
+  {
+    "handler": "appInfoLocalization",
+    "collection": false,
+    "path": "/apps/123/app-infos/info_1/localizations/en-US",
+    "item": {
+      "type": "appInfoLocalizations",
+      "id": "locale_1",
+      "attributes": {
+        "locale": "en-US",
+        "name": "Example Notes",
+        "privacyPolicyUrl": null
+      }
+    },
+    "responses": [
+      {
+        "data": [
+          {
+            "type": "appInfos",
+            "id": "info_1",
+            "attributes": {
+              "state": "PREPARE_FOR_SUBMISSION"
+            }
+          }
+        ],
+        "links": {
+          "next": null
+        }
+      },
+      {
+        "data": [
+          {
+            "type": "appInfoLocalizations",
+            "id": "locale_1",
+            "attributes": {
+              "locale": "en-US",
+              "name": "Example Notes",
+              "privacyPolicyUrl": null
+            }
+          }
+        ],
+        "links": {
+          "next": null
+        }
+      },
+      {
+        "data": {
+          "type": "appInfoLocalizations",
+          "id": "locale_1",
+          "attributes": {
+            "locale": "en-US",
+            "name": "Example Notes",
+            "privacyPolicyUrl": null
+          }
+        },
+        "links": {
+          "next": null
+        }
+      }
+    ]
+  },
+  {
+    "handler": "ageRating",
+    "collection": false,
+    "path": "/apps/123/app-infos/info_1/age-rating",
+    "item": {
+      "type": "ageRatingDeclarations",
+      "id": "rating_1",
+      "attributes": {
+        "gambling": false,
+        "ageRatingOverrideV2": "FUTURE_READ_VALUE"
+      }
+    },
+    "responses": [
+      {
+        "data": [
+          {
+            "type": "appInfos",
+            "id": "info_1",
+            "attributes": {
+              "state": "PREPARE_FOR_SUBMISSION"
+            }
+          }
+        ],
+        "links": {
+          "next": null
+        }
+      },
+      {
+        "data": {
+          "type": "ageRatingDeclarations",
+          "id": "rating_1",
+          "attributes": {
+            "gambling": false,
+            "ageRatingOverrideV2": "FUTURE_READ_VALUE"
+          }
+        },
+        "links": {
+          "next": null
+        }
+      }
+    ]
+  },
+  {
+    "handler": "versions",
+    "collection": true,
+    "path": "/apps/123/versions",
+    "item": {
+      "type": "appStoreVersions",
+      "id": "version_1",
+      "attributes": {
+        "platform": "IOS",
+        "appVersionState": "PREPARE_FOR_SUBMISSION"
+      }
+    },
+    "responses": [
+      {
+        "data": [
+          {
+            "type": "appStoreVersions",
+            "id": "version_1",
+            "attributes": {
+              "platform": "IOS",
+              "appVersionState": "PREPARE_FOR_SUBMISSION"
+            }
+          }
+        ],
+        "links": {
+          "next": null
+        }
+      }
+    ]
+  },
+  {
+    "handler": "version",
+    "collection": false,
+    "path": "/apps/123/versions/version_1",
+    "item": {
+      "type": "appStoreVersions",
+      "id": "version_1",
+      "attributes": {
+        "platform": "IOS",
+        "appVersionState": "PREPARE_FOR_SUBMISSION"
+      }
+    },
+    "responses": [
+      {
+        "data": [
+          {
+            "type": "appStoreVersions",
+            "id": "version_1",
+            "attributes": {
+              "platform": "IOS",
+              "appVersionState": "PREPARE_FOR_SUBMISSION"
+            }
+          }
+        ],
+        "links": {
+          "next": null
+        }
+      },
+      {
+        "data": {
+          "type": "appStoreVersions",
+          "id": "version_1",
+          "attributes": {
+            "platform": "IOS",
+            "appVersionState": "PREPARE_FOR_SUBMISSION"
+          }
+        },
+        "links": {
+          "next": null
+        }
+      }
+    ]
+  },
+  {
+    "handler": "versionLocalizations",
+    "collection": true,
+    "path": "/apps/123/versions/version_1/localizations",
+    "item": {
+      "type": "appStoreVersionLocalizations",
+      "id": "locale_1",
+      "attributes": {
+        "locale": "en-US",
+        "description": "Example description"
+      }
+    },
+    "responses": [
+      {
+        "data": [
+          {
+            "type": "appStoreVersions",
+            "id": "version_1",
+            "attributes": {
+              "platform": "IOS",
+              "appVersionState": "PREPARE_FOR_SUBMISSION"
+            }
+          }
+        ],
+        "links": {
+          "next": null
+        }
+      },
+      {
+        "data": [
+          {
+            "type": "appStoreVersionLocalizations",
+            "id": "locale_1",
+            "attributes": {
+              "locale": "en-US",
+              "description": "Example description"
+            }
+          }
+        ],
+        "links": {
+          "next": null
+        }
+      }
+    ]
+  },
+  {
+    "handler": "versionLocalization",
+    "collection": false,
+    "path": "/apps/123/versions/version_1/localizations/en-US",
+    "item": {
+      "type": "appStoreVersionLocalizations",
+      "id": "locale_1",
+      "attributes": {
+        "locale": "en-US",
+        "description": "Example description"
+      }
+    },
+    "responses": [
+      {
+        "data": [
+          {
+            "type": "appStoreVersions",
+            "id": "version_1",
+            "attributes": {
+              "platform": "IOS",
+              "appVersionState": "PREPARE_FOR_SUBMISSION"
+            }
+          }
+        ],
+        "links": {
+          "next": null
+        }
+      },
+      {
+        "data": [
+          {
+            "type": "appStoreVersionLocalizations",
+            "id": "locale_1",
+            "attributes": {
+              "locale": "en-US",
+              "description": "Example description"
+            }
+          }
+        ],
+        "links": {
+          "next": null
+        }
+      },
+      {
+        "data": {
+          "type": "appStoreVersionLocalizations",
+          "id": "locale_1",
+          "attributes": {
+            "locale": "en-US",
+            "description": "Example description"
+          }
+        },
+        "links": {
+          "next": null
+        }
+      }
+    ]
+  },
+  {
+    "handler": "reviewContact",
+    "collection": false,
+    "path": "/apps/123/versions/version_1/review-contact",
+    "item": {
+      "type": "appStoreReviewDetails",
+      "id": "review_1",
+      "attributes": {
+        "contactEmail": "review@example.com",
+        "notes": "private",
+        "demoAccountPassword": "secret"
+      }
+    },
+    "responses": [
+      {
+        "data": [
+          {
+            "type": "appStoreVersions",
+            "id": "version_1",
+            "attributes": {
+              "platform": "IOS",
+              "appVersionState": "PREPARE_FOR_SUBMISSION"
+            }
+          }
+        ],
+        "links": {
+          "next": null
+        }
+      },
+      {
+        "data": {
+          "type": "appStoreReviewDetails",
+          "id": "review_1",
+          "attributes": {
+            "contactEmail": "review@example.com",
+            "notes": "private",
+            "demoAccountPassword": "secret"
+          }
+        },
+        "links": {
+          "next": null
+        }
+      }
+    ]
+  }
+]
