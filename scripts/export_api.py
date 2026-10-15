@@ -65,10 +65,33 @@ def outputs():
                        (502, "Invalid upstream response or credentials."), (503, "Unavailable or unconfigured."), (504, "Upstream timeout.")]}},
             "x-apple-path": endpoint["applePath"], "x-implementation-status": "implemented",
         }}
+    write = json.loads((ROOT / "api/age-rating-write-contract.json").read_text())
+    rating = next(route for route in routes if route["handler"] == "ageRating")
+    path = "/v1/connections/{connectionId}" + write["route"]
+    write_attributes = {name: {**schema, **({"maxLength": 2048} if schema.get("type") == "string" else {})}
+                        for name, schema in write["attributes"].items()}
+    paths[path]["get"]["responses"]["405"]["description"] = "Use GET or POST."
+    paths[path]["post"] = {
+        "operationId": "updateAgeRating", "summary": "Update an app's age rating declaration",
+        "description": "Requires read and write capabilities. Proves the app-info belongs to the selected app, resolves its declaration ID, and sends one Apple PATCH without retrying. Only supplied attributes change. No query parameters or IDs are accepted. Unknown or deprecated fields and enum values are rejected. Questionnaire answers cannot be null. Optional override/text fields can be null to clear them. URL values must be HTTP(S) without embedded credentials. Apple decides whether the app state, key role, and combination of answers permit the update. On write_outcome_unknown (network, timeout, or malformed success response), read back before considering another POST.",
+        "parameters": [parameter for parameter in paths[path]["get"]["parameters"] if parameter["in"] == "path"],
+        "requestBody": {"required": True, "description": "A flat nonempty subset of writable attributes, at most 8 KiB of JSON.", "content": {"application/json": {
+            "schema": {"type": "object", "additionalProperties": False, "minProperties": 1, "properties": write_attributes},
+            "example": {"gambling": False, "ageRatingOverrideV2": "NONE", "kidsAgeBand": None}}}},
+        "responses": {"200": {"description": "Updated flat declaration.", "content": {"application/json": {"schema": rating["responseSchema"]}}},
+            **{str(status): {"description": description, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}}
+               for status, description in [(400, "Invalid or unsupported attributes, values, or query parameters."),
+                   (401, "Facade authentication failed."), (403, "write_forbidden for read-only grants; upstream_forbidden for Apple permission denial."),
+                   (404, "The selected app-info or declaration was not found under this app."), (405, "Use GET or POST."),
+                   (408, "Request body timed out."), (409, "Apple resource conflict."), (413, "Request body exceeded 8 KiB."),
+                   (415, "Content-Type must be application/json."), (422, "Apple validation failed."), (429, "Apple rate limit."),
+                   (502, "Invalid upstream response or credentials."), (503, "Apple unavailable."), (504, "Apple deadline exceeded.")]}},
+        "x-apple-path": write["applePath"], "x-implementation-status": "implemented",
+    }
     paths["/v1/connections"] = {"post": {
         "operationId": "createHostedConnection",
         "summary": "Create a hosted connection",
-        "description": "Accept at most 8 KiB of JSON, validate an App Store Connect team key, probe read access, and return a read-only facade key. The submitted private key is stored encrypted; provide it again only when creating a new connection.",
+        "description": "Accept at most 8 KiB of JSON, validate an App Store Connect team key, probe read access, and return a facade key. Optional capabilities defaults to [read]; [read,write] enables the age-rating POST. Existing connections remain read-only until reconnected. The submitted private key is stored encrypted; provide it again only when creating a new connection.",
         "security": [],
         "requestBody": {"required": True, "description": "The complete JSON body must not exceed 8 KiB.", "content": {"application/json": {
             "schema": {"$ref": "#/components/schemas/HostedConnectionRequest"},
@@ -101,7 +124,7 @@ def outputs():
     }}
     manifest = {"appleSpecification": SOURCE["specification"], "routes": routes}
     openapi = {
-        "openapi": "3.0.3", "info": {"title": "Parsequerade", "version": "0.1.0", "description": "Implemented read-only facade routes and hosted connection setup and revocation. Hosted connections require operator-configured encrypted storage; operator-managed connections remain supported."},
+        "openapi": "3.0.3", "info": {"title": "Parsequerade", "version": "0.1.0", "description": "Implemented read routes, the scoped age-rating POST, and hosted connection setup and revocation. Hosted connections require operator-configured encrypted storage; operator-managed connections remain supported."},
         "servers": [{"url": "/"}], "security": [{"facadeKey": []}], "paths": paths,
         "components": {"securitySchemes": {"facadeKey": {"type": "http", "scheme": "bearer"}}, "schemas": {
             "HostedConnectionRequest": {"type": "object", "additionalProperties": False,
@@ -109,6 +132,7 @@ def outputs():
                     "issuerId": {"type": "string", "format": "uuid"},
                     "keyId": {"type": "string", "pattern": "^[A-Z0-9]{10}$"},
                     "privateKey": {"type": "string", "maxLength": 4096, "description": "P-256 PKCS#8 PEM contents."},
+                    "capabilities": {"type": "array", "uniqueItems": True, "minItems": 1, "maxItems": 2, "items": {"type": "string", "enum": ["read", "write"]}, "default": ["read"], "description": "Must include read. Add write to enable the age-rating POST. Apple write permissions are checked when the POST executes."},
                 }},
             "HostedConnection": {"type": "object", "additionalProperties": False,
                 "required": ["connectionId", "baseUrl", "apiKey"], "properties": {
@@ -137,7 +161,7 @@ def main():
         else:
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(content)
-    print("Validated 12 implemented read contracts and 14 OpenAPI paths." if args.check else "Exported 12 implemented read contracts and 14 OpenAPI paths.")
+    print("Validated 12 implemented read contracts, one age-rating write, and 14 OpenAPI paths." if args.check else "Exported 12 implemented read contracts, one age-rating write, and 14 OpenAPI paths.")
 
 
 if __name__ == "__main__":

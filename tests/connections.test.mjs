@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { randomBytes, generateKeyPairSync } from "node:crypto";
 import { createWorker } from "../worker/index.js";
 import { HostedConnection } from "../worker/connections.js";
-import { pem } from "./helpers.mjs";
+import { pem, sha } from "./helpers.mjs";
 
 const issuerId = "00000000-1111-2222-3333-444444444444";
 const keyId = "ABCDEF1234";
@@ -262,4 +262,43 @@ test("setup audit events never contain Apple private keys or issued facade beare
   assert.equal(serialized.includes(pem), false);
   assert.equal(serialized.includes(created.body.apiKey), false);
   assert.equal(serialized.includes(`Bearer ${created.body.apiKey}`), false);
+});
+
+
+test("hosted write capability is explicit and legacy records remain read-only", async t => {
+  for (const [name, capabilities, expected] of [["default", undefined, ["read"]], ["opt in", ["read", "write"], ["read", "write"]]]) await t.test(name, async () => {
+    const fixture = workerFixture();
+    const created = await createConnection(fixture, createRequest({ issuerId, keyId, privateKey: pem, ...(capabilities ? { capabilities } : {}) }));
+    assert.equal(created.response.status, 201);
+    const stored = await fixture.env.HOSTED_CONNECTIONS.getByName(created.body.connectionId).fetch(new Request(`https://connection.internal/${created.body.connectionId}`, { headers: { Authorization: `Bearer ${created.body.apiKey}` } }));
+    assert.deepEqual((await stored.json()).auth.grant.capabilities, expected);
+  });
+  for (const capabilities of [[], ["write"], ["read", "admin"], ["read", "read"], "write", null]) {
+    const fixture = workerFixture();
+    const created = await createConnection(fixture, createRequest({ issuerId, keyId, privateKey: pem, capabilities }));
+    assert.equal(created.response.status, 400); assert.equal(fixture.calls.apple.length, 0);
+  }
+  const fixture = workerFixture();
+  const created = await createConnection(fixture);
+  const response = await fixture.worker.fetch(new Request(`${created.body.baseUrl}/apps/123/app-infos/info_1/age-rating`, { method: "POST", headers: { Authorization: `Bearer ${created.body.apiKey}`, "Content-Type": "application/json" }, body: '{"gambling":true}' }), fixture.env);
+  assert.equal(response.status, 403); assert.equal((await response.json()).error.code, "write_forbidden"); assert.equal(fixture.calls.apple.length, 1);
+});
+
+
+test("an encrypted hosted record created before capability support retains read-only access", async () => {
+  const fixture = workerFixture();
+  const created = await createConnection(fixture);
+  const headers = { Authorization: `Bearer ${created.body.apiKey}` };
+  const saved = await fixture.env.HOSTED_CONNECTIONS.getByName(created.body.connectionId).fetch(new Request(`https://connection.internal/${created.body.connectionId}`, { headers }));
+  const { config } = await saved.json();
+  delete config.capabilities;
+  const legacyId = "conn_live_00000000000000000000000000000000";
+  config.connectionId = legacyId;
+  const stored = await fixture.env.HOSTED_CONNECTIONS.getByName(legacyId).fetch(new Request(`https://connection.internal/${legacyId}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ config, apiKeyHash: sha(created.body.apiKey) }) }));
+  assert.equal(stored.status, 204);
+  const read = await fixture.env.HOSTED_CONNECTIONS.getByName(legacyId).fetch(new Request(`https://connection.internal/${legacyId}`, { headers }));
+  const body = await read.json(); assert.equal(body.config.capabilities, undefined); assert.deepEqual(body.auth.grant.capabilities, ["read"]);
+  const response = await fixture.worker.fetch(new Request(`https://facade.example/v1/connections/${legacyId}/apps/123/app-infos/info_1/age-rating`, { method: "POST", headers: { ...headers, "Content-Type": "application/json" }, body: '{"gambling":true}' }), fixture.env);
+  assert.equal(response.status, 403); assert.equal((await response.json()).error.code, "write_forbidden");
+  assert.equal(fixture.calls.apple.length, 1);
 });

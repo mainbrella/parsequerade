@@ -15,7 +15,7 @@ export function retryAfter(value, now) {
 function upstreamError(status, payload, headers, now, route) {
   const classifications = {
     401: [502, "upstream_authentication_failed", "Apple rejected the configured credentials. Ask the operator to repair this connection."],
-    403: [403, "upstream_forbidden", "The configured Apple key cannot read this resource."],
+    403: [403, "upstream_forbidden", "The configured Apple key cannot access this resource."],
     404: [404, "resource_not_found", "The requested resource was not found."],
     409: [409, "upstream_conflict", "Apple reported a resource conflict."],
     400: [422, "validation_failed", "Apple rejected one or more request parameters."],
@@ -113,6 +113,43 @@ export function createAppleTransport({ fetch: fetcher = globalThis.fetch, now = 
   return {
     credential,
     budget: () => ({ deadline: now() + POLICY.requestMs, requests: 0, bytes: 0 }),
+    async patchAgeRating(config, state, url, budget, body, route) {
+      if (url.origin !== APPLE_ORIGIN || url.username || url.password || url.hash || url.search ||
+          !/^\/v1\/ageRatingDeclarations\/[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/.test(url.pathname)) throw invalidUpstream();
+      if (++budget.requests > POLICY.requests || budget.deadline <= now()) {
+        throw new ApiError(504, "upstream_budget_exceeded", "The Apple update could not start within the deadline.");
+      }
+      const jwt = await token(config, state);
+      if (budget.deadline <= now()) throw new ApiError(504, "upstream_budget_exceeded", "The Apple update could not start within the deadline.");
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), Math.min(POLICY.attemptMs, Math.max(1, budget.deadline - now())));
+      let response;
+      try {
+        const timeout = new Promise((_, reject) => controller.signal.addEventListener("abort", () => reject(
+          new ApiError(504, "write_outcome_unknown", "Apple did not confirm this update. Refresh the age rating before trying again.")), { once: true }));
+        return await Promise.race([(async () => {
+          response = await fetcher(url.toString(), { method: "PATCH", redirect: "manual", signal: controller.signal,
+            headers: { Authorization: `Bearer ${jwt}`, Accept: "application/json", "Content-Type": "application/json" }, body: JSON.stringify(body) });
+          if (controller.signal.aborted) throw new ApiError(504, "write_outcome_unknown", "Apple did not confirm this update. Refresh the age rating before trying again.");
+          if (response.status >= 300 && response.status < 400) throw invalidUpstream();
+          const payload = await limitedJson(response, budget, controller.signal);
+          if (!response.ok) {
+            const error = upstreamError(response.status, payload, response.headers, now(), route);
+            error.retryable = false;
+            throw error;
+          }
+          if (!isObject(payload) || !Object.hasOwn(payload, "data")) throw invalidUpstream();
+          return payload;
+        })(), timeout]);
+      } catch (caught) {
+        if (caught instanceof ApiError && caught.code !== "upstream_invalid_response") throw caught;
+        throw new ApiError(503, "write_outcome_unknown", "Apple did not confirm this update. Refresh the age rating before trying again.");
+      } finally {
+        clearTimeout(timer);
+        if (response?.body && !response.bodyUsed) void response.body.cancel().catch(() => {});
+      }
+      // Deliberately no retry, including authentication failures and uncertain outcomes.
+    },
     async get(config, state, url, budget, route) {
       if (url.origin !== APPLE_ORIGIN || url.username || url.password || url.hash || !/^\/v1\/[A-Za-z0-9/_-]+$/.test(url.pathname)) throw invalidUpstream();
       if ((state.active || 0) >= POLICY.concurrentReads) throw new ApiError(429, "rate_limited", "This connection has too many concurrent reads.", {

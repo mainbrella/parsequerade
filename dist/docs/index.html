@@ -38,7 +38,7 @@
 
 <div class="intro-content">
   <p>Clients call ordinary routes such as <code>/apps</code> and receive flat JSON objects. The service owns Apple authentication, translates Apple’s resource envelopes, and resolves nested resources such as a version localization by its exact locale.</p>
-  <p><span class="status-label">Read-only implementation</span> The Worker implements 12 core read routes and hosted connection setup/revocation. Connect an Apple team key to receive a read-only facade key, or use the operator configuration path for your own deployment. Writes, reports, builds, and copy workflows remain planned; the reference labels each route’s implementation status.</p>
+  <p><span class="status-label">Core implementation</span> The Worker implements 12 core read routes and hosted connection setup/revocation. Connect an Apple team key to receive a read-only facade key, or use the operator configuration path for your own deployment. The scoped age-rating POST is also implemented; request read and write capabilities when connecting. Other writes, reports, builds, and copy workflows remain planned; the reference labels each route’s implementation status.</p>
 </div>
 
 <section class="document-section" id="common-reads">

@@ -7,7 +7,7 @@
     "dev": "wrangler dev --ip 127.0.0.1",
     "deploy": "wrangler deploy",
     "configure": "node scripts/configure.mjs",
-    "test": "node --test tests/worker.test.mjs tests/configure.test.mjs tests/connections.test.mjs && npm run test:runtime",
+    "test": "node --test tests/worker.test.mjs tests/configure.test.mjs tests/connections.test.mjs tests/writes.test.mjs && npm run test:runtime",
     "test:runtime": "wrangler deploy --dry-run --outdir .wrangler/test-build && node --test tests/runtime.test.mjs",
     "check": "python3 scripts/export_api.py --check && python3 scripts/check_site.py && python3 scripts/check_reference.py && node --check dist/app.js && npm test"
   },

@@ -4,7 +4,7 @@ Parsequerade is a JSON REST facade for App Store Connect. The hosted service dom
 
 The goal is to let a client list apps, edit a localized description, update a review contact, or read sales data without signing Apple JWTs, looking up internal child IDs, or assembling relationship payloads.
 
-**Status:** The read-only first slice is implemented: 12 GET routes for apps, app infos, versions, their localization collections and exact locales, age ratings, and review contacts. Public hosted connection onboarding and revocation are also implemented in the Worker. Writes, reports, copy workflows, and broader reads remain planned. See [rest.md](rest.md) for the remaining milestones.
+**Status:** The first slice is implemented: 12 GET routes for apps, app infos, versions, their localization collections and exact locales, age ratings, and review contacts. Public hosted connection onboarding and revocation are also implemented in the Worker. The scoped age-rating POST is implemented. Other writes, reports, copy workflows, and broader reads remain planned. See [rest.md](rest.md) for the remaining milestones.
 
 ## Connect to the hosted API
 
@@ -12,7 +12,7 @@ When the Worker is deployed with its hosted-connection bindings and encryption s
 
 Create an App Store Connect API key at [Users and Access → Integrations → Team Keys](https://appstoreconnect.apple.com/access/integrations/api). Copy the **Issuer ID** and **Key ID**, then download the `.p8` private key file (Apple only lets you download it once). Keep that file private. The optional vendor number is only needed for sales reports, which are not implemented in this read-only slice.
 
-`POST /v1/connections` accepts a JSON body of at most 8 KiB with exactly `issuerId`, `keyId`, and `privateKey`; `privateKey` is the PKCS#8 PEM contents, not a file path. The Worker validates the P-256 key locally, then makes a read-only `GET /v1/apps?limit=1` probe against Apple. Success returns `201 Created` with a generated connection ID (`conn_live_` plus 32 hex characters), a connection `baseUrl`, and a facade key (`pq_` plus a random 32-byte base64url value). The reserved `conn_live_` prefix is used for generated hosted IDs. The key grants read-only access to all apps the supplied Apple key can access. You do not need a preissued facade key or a Cloudflare account. The Worker stores the Apple credential encrypted and only a SHA-256 hash of the facade key; API responses are `no-store` and logs redact secrets. Treat both the submitted Apple key and returned bearer key as secrets.
+`POST /v1/connections` accepts a JSON body of at most 8 KiB with `issuerId`, `keyId`, and `privateKey`, and optional `capabilities`; `privateKey` is the PKCS#8 PEM contents, not a file path. The Worker validates the P-256 key locally, then makes a read-only `GET /v1/apps?limit=1` probe against Apple. Success returns `201 Created` with a generated connection ID (`conn_live_` plus 32 hex characters), a connection `baseUrl`, and a facade key (`pq_` plus a random 32-byte base64url value). The reserved `conn_live_` prefix is used for generated hosted IDs. The key defaults to read-only access to all apps the supplied Apple key can access. Set `capabilities: ["read", "write"]` at creation to enable the age-rating POST; the list must include read and may only contain read and write. Existing connections stay read-only and must reconnect explicitly for write access. The setup probe checks read access; Apple checks write permission on each update. You do not need a preissued facade key or a Cloudflare account. The Worker stores the Apple credential encrypted and only a SHA-256 hash of the facade key; API responses are `no-store` and logs redact secrets. Treat both the submitted Apple key and returned bearer key as secrets.
 
 Use `curl` and `jq`. The response is saved in a private temporary file outside the checkout:
 
@@ -109,9 +109,17 @@ npm run deploy -- --secrets-file .parsequerade-hosted.secrets.json
 
 Keep that key stable: deleting or rotating it without migrating stored records makes existing Apple credentials unreadable. For local Wrangler development, put `CONNECTION_ENCRYPTION_KEY` in `.dev.vars`.
 
-Known resource routes currently accept GET only. Mutation methods return `405`; planned routes return JSON `404 route_not_found`. Public connection creation and authenticated deletion are supported; there is no arbitrary upstream URL proxy. Permission checks happen before resource reads, and app-scoped list requests constrain Apple's `filter[id]` rather than filtering an unbounded account crawl.
+Resource routes accept GET; the age-rating resource also accepts the scoped POST documented below. Other mutation methods return `405`; planned routes return JSON `404 route_not_found`. Public connection creation and authenticated deletion are supported; there is no arbitrary upstream URL proxy. Permission checks happen before resource reads, and app-scoped list requests constrain Apple's `filter[id]` rather than filtering an unbounded account crawl.
 
 Each facade request permits 25 seconds and 32 Apple attempts, with an 8-second attempt timeout, 4 MiB response limit, and 16 MiB total body limit. Safe reads retry up to twice within that budget, respect short `Retry-After` delays, and refresh a rejected cached JWT at most once. A long throttle delay is returned to the caller. Locale/ownership resolvers permit 20 pages. Cursors expire after 15 minutes, permit 100 pages, and bind the caller/key grant, Apple credential revision, path, filters, fields, ordering, and limit. Concurrency is bounded to four Apple reads per connection **within each isolate**; shared connection-wide coordination is deferred to the Durable Object phase. No private resource cache is used in this slice.
+
+### Scoped age-rating update
+
+`POST /v1/connections/{connectionId}/apps/{appId}/app-infos/{appInfoId}/age-rating` is the first resource write. Send a nonempty flat object of age-rating attributes as `application/json` (8 KiB maximum), for example `{"gambling": false, "ageRatingOverrideV2": "NONE"}`. No query parameters, identifiers, or relationship envelopes are accepted. Both read and write grants and access to the target app are required; read-only grants receive `403 write_forbidden` before any Apple requests.
+
+The Worker proves the target app-info belongs to the app, reads its declaration ID, and sends one `PATCH /v1/ageRatingDeclarations/{id}`. Only submitted attributes change. Success is `200` with the same flattened declaration as GET. The exact allowlist, enums, and nullable fields are documented in [OpenAPI](dist/docs/openapi.json) and [API conventions](https://parsequerade.mainbrella.com/docs/conventions/#age-rating-updates). Questionnaire nulls are rejected; omit unanswered fields. Optional overrides/text can be null to clear. Deprecated `ageRatingOverride` is unsupported. Strings are limited to 2,048 characters and URLs must use HTTP(S) without embedded credentials. Apple validates key roles, app state, and answer combinations.
+
+Writes are never retried, even after Apple authentication/rate-limit errors or an uncertain network outcome, and write failures are marked `retryable: false`. Uncertain network, timeout, or malformed success outcomes use `write_outcome_unknown`. Read back the target before deciding whether to try another POST.
 
 ## Verify
 
@@ -121,7 +129,7 @@ Each facade request permits 25 seconds and 32 Apple attempts, with an 8-second a
 
 The static site lives in `dist/`; `/` is the Parsequerade landing page and the documentation starts at `/docs/`. Run `npm install` once, then use `npm run dev` to preview it locally. `npm run deploy` publishes through the existing Wrangler configuration.
 
-The GET reference covers all **457 GET endpoint pages** reached through Apple’s [App Store documentation topic tree](https://developer.apple.com/documentation/appstoreconnectapi/app-store), organized into 84 topics. Pages identify implementation status separately from delivery stage; documentation coverage is broader than runtime coverage. Additional resource reads are extended designs, and older resource shapes have separate proposed `/legacy` routes. The [facade OpenAPI document](dist/docs/openapi.json) covers the 12 implemented read routes and hosted connection creation and deletion.
+The GET reference covers all **457 GET endpoint pages** reached through Apple’s [App Store documentation topic tree](https://developer.apple.com/documentation/appstoreconnectapi/app-store), organized into 84 topics. Pages identify implementation status separately from delivery stage; documentation coverage is broader than runtime coverage. Additional resource reads are extended designs, and older resource shapes have separate proposed `/legacy` routes. The [facade OpenAPI document](dist/docs/openapi.json) covers the 12 implemented read routes, the scoped age-rating POST, and hosted connection creation and deletion.
 
 - `npm run build:docs` exports `api/read-contracts.json` and the facade OpenAPI document, then regenerates the reference and guides offline from the reviewed Apple snapshot, facade mappings, editorial overrides, and guide sources. `api/read-routes.json` explicitly selects implemented adapters.
 - `npm run check` verifies local links, endpoint coverage, examples, contract drift, syntax, API behavior, and local Worker execution. Miniflare is a test-only dependency; the Worker adds no runtime packages.
@@ -278,7 +286,7 @@ Apple's permissions, validation rules, and editable states still apply. The faca
 
 ## Plan
 
-The hosted self-service flow lets each user supply an Apple team key and receive a read-only facade key scoped to that connection. The Worker stores hosted credentials encrypted and supports authenticated connection deletion. Operator configuration remains supported. Reads return data without changing Apple resources.
+The hosted self-service flow lets each user supply an Apple team key and receive a facade key scoped to that connection, read-only unless write access is explicitly requested. The Worker stores hosted credentials encrypted and supports authenticated connection deletion. Operator configuration remains supported. Reads return data without changing Apple resources.
 
 Writes should name the app, platform, version or app-info resource, and locale they target. The existing `POST /copy-plans` contract previews a selected metadata copy field by field, stores the resolved targets and proposed steps, and performs no Apple writes. Applying that stored plan revalidates it and executes only its approved steps. This preview/apply contract is currently specified for copies in [rest.md](rest.md#6-copying-metadata-is-a-workflow); previewing arbitrary supplied multi-locale changes is a possible extension whose request and response contract still needs to be designed there.
 

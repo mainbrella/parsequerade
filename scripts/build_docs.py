@@ -231,6 +231,8 @@ def render_endpoint(endpoint, contract, entries, topics=None, domains=None):
     parameter_rows = query_rows(contract.get("parameters", []), route)
     if parameter_rows:
         body += section("query-parameters", "Query parameters", table(parameter_rows))
+    if endpoint["slug"] == "get-v1-appinfos-_id_-ageratingdeclaration":
+        body += section("update", "Update this section", '<p>This route also accepts <code>POST</code> with flat age-rating attributes. Both read and write capabilities are required. See ' + link("/docs/conventions/#age-rating-updates", "age rating updates") + ' for permissions, nullable fields, and write failure handling, or ' + link("/docs/openapi.json", "OpenAPI") + ' for the exact writable schema.</p>')
     shape = contract["shape"]
     collection, fields = shape["collection"], shape["fields"]
     response = contract["example"]

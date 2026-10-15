@@ -3,7 +3,7 @@
   "info": {
     "title": "Parsequerade",
     "version": "0.1.0",
-    "description": "Implemented read-only facade routes and hosted connection setup and revocation. Hosted connections require operator-configured encrypted storage; operator-managed connections remain supported."
+    "description": "Implemented read routes, the scoped age-rating POST, and hosted connection setup and revocation. Hosted connections require operator-configured encrypted storage; operator-managed connections remain supported."
   },
   "servers": [
     {
@@ -2086,7 +2086,7 @@
             }
           },
           "405": {
-            "description": "Only GET is implemented.",
+            "description": "Use GET or POST.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2167,6 +2167,590 @@
           }
         },
         "x-apple-path": "/v1/appInfos/{id}/ageRatingDeclaration",
+        "x-implementation-status": "implemented"
+      },
+      "post": {
+        "operationId": "updateAgeRating",
+        "summary": "Update an app's age rating declaration",
+        "description": "Requires read and write capabilities. Proves the app-info belongs to the selected app, resolves its declaration ID, and sends one Apple PATCH without retrying. Only supplied attributes change. No query parameters or IDs are accepted. Unknown or deprecated fields and enum values are rejected. Questionnaire answers cannot be null. Optional override/text fields can be null to clear them. URL values must be HTTP(S) without embedded credentials. Apple decides whether the app state, key role, and combination of answers permit the update. On write_outcome_unknown (network, timeout, or malformed success response), read back before considering another POST.",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "appId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "appInfoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "A flat nonempty subset of writable attributes, at most 8 KiB of JSON.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "minProperties": 1,
+                "properties": {
+                  "advertising": {
+                    "type": "boolean",
+                    "nullable": false
+                  },
+                  "alcoholTobaccoOrDrugUseOrReferences": {
+                    "type": "string",
+                    "nullable": false,
+                    "enum": [
+                      "NONE",
+                      "INFREQUENT_OR_MILD",
+                      "FREQUENT_OR_INTENSE",
+                      "INFREQUENT",
+                      "FREQUENT"
+                    ],
+                    "maxLength": 2048
+                  },
+                  "contests": {
+                    "type": "string",
+                    "nullable": false,
+                    "enum": [
+                      "NONE",
+                      "INFREQUENT_OR_MILD",
+                      "FREQUENT_OR_INTENSE",
+                      "INFREQUENT",
+                      "FREQUENT"
+                    ],
+                    "maxLength": 2048
+                  },
+                  "gambling": {
+                    "type": "boolean",
+                    "nullable": false
+                  },
+                  "gamblingSimulated": {
+                    "type": "string",
+                    "nullable": false,
+                    "enum": [
+                      "NONE",
+                      "INFREQUENT_OR_MILD",
+                      "FREQUENT_OR_INTENSE",
+                      "INFREQUENT",
+                      "FREQUENT"
+                    ],
+                    "maxLength": 2048
+                  },
+                  "gunsOrOtherWeapons": {
+                    "type": "string",
+                    "nullable": false,
+                    "enum": [
+                      "NONE",
+                      "INFREQUENT_OR_MILD",
+                      "FREQUENT_OR_INTENSE",
+                      "INFREQUENT",
+                      "FREQUENT"
+                    ],
+                    "maxLength": 2048
+                  },
+                  "healthOrWellnessTopics": {
+                    "type": "boolean",
+                    "nullable": false
+                  },
+                  "kidsAgeBand": {
+                    "type": "string",
+                    "enum": [
+                      "FIVE_AND_UNDER",
+                      "SIX_TO_EIGHT",
+                      "NINE_TO_ELEVEN"
+                    ],
+                    "nullable": true,
+                    "maxLength": 2048
+                  },
+                  "lootBox": {
+                    "type": "boolean",
+                    "nullable": false
+                  },
+                  "medicalOrTreatmentInformation": {
+                    "type": "string",
+                    "nullable": false,
+                    "enum": [
+                      "NONE",
+                      "INFREQUENT_OR_MILD",
+                      "FREQUENT_OR_INTENSE",
+                      "INFREQUENT",
+                      "FREQUENT"
+                    ],
+                    "maxLength": 2048
+                  },
+                  "messagingAndChat": {
+                    "type": "boolean",
+                    "nullable": false
+                  },
+                  "parentalControls": {
+                    "type": "boolean",
+                    "nullable": false
+                  },
+                  "profanityOrCrudeHumor": {
+                    "type": "string",
+                    "nullable": false,
+                    "enum": [
+                      "NONE",
+                      "INFREQUENT_OR_MILD",
+                      "FREQUENT_OR_INTENSE",
+                      "INFREQUENT",
+                      "FREQUENT"
+                    ],
+                    "maxLength": 2048
+                  },
+                  "ageAssurance": {
+                    "type": "boolean",
+                    "nullable": false
+                  },
+                  "sexualContentGraphicAndNudity": {
+                    "type": "string",
+                    "nullable": false,
+                    "enum": [
+                      "NONE",
+                      "INFREQUENT_OR_MILD",
+                      "FREQUENT_OR_INTENSE",
+                      "INFREQUENT",
+                      "FREQUENT"
+                    ],
+                    "maxLength": 2048
+                  },
+                  "sexualContentOrNudity": {
+                    "type": "string",
+                    "nullable": false,
+                    "enum": [
+                      "NONE",
+                      "INFREQUENT_OR_MILD",
+                      "FREQUENT_OR_INTENSE",
+                      "INFREQUENT",
+                      "FREQUENT"
+                    ],
+                    "maxLength": 2048
+                  },
+                  "socialMedia": {
+                    "type": "boolean",
+                    "nullable": false
+                  },
+                  "socialMediaAgeRestricted": {
+                    "type": "boolean",
+                    "nullable": false
+                  },
+                  "horrorOrFearThemes": {
+                    "type": "string",
+                    "nullable": false,
+                    "enum": [
+                      "NONE",
+                      "INFREQUENT_OR_MILD",
+                      "FREQUENT_OR_INTENSE",
+                      "INFREQUENT",
+                      "FREQUENT"
+                    ],
+                    "maxLength": 2048
+                  },
+                  "matureOrSuggestiveThemes": {
+                    "type": "string",
+                    "nullable": false,
+                    "enum": [
+                      "NONE",
+                      "INFREQUENT_OR_MILD",
+                      "FREQUENT_OR_INTENSE",
+                      "INFREQUENT",
+                      "FREQUENT"
+                    ],
+                    "maxLength": 2048
+                  },
+                  "unrestrictedWebAccess": {
+                    "type": "boolean",
+                    "nullable": false
+                  },
+                  "userGeneratedContent": {
+                    "type": "boolean",
+                    "nullable": false
+                  },
+                  "violenceCartoonOrFantasy": {
+                    "type": "string",
+                    "nullable": false,
+                    "enum": [
+                      "NONE",
+                      "INFREQUENT_OR_MILD",
+                      "FREQUENT_OR_INTENSE",
+                      "INFREQUENT",
+                      "FREQUENT"
+                    ],
+                    "maxLength": 2048
+                  },
+                  "violenceRealisticProlongedGraphicOrSadistic": {
+                    "type": "string",
+                    "nullable": false,
+                    "enum": [
+                      "NONE",
+                      "INFREQUENT_OR_MILD",
+                      "FREQUENT_OR_INTENSE",
+                      "INFREQUENT",
+                      "FREQUENT"
+                    ],
+                    "maxLength": 2048
+                  },
+                  "violenceRealistic": {
+                    "type": "string",
+                    "nullable": false,
+                    "enum": [
+                      "NONE",
+                      "INFREQUENT_OR_MILD",
+                      "FREQUENT_OR_INTENSE",
+                      "INFREQUENT",
+                      "FREQUENT"
+                    ],
+                    "maxLength": 2048
+                  },
+                  "ageRatingOverrideV2": {
+                    "type": "string",
+                    "nullable": true,
+                    "enum": [
+                      "NONE",
+                      "NINE_PLUS",
+                      "THIRTEEN_PLUS",
+                      "SIXTEEN_PLUS",
+                      "EIGHTEEN_PLUS",
+                      "UNRATED"
+                    ],
+                    "maxLength": 2048
+                  },
+                  "koreaAgeRatingOverride": {
+                    "type": "string",
+                    "nullable": true,
+                    "enum": [
+                      "NONE",
+                      "ALL",
+                      "TWELVE_PLUS",
+                      "FIFTEEN_PLUS",
+                      "NINETEEN_PLUS"
+                    ],
+                    "maxLength": 2048
+                  },
+                  "gracRatingClassificationNumber": {
+                    "type": "string",
+                    "nullable": true,
+                    "maxLength": 2048
+                  },
+                  "developerAgeRatingInfoUrl": {
+                    "type": "string",
+                    "format": "uri",
+                    "nullable": true,
+                    "maxLength": 2048
+                  }
+                }
+              },
+              "example": {
+                "gambling": false,
+                "ageRatingOverrideV2": "NONE",
+                "kidsAgeBand": null
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated flat declaration.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "appId": {
+                      "type": "string"
+                    },
+                    "appInfoId": {
+                      "type": "string"
+                    },
+                    "advertising": {
+                      "type": "boolean",
+                      "nullable": true
+                    },
+                    "alcoholTobaccoOrDrugUseOrReferences": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "contests": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "gambling": {
+                      "type": "boolean",
+                      "nullable": true
+                    },
+                    "gamblingSimulated": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "gunsOrOtherWeapons": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "healthOrWellnessTopics": {
+                      "type": "boolean",
+                      "nullable": true
+                    },
+                    "kidsAgeBand": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "lootBox": {
+                      "type": "boolean",
+                      "nullable": true
+                    },
+                    "medicalOrTreatmentInformation": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "messagingAndChat": {
+                      "type": "boolean",
+                      "nullable": true
+                    },
+                    "parentalControls": {
+                      "type": "boolean",
+                      "nullable": true
+                    },
+                    "profanityOrCrudeHumor": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "ageAssurance": {
+                      "type": "boolean",
+                      "nullable": true
+                    },
+                    "sexualContentGraphicAndNudity": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "sexualContentOrNudity": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "socialMedia": {
+                      "type": "boolean",
+                      "nullable": true
+                    },
+                    "socialMediaAgeRestricted": {
+                      "type": "boolean",
+                      "nullable": true
+                    },
+                    "horrorOrFearThemes": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "matureOrSuggestiveThemes": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "unrestrictedWebAccess": {
+                      "type": "boolean",
+                      "nullable": true
+                    },
+                    "userGeneratedContent": {
+                      "type": "boolean",
+                      "nullable": true
+                    },
+                    "violenceCartoonOrFantasy": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "violenceRealisticProlongedGraphicOrSadistic": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "violenceRealistic": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "ageRatingOverrideV2": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "koreaAgeRatingOverride": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "gracRatingClassificationNumber": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "developerAgeRatingInfoUrl": {
+                      "type": "string",
+                      "format": "uri",
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "appId",
+                    "appInfoId"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid or unsupported attributes, values, or query parameters.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Facade authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "write_forbidden for read-only grants; upstream_forbidden for Apple permission denial.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The selected app-info or declaration was not found under this app.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Use GET or POST.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "408": {
+            "description": "Request body timed out.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Apple resource conflict.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request body exceeded 8 KiB.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Content-Type must be application/json.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Apple validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Apple rate limit.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Invalid upstream response or credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Apple unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Apple deadline exceeded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-apple-path": "/v1/ageRatingDeclarations/{id}",
         "x-implementation-status": "implemented"
       }
     },
@@ -3618,7 +4202,7 @@
       "post": {
         "operationId": "createHostedConnection",
         "summary": "Create a hosted connection",
-        "description": "Accept at most 8 KiB of JSON, validate an App Store Connect team key, probe read access, and return a read-only facade key. The submitted private key is stored encrypted; provide it again only when creating a new connection.",
+        "description": "Accept at most 8 KiB of JSON, validate an App Store Connect team key, probe read access, and return a facade key. Optional capabilities defaults to [read]; [read,write] enables the age-rating POST. Existing connections remain read-only until reconnected. The submitted private key is stored encrypted; provide it again only when creating a new connection.",
         "security": [],
         "requestBody": {
           "required": true,
@@ -3820,6 +4404,23 @@
             "type": "string",
             "maxLength": 4096,
             "description": "P-256 PKCS#8 PEM contents."
+          },
+          "capabilities": {
+            "type": "array",
+            "uniqueItems": true,
+            "minItems": 1,
+            "maxItems": 2,
+            "items": {
+              "type": "string",
+              "enum": [
+                "read",
+                "write"
+              ]
+            },
+            "default": [
+              "read"
+            ],
+            "description": "Must include read. Add write to enable the age-rating POST. Apple write permissions are checked when the POST executes."
           }
         }
       },

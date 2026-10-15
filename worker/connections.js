@@ -48,10 +48,13 @@ async function inputCredentials(request) {
     let input;
     try { input = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(buffer)); }
     catch { throw new ApiError(400, "invalid_request", "Provide a valid JSON connection request."); }
-    if (!isObject(input) || Object.keys(input).some(key => !["issuerId", "keyId", "privateKey"].includes(key)) ||
+    if (!isObject(input) || Object.keys(input).some(key => !["issuerId", "keyId", "privateKey", "capabilities"].includes(key)) ||
         typeof input.issuerId !== "string" || !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(input.issuerId) ||
         typeof input.keyId !== "string" || !/^[A-Z0-9]{10}$/.test(input.keyId) ||
-        typeof input.privateKey !== "string" || input.privateKey.length > 4096) {
+        typeof input.privateKey !== "string" || input.privateKey.length > 4096 ||
+        (input.capabilities !== undefined && (!Array.isArray(input.capabilities) ||
+          !input.capabilities.includes("read") || new Set(input.capabilities).size !== input.capabilities.length ||
+          input.capabilities.some(value => !["read", "write"].includes(value))))) {
       throw new ApiError(400, "invalid_request", "Provide an issuer UUID, a 10-character Apple key ID, and a PKCS#8 privateKey PEM.");
     }
     return input;
@@ -85,7 +88,7 @@ export async function createHostedConnection(request, env, transport) {
   if (new URL(request.url).search) throw new ApiError(400, "invalid_request", "Connection setup does not accept query parameters.");
   const input = await inputCredentials(request);
   const connectionId = `conn_live_${crypto.randomUUID().replaceAll("-", "")}`;
-  const config = { ...input, connectionId, credentialRevision: "1", cursorSecret: randomSecret() };
+  const config = { ...input, capabilities: input.capabilities || ["read"], connectionId, credentialRevision: "1", cursorSecret: randomSecret() };
   let credential;
   try { credential = await transport.credential(config); }
   catch (error) {
@@ -94,7 +97,7 @@ export async function createHostedConnection(request, env, transport) {
     }
     throw error;
   }
-  // Probe only the read capability being issued; no administrator-only /users access or Apple writes.
+  // Validate credentials with a read. Apple checks write permission on each actual update.
   let probe;
   try { probe = await transport.get(config, credential, new URL("/v1/apps?limit=1", APPLE_ORIGIN), transport.budget(), { parameters: [] }); }
   catch (error) {
@@ -152,7 +155,7 @@ export class HostedConnection {
         const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv: unbase64url(record.iv), additionalData: bytes(connectionId) }, await encryptionKey(this.env), unbase64url(record.encrypted));
         config = JSON.parse(new TextDecoder().decode(decrypted));
       } catch { throw unavailable(); }
-      const grant = { connectionId, capabilities: ["read"], appIds: "*" };
+      const grant = { connectionId, capabilities: config.capabilities || ["read"], appIds: "*" };
       const auth = { principalId: connectionId, grant, authorizationRevision: await sha256(JSON.stringify({ principal: connectionId, keyHash: hash, grant })) };
       return Response.json({ config, auth });
     } catch (caught) {
