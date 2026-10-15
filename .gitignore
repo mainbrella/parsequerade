@@ -9,3 +9,9 @@ sdks/rust/target/
 !dist/**
 sdks/typescript/dist/
 sdks/typescript/.types/
+sdks/python/.venv/
+sdks/python/dist/
+sdks/python/build/
+*.egg-info/
+sdks/swift/.build/
+sdks/swift/.swiftpm/

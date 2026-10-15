@@ -3,8 +3,8 @@
   "private": true,
   "scripts": {
     "build:docs": "python3 scripts/export_api.py && python3 scripts/build_docs.py",
-    "generate:sdks": "python3 scripts/generate_sdks.py",
-    "build:sdks": "npm run generate:sdks && npm run build:sdk:typescript",
+    "generate:sdks": "python3 scripts/generate_sdks.py && node scripts/export_sdk_fixtures.mjs",
+    "build:sdks": "npm run generate:sdks && npm run build:sdk:typescript && npm run build:sdk:python && npm run build:sdk:swift",
     "build:sdk:typescript": "node scripts/build_typescript_sdk.mjs",
     "sync:docs": "python3 scripts/sync_apple_docs.py --refresh",
     "dev": "wrangler dev --ip 127.0.0.1",
@@ -12,11 +12,15 @@
     "configure": "node scripts/configure.mjs",
     "test": "node --test tests/worker.test.mjs tests/configure.test.mjs tests/connections.test.mjs tests/writes.test.mjs && npm run test:runtime",
     "test:runtime": "wrangler deploy --dry-run --outdir .wrangler/test-build && node --test tests/runtime.test.mjs",
-    "test:sdks": "npm run test:sdk:typescript && npm run test:sdk:rust",
+    "test:sdks": "npm run test:sdk:typescript && npm run test:sdk:rust && npm run test:sdk:python && npm run test:sdk:swift",
     "test:sdk:typescript": "npm run build:sdk:typescript && node node_modules/typescript/bin/tsc -p sdks/typescript/tests/tsconfig.json && node --test sdks/typescript/tests/*.test.mjs",
     "test:sdk:rust": "cargo test --locked --manifest-path sdks/rust/Cargo.toml",
-    "check:sdks": "python3 scripts/generate_sdks.py --check && cargo fmt --manifest-path sdks/rust/Cargo.toml --check && cargo clippy --locked --manifest-path sdks/rust/Cargo.toml --all-targets -- -D warnings && npm run test:sdks",
-    "check": "python3 scripts/export_api.py --check && python3 scripts/generate_sdks.py --check && python3 scripts/check_site.py && python3 scripts/check_reference.py && node --check dist/app.js && npm test && npm run test:sdk:typescript"
+    "check:sdks": "python3 scripts/generate_sdks.py --check && node scripts/export_sdk_fixtures.mjs --check && cargo fmt --manifest-path sdks/rust/Cargo.toml --check && cargo clippy --locked --manifest-path sdks/rust/Cargo.toml --all-targets -- -D warnings && npm run test:sdks",
+    "check": "python3 scripts/export_api.py --check && python3 scripts/generate_sdks.py --check && node scripts/export_sdk_fixtures.mjs --check && python3 scripts/check_site.py && python3 scripts/check_reference.py && node --check dist/app.js && npm test && npm run test:sdk:typescript",
+    "build:sdk:python": "python3 -m pip wheel --no-deps ./sdks/python --wheel-dir sdks/python/dist",
+    "build:sdk:swift": "swift build --package-path sdks/swift",
+    "test:sdk:python": "node scripts/export_sdk_fixtures.mjs --check && python3 -m unittest discover -s sdks/python/tests -v",
+    "test:sdk:swift": "node scripts/export_sdk_fixtures.mjs --check && swift test --package-path sdks/swift"
   },
   "devDependencies": {
     "esbuild": "^0.28.2",

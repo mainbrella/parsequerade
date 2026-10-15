@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "parsequerade"
+version = "0.1.0"
+description = "A local App Store Connect facade with flat resources and scoped updates"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "GPL-3.0-or-later"
+dependencies = ["cryptography>=41"]
+
+[tool.setuptools.package-data]
+parsequerade = ["contracts.json", "py.typed"]

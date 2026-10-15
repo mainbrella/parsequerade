@@ -142,7 +142,7 @@ The shared runtime permits 25 seconds and 32 Apple attempts per operation, an ei
 From the repository root:
 
 ```sh
-npm run generate:sdks       # regenerate Rust and TypeScript artifacts
+npm run generate:sdks       # regenerate all SDK artifacts
 npm run build:sdk:typescript
 npm run test:sdk:typescript # strict public type checks and mocked API tests
 npm run check:sdks         # also validates and tests Rust

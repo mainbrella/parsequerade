@@ -27,3 +27,14 @@ def resource_models(routes):
         if route["collection"]:
             schema = schema["properties"]["items"]["items"]
         yield RESOURCE_NAMES[route["type"]], schema
+
+
+def runtime_contracts():
+    routes, write = read_contracts()
+    return {
+        "routes": [
+            {key: r[key] for key in ("handler", "route", "type", "collection", "attributes", "relationships", "parameters")}
+            for r in routes
+        ],
+        "ageRatingWrite": write["attributes"],
+    }
