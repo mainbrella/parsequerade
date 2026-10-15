@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "types": [],
+    "strict": true,
+    "exactOptionalPropertyTypes": true,
+    "noEmit": true,
+    "verbatimModuleSyntax": true
+  },
+  "include": ["types.test.ts"]
+}

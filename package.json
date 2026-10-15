@@ -3,19 +3,25 @@
   "private": true,
   "scripts": {
     "build:docs": "python3 scripts/export_api.py && python3 scripts/build_docs.py",
-    "build:sdks": "python3 scripts/generate_rust_sdk.py",
+    "generate:sdks": "python3 scripts/generate_sdks.py",
+    "build:sdks": "npm run generate:sdks && npm run build:sdk:typescript",
+    "build:sdk:typescript": "node scripts/build_typescript_sdk.mjs",
     "sync:docs": "python3 scripts/sync_apple_docs.py --refresh",
     "dev": "wrangler dev --ip 127.0.0.1",
     "deploy": "wrangler deploy",
     "configure": "node scripts/configure.mjs",
     "test": "node --test tests/worker.test.mjs tests/configure.test.mjs tests/connections.test.mjs tests/writes.test.mjs && npm run test:runtime",
     "test:runtime": "wrangler deploy --dry-run --outdir .wrangler/test-build && node --test tests/runtime.test.mjs",
-    "test:sdks": "cargo test --locked --manifest-path sdks/rust/Cargo.toml",
-    "check:sdks": "python3 scripts/generate_rust_sdk.py --check && cargo fmt --manifest-path sdks/rust/Cargo.toml --check && cargo clippy --locked --manifest-path sdks/rust/Cargo.toml --all-targets -- -D warnings && npm run test:sdks",
-    "check": "python3 scripts/export_api.py --check && python3 scripts/generate_rust_sdk.py --check && python3 scripts/check_site.py && python3 scripts/check_reference.py && node --check dist/app.js && npm test"
+    "test:sdks": "npm run test:sdk:typescript && npm run test:sdk:rust",
+    "test:sdk:typescript": "npm run build:sdk:typescript && node node_modules/typescript/bin/tsc -p sdks/typescript/tests/tsconfig.json && node --test sdks/typescript/tests/*.test.mjs",
+    "test:sdk:rust": "cargo test --locked --manifest-path sdks/rust/Cargo.toml",
+    "check:sdks": "python3 scripts/generate_sdks.py --check && cargo fmt --manifest-path sdks/rust/Cargo.toml --check && cargo clippy --locked --manifest-path sdks/rust/Cargo.toml --all-targets -- -D warnings && npm run test:sdks",
+    "check": "python3 scripts/export_api.py --check && python3 scripts/generate_sdks.py --check && python3 scripts/check_site.py && python3 scripts/check_reference.py && node --check dist/app.js && npm test && npm run test:sdk:typescript"
   },
   "devDependencies": {
+    "esbuild": "^0.28.2",
     "miniflare": "5.20261012.0-beta",
+    "typescript": "^7.0.2",
     "wrangler": "^4.128.0"
   },
   "license": "GPL-3.0-or-later",

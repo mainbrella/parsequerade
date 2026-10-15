@@ -1,0 +1,27 @@
+{
+  "name": "@parsequerade/sdk",
+  "version": "0.1.0",
+  "description": "The Parsequerade facade for TypeScript, calling App Store Connect directly",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist", "README.md", "LICENSE", "examples"],
+  "sideEffects": false,
+  "engines": { "node": ">=22" },
+  "license": "GPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mainbrella/parsequerade.git",
+    "directory": "sdks/typescript"
+  },
+  "scripts": {
+    "build": "node ../../scripts/build_typescript_sdk.mjs",
+    "prepack": "npm run build"
+  }
+}

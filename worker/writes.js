@@ -33,26 +33,34 @@ export async function ageRatingInput(request) {
     let attributes;
     try { attributes = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(buffer)); }
     catch { throw invalid(); }
-    if (!isObject(attributes) || !Object.keys(attributes).length) throw invalid();
-    for (const [name, value] of Object.entries(attributes)) {
-      const schema = Object.hasOwn(contract.attributes, name) ? contract.attributes[name] : null;
-      if (!schema) throw invalid(name);
-      if (value === null) { if (!schema.nullable) throw invalid(name); continue; }
-      if (typeof value !== schema.type || (schema.enum && !schema.enum.includes(value))) throw invalid(name);
-      if (schema.type === "string" && value.length > 2048) throw invalid(name);
-      if (schema.format === "uri") {
-        try {
-          const url = new URL(value);
-          if (!["https:", "http:"].includes(url.protocol) || url.username || url.password) throw new Error();
-        } catch { throw invalid(name); }
-      }
-    }
-    return attributes;
+    return validateAgeRatingAttributes(attributes);
   } finally {
     clearTimeout(timer);
     void reader.cancel().catch(() => {});
     reader.releaseLock();
   }
+}
+
+// Shared by HTTP input parsing and the direct SDK; keep the write rules in one place.
+export function validateAgeRatingAttributes(attributes) {
+  if (!isObject(attributes) || !Object.keys(attributes).length) throw invalid();
+  if (new TextEncoder().encode(JSON.stringify(attributes)).byteLength > 8192) {
+    throw new ApiError(413, "request_too_large", "Age rating attributes must fit within 8 KiB.");
+  }
+  for (const [name, value] of Object.entries(attributes)) {
+    const schema = Object.hasOwn(contract.attributes, name) ? contract.attributes[name] : null;
+    if (!schema) throw invalid(name);
+    if (value === null) { if (!schema.nullable) throw invalid(name); continue; }
+    if (typeof value !== schema.type || (schema.enum && !schema.enum.includes(value))) throw invalid(name);
+    if (schema.type === "string" && value.length > 2048) throw invalid(name);
+    if (schema.format === "uri") {
+      try {
+        const url = new URL(value);
+        if (!["https:", "http:"].includes(url.protocol) || url.username || url.password) throw new Error();
+      } catch { throw invalid(name); }
+    }
+  }
+  return attributes;
 }
 
 export async function writeAgeRating(ctx, attributes, transport) {

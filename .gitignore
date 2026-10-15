@@ -7,3 +7,5 @@ __pycache__/
 sdks/rust/target/
 !dist/
 !dist/**
+sdks/typescript/dist/
+sdks/typescript/.types/

@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { createWorker } from "../worker/index.js";
 import { routes } from "../worker/resources.js";
 import { CURSOR_TTL_MS } from "../worker/pagination.js";
-import { connectionId, facadeKey, makeEnv, request, app, appInfo, version, localization, resource, json, jsonResponse, validateJwt, sha } from "./helpers.mjs";
+import { connectionId, facadeKey, makeEnv, request, app, appInfo, version, localization, resource, json, jsonResponse, validateJwt, sha, readFixture } from "./helpers.mjs";
 
 function fixture(responses, env = makeEnv(), extra = {}) {
   const calls = [], logs = [];
@@ -40,22 +40,7 @@ test("flat app list maps reviewed query parameters and signs a valid Apple JWT",
 
 test("all twelve routes return the documented flat resource and parent context", async t => {
   for (const route of routes) await t.test(route.handler, async () => {
-    const path = route.route.replace("{appId}", "123").replace("{appInfoId}", "info_1").replace("{versionId}", "version_1").replace("{locale}", "en-US");
-    let item;
-    switch (route.type) {
-      case "apps": item = app(); break;
-      case "appInfos": item = appInfo(); break;
-      case "appStoreVersions": item = version(); break;
-      case "appInfoLocalizations": item = resource(route.type, "locale_1", { locale: "en-US", name: "Example Notes", privacyPolicyUrl: null }); break;
-      case "appStoreVersionLocalizations": item = localization(); break;
-      case "appStoreReviewDetails": item = resource(route.type, "review_1", { contactEmail: "review@example.com", notes: "private", demoAccountPassword: "secret" }); break;
-      case "ageRatingDeclarations": item = resource(route.type, "rating_1", { gambling: false, ageRatingOverrideV2: "FUTURE_READ_VALUE" }); break;
-    }
-    const responses = [];
-    if (path.includes("info_1")) responses.push(json([appInfo()]));
-    if (path.includes("version_1")) responses.push(json([version()]));
-    if (path.endsWith("/en-US")) responses.push(json([item]));
-    responses.push(json(route.collection ? [item] : item));
+    const { path, item, responses } = readFixture(route);
     const f = fixture(responses);
     const result = await f.get(path);
     assert.equal(result.status, 200);

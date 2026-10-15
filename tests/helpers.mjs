@@ -45,3 +45,23 @@ export function jsonResponse(payload, status = 200, headers = {}) {
 export function request(path = "/apps", options = {}) {
   return new Request(base + path, { ...options, headers: { Authorization: `Bearer ${facadeKey}`, ...options.headers } });
 }
+
+export function readFixture(route) {
+  const path = route.route.replace("{appId}", "123").replace("{appInfoId}", "info_1").replace("{versionId}", "version_1").replace("{locale}", "en-US");
+  let item;
+  switch (route.type) {
+    case "apps": item = app(); break;
+    case "appInfos": item = appInfo(); break;
+    case "appStoreVersions": item = version(); break;
+    case "appInfoLocalizations": item = resource(route.type, "locale_1", { locale: "en-US", name: "Example Notes", privacyPolicyUrl: null }); break;
+    case "appStoreVersionLocalizations": item = localization(); break;
+    case "appStoreReviewDetails": item = resource(route.type, "review_1", { contactEmail: "review@example.com", notes: "private", demoAccountPassword: "secret" }); break;
+    case "ageRatingDeclarations": item = resource(route.type, "rating_1", { gambling: false, ageRatingOverrideV2: "FUTURE_READ_VALUE" }); break;
+  }
+  const responses = [];
+  if (path.includes("info_1")) responses.push(json([appInfo()]));
+  if (path.includes("version_1")) responses.push(json([version()]));
+  if (path.endsWith("/en-US")) responses.push(json([item]));
+  responses.push(json(route.collection ? [item] : item));
+  return { path, item, responses };
+}
