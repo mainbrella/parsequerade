@@ -77,6 +77,71 @@ test("sparse fields never change ownership or locale selection", async () => {
   assert.equal(f.calls.at(-1).url.searchParams.get("fields[appStoreVersionLocalizations]"), "description,locale");
 });
 
+test("app-info reads include category links and preserve them with sparse fields and pagination", async () => {
+  const listed = (url, id, primary, secondary) => {
+    const relationships = { app: { data: { type: "apps", id: "123" } } };
+    if (url.searchParams.get("include")?.split(",").includes("primaryCategory")) {
+      relationships.primaryCategory = { data: { type: "appCategories", id: primary } };
+    }
+    if (url.searchParams.get("include")?.split(",").includes("secondaryCategory")) {
+      relationships.secondaryCategory = { data: secondary === null ? null : { type: "appCategories", id: secondary } };
+    }
+    return resource("appInfos", id, { state: "PREPARE_FOR_SUBMISSION" }, relationships);
+  };
+  const f = fixture([
+    ({ url }) => jsonResponse(json([listed(url, "info_1", "category_1", "category_2")], "/v1/apps/123/appInfos?cursor=next")),
+    ({ url }) => jsonResponse(json([listed(url, "info_2", "category_3", null)])),
+  ]);
+  const first = await f.get("/apps/123/app-infos?fields=state&limit=1");
+  assert.equal(first.status, 200);
+  const firstBody = await first.json();
+  assert.equal(firstBody.items[0].primaryCategoryId, "category_1");
+  assert.equal(firstBody.items[0].secondaryCategoryId, "category_2");
+  assert.equal(firstBody.items[0].state, "PREPARE_FOR_SUBMISSION");
+  assert.equal(f.calls[0].url.searchParams.get("include"), "primaryCategory,secondaryCategory");
+  assert.equal(f.calls[0].url.searchParams.get("fields[appInfos]"), "state,primaryCategory,secondaryCategory");
+  const next = await f.get(`/apps/123/app-infos?fields=state&limit=1&cursor=${encodeURIComponent(firstBody.nextCursor)}`);
+  assert.equal(next.status, 200);
+  const secondBody = await next.json();
+  assert.equal(secondBody.items[0].primaryCategoryId, "category_3");
+  assert.equal(secondBody.items[0].secondaryCategoryId, null);
+  assert.equal(f.calls[1].url.searchParams.get("include"), "primaryCategory,secondaryCategory");
+  assert.equal(f.calls[1].url.searchParams.get("fields[appInfos]"), "state,primaryCategory,secondaryCategory");
+  assert.equal(f.calls[1].url.searchParams.get("cursor"), "next");
+
+  const full = fixture([({ url }) => jsonResponse(json([listed(url, "info_3", "category_4", "category_5")]))]);
+  const fullResponse = await full.get("/apps/123/app-infos");
+  assert.equal(fullResponse.status, 200);
+  assert.equal((await fullResponse.json()).items[0].primaryCategoryId, "category_4");
+  assert.equal(full.calls[0].url.searchParams.get("include"), "primaryCategory,secondaryCategory");
+  assert.equal(full.calls[0].url.searchParams.has("fields[appInfos]"), false);
+});
+
+test("app-info detail includes category links while ownership lookup stays lightweight", async () => {
+  const f = fixture([
+    json([appInfo()]),
+    ({ url }) => {
+      return jsonResponse(json(resource("appInfos", "info_1", { state: "PREPARE_FOR_SUBMISSION" }, {
+        app: { data: { type: "apps", id: "123" } },
+        primaryCategory: { data: { type: "appCategories", id: "category_1" } },
+        secondaryCategory: { data: null },
+      })));
+    },
+  ]);
+  const response = await f.get("/apps/123/app-infos/info_1?fields=state");
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), {
+    id: "info_1", appId: "123", state: "PREPARE_FOR_SUBMISSION",
+    primaryCategoryId: "category_1", secondaryCategoryId: null,
+  });
+  assert.equal(f.calls[0].url.pathname, "/v1/apps/123/appInfos");
+  assert.equal(f.calls[0].url.searchParams.has("include"), false);
+  assert.equal(f.calls[0].url.searchParams.has("fields[appInfos]"), false);
+  assert.equal(f.calls[1].url.pathname, "/v1/appInfos/info_1");
+  assert.equal(f.calls[1].url.searchParams.get("include"), "primaryCategory,secondaryCategory");
+  assert.equal(f.calls[1].url.searchParams.get("fields[appInfos]"), "state,primaryCategory,secondaryCategory");
+});
+
 test("missing/invalid/revoked keys and missing capability never contact Apple", async t => {
   const cases = [
     ["missing", {}, { Authorization: "" }, 401], ["invalid", {}, { Authorization: "Bearer invalid" }, 401],

@@ -19,6 +19,12 @@
     "example": {"items": [{"id": "build_123", "appId": "1234567890", "version": "42", "uploadedDate": "2026-10-13T18:00:00Z", "expirationDate": "2027-01-11T18:00:00Z", "expired": false, "minOsVersion": "18.0", "processingState": "PROCESSING"}], "nextCursor": null},
     "notes": ["processingState describes build processing. It does not indicate App Review approval or whether a version is live.", "The adapter uses Apple’s app-build endpoint for an unfiltered list. Filtering uses GET /v1/builds with filter[app] fixed to appId, so filters apply across the collection rather than to one page."]
   },
+  "get-v1-apps-_id_-appinfos": {
+    "notes": ["The adapter explicitly includes primaryCategory and secondaryCategory from Apple and returns their IDs in the flat app-info object."]
+  },
+  "get-v1-appinfos-_id_": {
+    "notes": ["The adapter explicitly includes primaryCategory and secondaryCategory from Apple and returns their IDs in the flat app-info object.", "The adapter verifies that the selected app-info belongs to appId before returning it."]
+  },
   "get-v1-appstoreversionlocalizations-_id_": {
     "title": "Read a version localization",
     "route": "/apps/{appId}/versions/{versionId}/localizations/{locale}",

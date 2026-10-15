@@ -175,7 +175,7 @@ def nested_fields(schema, name, depth=0):
     return '<details class="schema-details"><summary>' + esc(name) + " fields</summary>" + body + "</details>"
 
 
-def query_rows(parameters):
+def query_rows(parameters, route):
     rows = []
     descriptions = {
         "bundleId": "Match a bundle identifier, such as com.example.notes.",
@@ -195,6 +195,8 @@ def query_rows(parameters):
         "fields": "Comma-separated attribute names to return. This selects read fields and does not expand relationships.",
         "cursor": "Opaque nextCursor from a previous response. Keep the route, connection, filters, and ordering unchanged.",
     }
+    if route in ("/apps/{appId}/app-infos", "/apps/{appId}/app-infos/{appInfoId}"):
+        descriptions["fields"] = "Comma-separated app-info attributes to return. The adapter also requests primaryCategory and secondaryCategory from Apple so their IDs remain available in the flat response."
     for parameter in parameters:
         name = parameter["name"]
         schema = resolve(parameter["schema"])
@@ -226,7 +228,7 @@ def render_endpoint(endpoint, contract, entries, topics=None, domains=None):
         path_rows.append((name, "string", esc(path_descriptions.get(name, "The selected resource’s ID.")), "Required"))
     if path_rows:
         body += section("path-parameters", "Path parameters", table(path_rows))
-    parameter_rows = query_rows(contract.get("parameters", []))
+    parameter_rows = query_rows(contract.get("parameters", []), route)
     if parameter_rows:
         body += section("query-parameters", "Query parameters", table(parameter_rows))
     shape = contract["shape"]

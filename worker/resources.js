@@ -154,6 +154,12 @@ export async function readResource(ctx, transport) {
     // Validate incoming cursors below even for an empty scope; never skip authorization binding.
     query.upstream.set("filter[id]", permitted.join(","));
   }
+  if (["appInfos", "appInfo"].includes(route.handler)) {
+    query.upstream.set("include", "primaryCategory,secondaryCategory");
+    if (query.values.fields) {
+      query.upstream.set("fields[appInfos]", [...query.values.fields, "primaryCategory", "secondaryCategory"].join(","));
+    }
+  }
   const initial = appleUrl(path, query.upstream);
   if (!route.collection) {
     const payload = await get(initial);
