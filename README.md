@@ -6,6 +6,12 @@ The goal is to let a client list apps, edit a localized description, update a re
 
 **Status:** The first slice is implemented: 12 GET routes for apps, app infos, versions, their localization collections and exact locales, age ratings, and review contacts. Public hosted connection onboarding and revocation are also implemented in the Worker. The scoped age-rating POST is implemented. Other writes, reports, copy workflows, and broader reads remain planned. See [rest.md](rest.md) for the remaining milestones.
 
+## Use the facade directly from Rust
+
+The [Rust SDK](sdks/rust/README.md) implements the same 12 reads and age-rating update inside your program. It sends requests directly to Apple, removing the Cloudflare proxy hop while retaining flat resources, facade query names, exact-locale lookup, ownership checks, pagination, and stable errors. JWT signing and caching happen locally with your Apple team key; no hosted connection or facade API key is needed.
+
+The crate lives at `sdks/rust` and can be used as a Cargo path dependency. See its [list-apps example](sdks/rust/examples/list_apps.rs) for authentication and pagination. The SDK is not yet published to crates.io. Scoped operations can still require multiple Apple calls to resolve and verify their targets.
+
 ## Connect to the hosted API
 
 When the Worker is deployed with its hosted-connection bindings and encryption secret, you can connect an App Store Connect team key with `curl` and receive a read-only facade key for the apps that Apple key can access. Hosted setup requires a Cloudflare Durable Object binding/migration and a stable `CONNECTION_ENCRYPTION_KEY`; see deployment setup below.
@@ -124,6 +130,8 @@ Writes are never retried, even after Apple authentication/rate-limit errors or a
 ## Verify
 
 `npm run check` validates documentation, generated runtime/OpenAPI contracts, and JavaScript, then runs unit/security tests and the bundled Worker in local `workerd` via Miniflare. Tests use fictional fixtures and generated test keys; all outbound Apple requests are mocked. The deployment build uses `--dry-run`, so checks do not publish anything. Real-account verification is a separate, explicitly configured read-only check.
+
+With Rust installed, `npm run check:sdks` also checks SDK contract drift, formatting, Clippy, and the Rust tests. These tests use a local mock Apple server and generated test keys. Run `npm run build:sdks` after updating the facade contracts to regenerate the Rust models and bundled contracts; consumers do not need Python or the rest of this repository to build the crate.
 
 ## Documentation site
 

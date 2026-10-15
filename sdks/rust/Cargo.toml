@@ -1,0 +1,24 @@
+[package]
+name = "parsequerade"
+version = "0.1.0"
+edition = "2021"
+description = "The Parsequerade facade for Rust, calling App Store Connect directly"
+repository = "https://github.com/mainbrella/parsequerade"
+homepage = "https://parsequerade.mainbrella.com"
+license = "GPL-3.0-or-later"
+readme = "README.md"
+keywords = ["apple", "app-store-connect", "sdk"]
+categories = ["api-bindings"]
+include = ["src/**", "examples/**", "README.md", "LICENSE", "Cargo.toml"]
+
+[dependencies]
+base64 = "0.22"
+httpdate = "1"
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+ring = "0.17"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["sync", "time"] }
+
+[dev-dependencies]
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "net", "io-util"] }

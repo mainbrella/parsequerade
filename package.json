@@ -3,13 +3,16 @@
   "private": true,
   "scripts": {
     "build:docs": "python3 scripts/export_api.py && python3 scripts/build_docs.py",
+    "build:sdks": "python3 scripts/generate_rust_sdk.py",
     "sync:docs": "python3 scripts/sync_apple_docs.py --refresh",
     "dev": "wrangler dev --ip 127.0.0.1",
     "deploy": "wrangler deploy",
     "configure": "node scripts/configure.mjs",
     "test": "node --test tests/worker.test.mjs tests/configure.test.mjs tests/connections.test.mjs tests/writes.test.mjs && npm run test:runtime",
     "test:runtime": "wrangler deploy --dry-run --outdir .wrangler/test-build && node --test tests/runtime.test.mjs",
-    "check": "python3 scripts/export_api.py --check && python3 scripts/check_site.py && python3 scripts/check_reference.py && node --check dist/app.js && npm test"
+    "test:sdks": "cargo test --locked --manifest-path sdks/rust/Cargo.toml",
+    "check:sdks": "python3 scripts/generate_rust_sdk.py --check && cargo fmt --manifest-path sdks/rust/Cargo.toml --check && cargo clippy --locked --manifest-path sdks/rust/Cargo.toml --all-targets -- -D warnings && npm run test:sdks",
+    "check": "python3 scripts/export_api.py --check && python3 scripts/generate_rust_sdk.py --check && python3 scripts/check_site.py && python3 scripts/check_reference.py && node --check dist/app.js && npm test"
   },
   "devDependencies": {
     "miniflare": "5.20261012.0-beta",
