@@ -2,7 +2,7 @@
 
 An async Rust crate that implements the Parsequerade facade locally. Your program calls Apple directly at `https://api.appstoreconnect.apple.com`, with flat resources and facade query names. No Cloudflare deployment, hosted connection, or facade API key is needed.
 
-The SDK covers the 12 implemented read routes and the scoped age-rating update. Reports, other writes, copy workflows, and proposed routes are not implemented.
+The SDK covers the 12 implemented core read routes, four documented screenshot/preview reads, and the scoped age-rating update. The media adapters are available in this Rust SDK; the hosted Worker and other SDKs still expose their existing route sets. Reports, other writes, copy workflows, and other proposed routes are not implemented.
 
 ## Add to your project
 
@@ -82,6 +82,10 @@ println!("{:?}", localization.description);
 | `version_localizations(app_id, version_id, query)` | `…/versions/{versionId}/localizations` | `Page<VersionLocalization>` |
 | `version_localization(app_id, version_id, locale, query)` | `…/versions/{versionId}/localizations/{locale}` | `VersionLocalization` |
 | `review_contact(app_id, version_id, query)` | `…/versions/{versionId}/review-contact` | `ReviewContact` |
+| `screenshot_sets(app_id, version_id, locale, query)` | `…/versions/{versionId}/localizations/{locale}/screenshot-sets` | `Page<ScreenshotSet>` |
+| `screenshots(screenshot_set_id, query)` | `/screenshot-sets/{screenshotSetId}/screenshots` | `Page<Screenshot>` |
+| `preview_sets(app_id, version_id, locale, query)` | `…/versions/{versionId}/localizations/{locale}/preview-sets` | `Page<PreviewSet>` |
+| `previews(preview_set_id, query)` | `/preview-sets/{previewSetId}/previews` | `Page<Preview>` |
 
 Responses have `id` and flattened attributes and relationship IDs. Child resources also carry `app_id` and, where applicable, `app_info_id` or `version_id`. Rust fields use snake case; Serde uses the hosted facade's camel case JSON names. Optional attributes use `Option`, so omitted and null values both deserialize to `None` and are omitted when reserialized. For exact JSON including explicit nulls, use the generic facade entry point:
 
@@ -93,6 +97,26 @@ println!("{}", app["name"]);
 ```
 
 Paths are relative to a connection; there is no `/v1/connections/{id}` prefix. The generic entry point accepts only implemented facade paths, never arbitrary Apple URLs.
+
+## Screenshots and previews
+
+Media reads follow the [documented facade](https://parsequerade.mainbrella.com/docs/). Select sets for an exact version locale, then read each set's ordered assets. These are paginated collections, with the same cursor behavior as other reads. Set queries accept `screenshotDisplayType` or `previewType`, respectively, plus the documented localization filters, `fields`, `limit`, and `cursor`. Asset queries accept `fields`, `limit`, and `cursor`.
+
+```rust,ignore
+let sets = client.screenshot_sets(
+    "1234567890", "version_123", "en-US", &Query::new().with("limit", 200),
+).await?;
+for set in sets.items {
+    let screenshots = client.screenshots(&set.id, &Query::new().with("limit", 200)).await?;
+    for screenshot in screenshots.items {
+        if let Some(image) = screenshot.image_asset {
+            println!("{:?}: {:?} × {:?}", image.template_url, image.width, image.height);
+        }
+    }
+}
+```
+
+`Screenshot::image_asset` contains Apple's image URL template and dimensions. `Preview::preview_frame_image` contains a nested `image` with the same fields and its processing `state`; a preview can also contain `video_url` and `video_delivery_state`. Missing or processing media remain optional. The SDK returns asset metadata without downloading images, playing videos, or performing any upload operation. Generic `get::<Page<serde_json::Value>>` reads preserve explicit nulls and additional fields inside nested asset metadata.
 
 ## Pagination
 
@@ -139,4 +163,4 @@ npm run check:sdks
 cargo package --locked --manifest-path sdks/rust/Cargo.toml --allow-dirty
 ```
 
-Generated response types and bundled contracts come from the repository's reviewed runtime manifests. The packaged crate is self-contained and requires neither Python nor the Worker. Tests use generated keys and a local mock Apple server; they do not access a real Apple account. The crate uses the repository's GPL-3.0-or-later license.
+Generated response types and bundled contracts come from the repository's reviewed runtime manifests, including `api/rust-media-read-contracts.json` for the Rust media adapters. The packaged crate is self-contained and requires neither Python nor the Worker. Tests use generated keys and a local mock Apple server; they do not access a real Apple account. The crate uses the repository's GPL-3.0-or-later license.

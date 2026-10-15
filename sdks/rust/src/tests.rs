@@ -12,6 +12,8 @@ use tokio::{
     task::JoinHandle,
 };
 
+mod media;
+
 pub(super) struct Step {
     method: &'static str,
     path: String,

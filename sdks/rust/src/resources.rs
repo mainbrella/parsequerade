@@ -74,7 +74,7 @@ impl Client {
             .map(String::as_str);
         let parent_type = if info { "appInfos" } else { "appStoreVersions" };
         let mut context = Map::new();
-        if !matches!(handler, "apps" | "app") {
+        if !app_id.is_empty() && !matches!(handler, "apps" | "app") {
             context.insert("appId".into(), app_id.into());
             if let Some(id) = parent_id.filter(|_| !matches!(handler, "appInfo" | "version")) {
                 context.insert(
@@ -110,6 +110,7 @@ impl Client {
             }
         }
         let id = parent_id.unwrap_or("");
+        let mut localization_id = None;
         let apple_path = match handler {
             "apps" => "/v1/apps".into(),
             "app" => format!("/v1/apps/{app_id}"),
@@ -123,7 +124,12 @@ impl Client {
             }
             "ageRating" => format!("/v1/appInfos/{id}/ageRatingDeclaration"),
             "reviewContact" => format!("/v1/appStoreVersions/{id}/appStoreReviewDetail"),
-            "appInfoLocalization" | "versionLocalization" => {
+            "screenshots" => format!(
+                "/v1/appScreenshotSets/{}/appScreenshots",
+                p["screenshotSetId"]
+            ),
+            "previews" => format!("/v1/appPreviewSets/{}/appPreviews", p["previewSetId"]),
+            "appInfoLocalization" | "versionLocalization" | "screenshotSets" | "previewSets" => {
                 let localizations = if info {
                     "appInfoLocalizations"
                 } else {
@@ -174,15 +180,25 @@ impl Client {
                 .await?;
                 let selected =
                     selected.ok_or_else(|| Error::not_found("localization_not_found"))?;
-                if let Some(fields) = &query.fields {
-                    if !fields.iter().any(|f| f == "locale") {
-                        query.upstream.insert(
-                            format!("fields[{localizations}]"),
-                            format!("{},locale", fields.join(",")),
-                        );
+                if matches!(handler, "screenshotSets" | "previewSets") {
+                    let sets = if handler == "screenshotSets" {
+                        "appScreenshotSets"
+                    } else {
+                        "appPreviewSets"
+                    };
+                    localization_id = Some(selected.clone());
+                    format!("/v1/{localizations}/{selected}/{sets}")
+                } else {
+                    if let Some(fields) = &query.fields {
+                        if !fields.iter().any(|f| f == "locale") {
+                            query.upstream.insert(
+                                format!("fields[{localizations}]"),
+                                format!("{},locale", fields.join(",")),
+                            );
+                        }
                     }
+                    format!("/v1/{localizations}/{selected}")
                 }
-                format!("/v1/{localizations}/{selected}")
             }
             _ => return Err(Error::not_found("route_not_found")),
         };
@@ -273,6 +289,25 @@ impl Client {
                     id,
                     parent_type,
                 )?;
+            }
+            if let Some(localization_id) = &localization_id {
+                check_parent(
+                    item,
+                    "appStoreVersionLocalization",
+                    localization_id,
+                    "appStoreVersionLocalizations",
+                )?;
+            }
+            if handler == "screenshots" {
+                check_parent(
+                    item,
+                    "appScreenshotSet",
+                    &p["screenshotSetId"],
+                    "appScreenshotSets",
+                )?;
+            }
+            if handler == "previews" {
+                check_parent(item, "appPreviewSet", &p["previewSetId"], "appPreviewSets")?;
             }
             items.push(flatten(item, route, &context, query.fields.as_deref())?);
         }

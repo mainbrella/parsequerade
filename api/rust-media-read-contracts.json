@@ -1,0 +1,855 @@
+{
+  "description": "Rust-only adapters for the four documented media reads. Shapes and queries match the reviewed Parsequerade reference; the hosted Worker and other SDKs do not implement these routes.",
+  "documentation": "https://parsequerade.mainbrella.com/docs/",
+  "routes": [
+    {
+      "slug": "get-v1-appstoreversionlocalizations-_id_-appscreenshotsets",
+      "handler": "screenshotSets",
+      "route": "/apps/{appId}/versions/{versionId}/localizations/{locale}/screenshot-sets",
+      "applePath": "/v1/appStoreVersionLocalizations/{id}/appScreenshotSets",
+      "type": "appScreenshotSets",
+      "collection": true,
+      "attributes": {
+        "screenshotDisplayType": {
+          "$ref": "#/components/schemas/ScreenshotDisplayType"
+        }
+      },
+      "relationships": {
+        "appStoreVersionLocalization": {
+          "field": "appStoreVersionLocalizationId",
+          "type": "appStoreVersionLocalizations"
+        },
+        "appCustomProductPageLocalization": {
+          "field": "appCustomProductPageLocalizationId",
+          "type": "appCustomProductPageLocalizations"
+        },
+        "appStoreVersionExperimentTreatmentLocalization": {
+          "field": "appStoreVersionExperimentTreatmentLocalizationId",
+          "type": "appStoreVersionExperimentTreatmentLocalizations"
+        }
+      },
+      "parameters": [
+        {
+          "name": "screenshotDisplayType",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "APP_IPHONE_67",
+                "APP_IPHONE_61",
+                "APP_IPHONE_65",
+                "APP_IPHONE_58",
+                "APP_IPHONE_55",
+                "APP_IPHONE_47",
+                "APP_IPHONE_40",
+                "APP_IPHONE_35",
+                "APP_IPAD_PRO_3GEN_129",
+                "APP_IPAD_PRO_3GEN_11",
+                "APP_IPAD_PRO_129",
+                "APP_IPAD_105",
+                "APP_IPAD_97",
+                "APP_DESKTOP",
+                "APP_WATCH_ULTRA",
+                "APP_WATCH_SERIES_10",
+                "APP_WATCH_SERIES_7",
+                "APP_WATCH_SERIES_4",
+                "APP_WATCH_SERIES_3",
+                "APP_APPLE_TV",
+                "APP_APPLE_VISION_PRO",
+                "IMESSAGE_APP_IPHONE_67",
+                "IMESSAGE_APP_IPHONE_61",
+                "IMESSAGE_APP_IPHONE_65",
+                "IMESSAGE_APP_IPHONE_58",
+                "IMESSAGE_APP_IPHONE_55",
+                "IMESSAGE_APP_IPHONE_47",
+                "IMESSAGE_APP_IPHONE_40",
+                "IMESSAGE_APP_IPAD_PRO_3GEN_129",
+                "IMESSAGE_APP_IPAD_PRO_3GEN_11",
+                "IMESSAGE_APP_IPAD_PRO_129",
+                "IMESSAGE_APP_IPAD_105",
+                "IMESSAGE_APP_IPAD_97"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "filter[screenshotDisplayType]"
+        },
+        {
+          "name": "appCustomProductPageLocalization",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "required": false,
+          "appleName": "filter[appCustomProductPageLocalization]"
+        },
+        {
+          "name": "appStoreVersionExperimentTreatmentLocalization",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "required": false,
+          "appleName": "filter[appStoreVersionExperimentTreatmentLocalization]"
+        },
+        {
+          "name": "fields",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "screenshotDisplayType"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "fields[appScreenshotSets]"
+        },
+        {
+          "name": "limit",
+          "schema": {
+            "type": "integer",
+            "maximum": 200
+          },
+          "required": false,
+          "appleName": "limit",
+          "default": 50
+        },
+        {
+          "name": "cursor",
+          "schema": {
+            "type": "string"
+          },
+          "required": false,
+          "appleName": null
+        }
+      ],
+      "responseSchema": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "appId": {
+                  "type": "string"
+                },
+                "versionId": {
+                  "type": "string"
+                },
+                "screenshotDisplayType": {
+                  "$ref": "#/components/schemas/ScreenshotDisplayType"
+                },
+                "appStoreVersionLocalizationId": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "appCustomProductPageLocalizationId": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "appStoreVersionExperimentTreatmentLocalizationId": {
+                  "type": "string",
+                  "nullable": true
+                }
+              },
+              "required": [
+                "id",
+                "appId",
+                "versionId"
+              ]
+            }
+          },
+          "nextCursor": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ]
+      }
+    },
+    {
+      "slug": "get-v1-appscreenshotsets-_id_-appscreenshots",
+      "handler": "screenshots",
+      "route": "/screenshot-sets/{screenshotSetId}/screenshots",
+      "applePath": "/v1/appScreenshotSets/{id}/appScreenshots",
+      "type": "appScreenshots",
+      "collection": true,
+      "attributes": {
+        "fileSize": {
+          "type": "integer"
+        },
+        "fileName": {
+          "type": "string"
+        },
+        "sourceFileChecksum": {
+          "type": "string"
+        },
+        "imageAsset": {
+          "$ref": "#/components/schemas/ImageAsset"
+        },
+        "assetToken": {
+          "type": "string"
+        },
+        "assetType": {
+          "type": "string"
+        },
+        "uploadOperations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/UploadOperation"
+          }
+        },
+        "assetDeliveryState": {
+          "$ref": "#/components/schemas/AppMediaAssetState"
+        }
+      },
+      "relationships": {
+        "appScreenshotSet": {
+          "field": "appScreenshotSetId",
+          "type": "appScreenshotSets"
+        }
+      },
+      "parameters": [
+        {
+          "name": "fields",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "fileSize",
+                "fileName",
+                "sourceFileChecksum",
+                "imageAsset",
+                "assetToken",
+                "assetType",
+                "uploadOperations",
+                "assetDeliveryState"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "fields[appScreenshots]"
+        },
+        {
+          "name": "limit",
+          "schema": {
+            "type": "integer",
+            "maximum": 200
+          },
+          "required": false,
+          "appleName": "limit",
+          "default": 50
+        },
+        {
+          "name": "cursor",
+          "schema": {
+            "type": "string"
+          },
+          "required": false,
+          "appleName": null
+        }
+      ],
+      "responseSchema": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "fileSize": {
+                  "type": "integer"
+                },
+                "fileName": {
+                  "type": "string"
+                },
+                "sourceFileChecksum": {
+                  "type": "string"
+                },
+                "imageAsset": {
+                  "$ref": "#/components/schemas/ImageAsset"
+                },
+                "assetToken": {
+                  "type": "string"
+                },
+                "assetType": {
+                  "type": "string"
+                },
+                "uploadOperations": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UploadOperation"
+                  }
+                },
+                "assetDeliveryState": {
+                  "$ref": "#/components/schemas/AppMediaAssetState"
+                },
+                "appScreenshotSetId": {
+                  "type": "string",
+                  "nullable": true
+                }
+              },
+              "required": [
+                "id"
+              ]
+            }
+          },
+          "nextCursor": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ]
+      }
+    },
+    {
+      "slug": "get-v1-appstoreversionlocalizations-_id_-apppreviewsets",
+      "handler": "previewSets",
+      "route": "/apps/{appId}/versions/{versionId}/localizations/{locale}/preview-sets",
+      "applePath": "/v1/appStoreVersionLocalizations/{id}/appPreviewSets",
+      "type": "appPreviewSets",
+      "collection": true,
+      "attributes": {
+        "previewType": {
+          "$ref": "#/components/schemas/PreviewType"
+        }
+      },
+      "relationships": {
+        "appStoreVersionLocalization": {
+          "field": "appStoreVersionLocalizationId",
+          "type": "appStoreVersionLocalizations"
+        },
+        "appCustomProductPageLocalization": {
+          "field": "appCustomProductPageLocalizationId",
+          "type": "appCustomProductPageLocalizations"
+        },
+        "appStoreVersionExperimentTreatmentLocalization": {
+          "field": "appStoreVersionExperimentTreatmentLocalizationId",
+          "type": "appStoreVersionExperimentTreatmentLocalizations"
+        }
+      },
+      "parameters": [
+        {
+          "name": "previewType",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "IPHONE_67",
+                "IPHONE_61",
+                "IPHONE_65",
+                "IPHONE_58",
+                "IPHONE_55",
+                "IPHONE_47",
+                "IPHONE_40",
+                "IPHONE_35",
+                "IPAD_PRO_3GEN_129",
+                "IPAD_PRO_3GEN_11",
+                "IPAD_PRO_129",
+                "IPAD_105",
+                "IPAD_97",
+                "DESKTOP",
+                "APPLE_TV",
+                "APPLE_VISION_PRO"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "filter[previewType]"
+        },
+        {
+          "name": "appCustomProductPageLocalization",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "required": false,
+          "appleName": "filter[appCustomProductPageLocalization]"
+        },
+        {
+          "name": "appStoreVersionExperimentTreatmentLocalization",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "required": false,
+          "appleName": "filter[appStoreVersionExperimentTreatmentLocalization]"
+        },
+        {
+          "name": "fields",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "previewType"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "fields[appPreviewSets]"
+        },
+        {
+          "name": "limit",
+          "schema": {
+            "type": "integer",
+            "maximum": 200
+          },
+          "required": false,
+          "appleName": "limit",
+          "default": 50
+        },
+        {
+          "name": "cursor",
+          "schema": {
+            "type": "string"
+          },
+          "required": false,
+          "appleName": null
+        }
+      ],
+      "responseSchema": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "appId": {
+                  "type": "string"
+                },
+                "versionId": {
+                  "type": "string"
+                },
+                "previewType": {
+                  "$ref": "#/components/schemas/PreviewType"
+                },
+                "appStoreVersionLocalizationId": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "appCustomProductPageLocalizationId": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "appStoreVersionExperimentTreatmentLocalizationId": {
+                  "type": "string",
+                  "nullable": true
+                }
+              },
+              "required": [
+                "id",
+                "appId",
+                "versionId"
+              ]
+            }
+          },
+          "nextCursor": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ]
+      }
+    },
+    {
+      "slug": "get-v1-apppreviewsets-_id_-apppreviews",
+      "handler": "previews",
+      "route": "/preview-sets/{previewSetId}/previews",
+      "applePath": "/v1/appPreviewSets/{id}/appPreviews",
+      "type": "appPreviews",
+      "collection": true,
+      "attributes": {
+        "fileSize": {
+          "type": "integer"
+        },
+        "fileName": {
+          "type": "string"
+        },
+        "sourceFileChecksum": {
+          "type": "string"
+        },
+        "previewFrameTimeCode": {
+          "type": "string"
+        },
+        "mimeType": {
+          "type": "string"
+        },
+        "videoUrl": {
+          "type": "string"
+        },
+        "previewFrameImage": {
+          "$ref": "#/components/schemas/PreviewFrameImage"
+        },
+        "previewImage": {
+          "deprecated": true,
+          "$ref": "#/components/schemas/ImageAsset"
+        },
+        "uploadOperations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/UploadOperation"
+          }
+        },
+        "assetDeliveryState": {
+          "deprecated": true,
+          "$ref": "#/components/schemas/AppMediaAssetState"
+        },
+        "videoDeliveryState": {
+          "$ref": "#/components/schemas/AppMediaVideoState"
+        }
+      },
+      "relationships": {
+        "appPreviewSet": {
+          "field": "appPreviewSetId",
+          "type": "appPreviewSets"
+        }
+      },
+      "parameters": [
+        {
+          "name": "fields",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "fileSize",
+                "fileName",
+                "sourceFileChecksum",
+                "previewFrameTimeCode",
+                "mimeType",
+                "videoUrl",
+                "previewFrameImage",
+                "uploadOperations",
+                "videoDeliveryState"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "fields[appPreviews]"
+        },
+        {
+          "name": "limit",
+          "schema": {
+            "type": "integer",
+            "maximum": 200
+          },
+          "required": false,
+          "appleName": "limit",
+          "default": 50
+        },
+        {
+          "name": "cursor",
+          "schema": {
+            "type": "string"
+          },
+          "required": false,
+          "appleName": null
+        }
+      ],
+      "responseSchema": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "fileSize": {
+                  "type": "integer"
+                },
+                "fileName": {
+                  "type": "string"
+                },
+                "sourceFileChecksum": {
+                  "type": "string"
+                },
+                "previewFrameTimeCode": {
+                  "type": "string"
+                },
+                "mimeType": {
+                  "type": "string"
+                },
+                "videoUrl": {
+                  "type": "string"
+                },
+                "previewFrameImage": {
+                  "$ref": "#/components/schemas/PreviewFrameImage"
+                },
+                "uploadOperations": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UploadOperation"
+                  }
+                },
+                "videoDeliveryState": {
+                  "$ref": "#/components/schemas/AppMediaVideoState"
+                },
+                "appPreviewSetId": {
+                  "type": "string",
+                  "nullable": true
+                }
+              },
+              "required": [
+                "id"
+              ]
+            }
+          },
+          "nextCursor": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ]
+      }
+    }
+  ],
+  "models": {
+    "ScreenshotDisplayType": {
+      "type": "string",
+      "enum": [
+        "APP_IPHONE_67",
+        "APP_IPHONE_61",
+        "APP_IPHONE_65",
+        "APP_IPHONE_58",
+        "APP_IPHONE_55",
+        "APP_IPHONE_47",
+        "APP_IPHONE_40",
+        "APP_IPHONE_35",
+        "APP_IPAD_PRO_3GEN_129",
+        "APP_IPAD_PRO_3GEN_11",
+        "APP_IPAD_PRO_129",
+        "APP_IPAD_105",
+        "APP_IPAD_97",
+        "APP_DESKTOP",
+        "APP_WATCH_ULTRA",
+        "APP_WATCH_SERIES_10",
+        "APP_WATCH_SERIES_7",
+        "APP_WATCH_SERIES_4",
+        "APP_WATCH_SERIES_3",
+        "APP_APPLE_TV",
+        "APP_APPLE_VISION_PRO",
+        "IMESSAGE_APP_IPHONE_67",
+        "IMESSAGE_APP_IPHONE_61",
+        "IMESSAGE_APP_IPHONE_65",
+        "IMESSAGE_APP_IPHONE_58",
+        "IMESSAGE_APP_IPHONE_55",
+        "IMESSAGE_APP_IPHONE_47",
+        "IMESSAGE_APP_IPHONE_40",
+        "IMESSAGE_APP_IPAD_PRO_3GEN_129",
+        "IMESSAGE_APP_IPAD_PRO_3GEN_11",
+        "IMESSAGE_APP_IPAD_PRO_129",
+        "IMESSAGE_APP_IPAD_105",
+        "IMESSAGE_APP_IPAD_97"
+      ]
+    },
+    "ImageAsset": {
+      "type": "object",
+      "properties": {
+        "templateUrl": {
+          "type": "string"
+        },
+        "width": {
+          "type": "integer"
+        },
+        "height": {
+          "type": "integer"
+        }
+      }
+    },
+    "UploadOperation": {
+      "type": "object",
+      "properties": {
+        "method": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "length": {
+          "type": "integer"
+        },
+        "offset": {
+          "type": "integer"
+        },
+        "requestHeaders": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/HttpHeader"
+          }
+        }
+      }
+    },
+    "HttpHeader": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "AppMediaAssetState": {
+      "type": "object",
+      "properties": {
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/AppMediaStateError"
+          }
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/AppMediaStateError"
+          }
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "AWAITING_UPLOAD",
+            "UPLOAD_COMPLETE",
+            "COMPLETE",
+            "FAILED"
+          ]
+        }
+      }
+    },
+    "AppMediaStateError": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "PreviewType": {
+      "type": "string",
+      "enum": [
+        "IPHONE_67",
+        "IPHONE_61",
+        "IPHONE_65",
+        "IPHONE_58",
+        "IPHONE_55",
+        "IPHONE_47",
+        "IPHONE_40",
+        "IPHONE_35",
+        "IPAD_PRO_3GEN_129",
+        "IPAD_PRO_3GEN_11",
+        "IPAD_PRO_129",
+        "IPAD_105",
+        "IPAD_97",
+        "DESKTOP",
+        "APPLE_TV",
+        "APPLE_VISION_PRO"
+      ]
+    },
+    "PreviewFrameImage": {
+      "type": "object",
+      "properties": {
+        "image": {
+          "$ref": "#/components/schemas/ImageAsset"
+        },
+        "state": {
+          "$ref": "#/components/schemas/AppMediaPreviewFrameImageState"
+        }
+      }
+    },
+    "AppMediaPreviewFrameImageState": {
+      "type": "object",
+      "properties": {
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/AppMediaStateError"
+          }
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/AppMediaStateError"
+          }
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "PROCESSING",
+            "COMPLETE",
+            "FAILED"
+          ]
+        }
+      }
+    },
+    "AppMediaVideoState": {
+      "type": "object",
+      "properties": {
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/AppMediaStateError"
+          }
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/AppMediaStateError"
+          }
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "AWAITING_UPLOAD",
+            "UPLOAD_COMPLETE",
+            "PROCESSING",
+            "COMPLETE",
+            "FAILED"
+          ]
+        }
+      }
+    }
+  }
+}

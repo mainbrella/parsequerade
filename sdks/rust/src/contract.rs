@@ -32,6 +32,8 @@ pub(crate) struct Schema {
     pub items: Option<Box<Schema>>,
     pub maximum: Option<u64>,
     pub format: Option<String>,
+    #[serde(default)]
+    pub properties: BTreeMap<String, Schema>,
 }
 #[derive(Deserialize)]
 pub(crate) struct Relationship {
@@ -242,12 +244,7 @@ pub(crate) fn flatten(
             continue;
         }
         if let Some(item) = value.get("attributes").and_then(|a| a.get(name)) {
-            if !item.is_null()
-                && !matches!(
-                    (schema.kind.as_str(), item),
-                    ("string", Value::String(_)) | ("boolean", Value::Bool(_))
-                )
-            {
+            if !valid_attribute(item, schema) {
                 return Err(Error::invalid_upstream());
             }
             result.insert(name.clone(), item.clone());
@@ -277,6 +274,29 @@ pub(crate) fn flatten(
         }
     }
     Ok(Value::Object(result))
+}
+
+// Read enums remain forward compatible. Validate known nested fields while
+// preserving the complete object, including Apple fields added in the future.
+fn valid_attribute(value: &Value, schema: &Schema) -> bool {
+    if value.is_null() {
+        return true;
+    }
+    match (schema.kind.as_str(), value) {
+        ("string", Value::String(_)) | ("boolean", Value::Bool(_)) => true,
+        ("integer", Value::Number(number)) => number.is_i64() || number.is_u64(),
+        ("number", Value::Number(_)) => true,
+        ("object", Value::Object(object)) => schema.properties.iter().all(|(name, field)| {
+            object
+                .get(name)
+                .is_none_or(|value| valid_attribute(value, field))
+        }),
+        ("array", Value::Array(items)) => schema
+            .items
+            .as_ref()
+            .is_some_and(|item_schema| items.iter().all(|item| valid_attribute(item, item_schema))),
+        _ => false,
+    }
 }
 
 pub(crate) fn validate_update(value: &Value) -> Result<()> {
