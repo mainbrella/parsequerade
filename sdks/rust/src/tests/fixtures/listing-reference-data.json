@@ -1,0 +1,158 @@
+{
+  "data": [
+    {
+      "id": "1",
+      "type": "appAssetLibraryRefData",
+      "attributes": {
+        "features": [
+          {
+            "featureId": "APP_STORE_VERSIONS",
+            "placementPolicies": [
+              {
+                "groupLimits": [
+                  {
+                    "groupIds": [
+                      "DEFAULT_PROFILE"
+                    ],
+                    "maxCount": 1
+                  }
+                ],
+                "placementType": "PRODUCT_PAGE_HEADER_ASSET"
+              },
+              {
+                "groupLimits": [
+                  {
+                    "groupIds": [
+                      "DEFAULT_PROFILE"
+                    ],
+                    "maxCount": 1
+                  }
+                ],
+                "placementType": "APP_STORE_SEARCH_RESULTS_ASSET"
+              }
+            ]
+          }
+        ],
+        "placementProfileGroups": [
+          {
+            "displayClassId": "DEFAULT",
+            "placementProfileGroupId": "DEFAULT_PROFILE",
+            "platform": "ANY"
+          }
+        ],
+        "placementTypes": [
+          {
+            "acceptsAssetCategories": [
+              "CREATIVE_ASSETS"
+            ],
+            "placementTypeId": "PRODUCT_PAGE_HEADER_ASSET",
+            "specMappings": [
+              {
+                "placementGroupId": "DEFAULT_PROFILE",
+                "specs": [
+                  "c8f4e2b1-7a3d-5c9e-8b6f-2d1a0e9c8b7a",
+                  "1eb43b80-e0b7-4d96-bd32-47a42a8c5fed",
+                  "8aeaae00-2a17-4781-bfc0-44ca02e26ccb"
+                ]
+              }
+            ]
+          },
+          {
+            "acceptsAssetCategories": [
+              "CREATIVE_ASSETS"
+            ],
+            "placementTypeId": "APP_STORE_SEARCH_RESULTS_ASSET",
+            "specMappings": [
+              {
+                "placementGroupId": "DEFAULT_PROFILE",
+                "specs": [
+                  "c8f4e2b1-7a3d-5c9e-8b6f-2d1a0e9c8b7a",
+                  "d2ffa3b7-6c55-5cdf-8512-229d92791333",
+                  "a28b6440-2fe2-58f0-9da3-354cb54cab57"
+                ]
+              }
+            ]
+          }
+        ],
+        "imageSpecs": [
+          {
+            "alphaAllowed": false,
+            "aspectRatio": "3:2",
+            "compatiblePlacementTypes": [
+              "APP_STORE_SEARCH_RESULTS_ASSET"
+            ],
+            "dimensions": {
+              "maxHeight": 2560,
+              "maxWidth": 3840,
+              "minHeight": 1280,
+              "minWidth": 1920
+            },
+            "fileExtensions": [
+              ".jpg",
+              ".jpeg",
+              ".png"
+            ],
+            "maxFileSize": 524288000,
+            "mimeTypes": [
+              "image/jpeg",
+              "image/png"
+            ],
+            "shortName": "i3x2w1920~3840a0",
+            "specId": "d2ffa3b7-6c55-5cdf-8512-229d92791333",
+            "universalAsset": false
+          },
+          {
+            "alphaAllowed": false,
+            "aspectRatio": "16:9",
+            "compatiblePlacementTypes": [
+              "APP_STORE_SEARCH_RESULTS_ASSET",
+              "PRODUCT_PAGE_HEADER_ASSET"
+            ],
+            "dimensions": {
+              "maxHeight": 2950,
+              "maxWidth": 5244,
+              "minHeight": 2950,
+              "minWidth": 5244
+            },
+            "fileExtensions": [
+              ".png"
+            ],
+            "maxFileSize": 524288000,
+            "mimeTypes": [
+              "image/png"
+            ],
+            "shortName": "i5244x2950a0",
+            "specId": "c8f4e2b1-7a3d-5c9e-8b6f-2d1a0e9c8b7a",
+            "universalAsset": true
+          },
+          {
+            "alphaAllowed": false,
+            "aspectRatio": "21:9",
+            "compatiblePlacementTypes": [
+              "PRODUCT_PAGE_HEADER_ASSET"
+            ],
+            "dimensions": {
+              "maxHeight": 1646,
+              "maxWidth": 3840,
+              "minHeight": 1646,
+              "minWidth": 3840
+            },
+            "fileExtensions": [
+              ".png"
+            ],
+            "maxFileSize": 524288000,
+            "mimeTypes": [
+              "image/png"
+            ],
+            "shortName": "i3840x1646a0",
+            "specId": "1eb43b80-e0b7-4d96-bd32-47a42a8c5fed",
+            "universalAsset": false
+          }
+        ]
+      }
+    }
+  ],
+  "links": {
+    "next": null
+  }
+}

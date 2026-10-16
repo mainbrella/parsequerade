@@ -69,7 +69,7 @@ impl Error {
         Self::new(
             503,
             "write_outcome_unknown",
-            "Apple did not confirm this update. Read the age rating before trying again.",
+            "Apple did not confirm this write. Read the affected resource before trying again.",
         )
     }
 }

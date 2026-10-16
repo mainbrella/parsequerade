@@ -74,7 +74,11 @@ fn failure(code: &'static str, message: &'static str) -> Error {
     Error::new(422, code, message)
 }
 fn unknown() -> Error {
-    Error::unknown_write()
+    Error::new(
+        503,
+        "write_outcome_unknown",
+        "Apple did not confirm this upload. Resume with the same checkpoint to reconcile its state.",
+    )
 }
 fn image_usable(state: Option<&str>) -> bool {
     matches!(
@@ -210,6 +214,18 @@ fn resolve_placement_group(
     size: usize,
     alpha: bool,
 ) -> Result<String> {
+    if data["data"].as_array().is_none_or(|items| items.len() != 1)
+        || data["data"][0]["type"] != "appAssetLibraryRefData"
+        || !data["links"]["next"].is_null()
+    {
+        return Err(Error::invalid_upstream());
+    }
+    contract::validate_id(
+        data["data"][0]["id"]
+            .as_str()
+            .ok_or_else(Error::invalid_upstream)?,
+    )
+    .map_err(|_| Error::invalid_upstream())?;
     let attrs = data["data"][0]["attributes"]
         .as_object()
         .ok_or_else(Error::invalid_upstream)?;
@@ -264,7 +280,7 @@ fn resolve_placement_group(
     let mut matches = BTreeSet::new();
     for group in groups.iter().filter(|g| {
         allowed.contains(g["placementProfileGroupId"].as_str().unwrap_or(""))
-            && g["platform"] == "IOS"
+            && matches!(g["platform"].as_str(), Some("IOS" | "ANY"))
     }) {
         let gid = group["placementProfileGroupId"]
             .as_str()
@@ -279,31 +295,110 @@ fn resolve_placement_group(
             .iter()
             .filter_map(Value::as_str)
             .filter_map(|id| specs.iter().find(|s| s["specId"] == id))
-            .any(|spec| {
-                let d = &spec["dimensions"];
-                d["minWidth"].as_u64() == Some(width as u64)
-                    && d["maxWidth"].as_u64() == Some(width as u64)
-                    && d["minHeight"].as_u64() == Some(height as u64)
-                    && d["maxHeight"].as_u64() == Some(height as u64)
-                    && spec["maxFileSize"]
-                        .as_u64()
-                        .is_some_and(|m| size as u64 <= m)
-                    && spec["fileExtensions"]
-                        .as_array()
-                        .is_some_and(|a| a.iter().any(|v| v == ".png"))
-                    && spec["mimeTypes"]
-                        .as_array()
-                        .is_some_and(|a| a.iter().any(|v| v == "image/png"))
-                    && (!alpha || spec["alphaAllowed"] == true)
-            });
+            .any(|spec| image_spec_matches(spec, placement_type, width, height, size, alpha));
         if valid {
             matches.insert(gid.to_owned());
         }
     }
-    if matches.len() != 1 {
-        return Err(failure("placement_ambiguous", "Apple's current specifications do not resolve to exactly one compatible placement group."));
+    if matches.is_empty() {
+        return Err(failure(
+            "placement_spec_not_found",
+            "Apple's current catalog has no compatible image specification for this PNG and placement type.",
+        ));
+    }
+    if matches.len() > 1 {
+        return Err(failure(
+            "placement_ambiguous",
+            "Apple's current catalog resolves this PNG to more than one compatible placement group.",
+        ));
     }
     Ok(matches.into_iter().next().unwrap())
+}
+
+fn image_spec_matches(
+    spec: &Value,
+    placement_type: &str,
+    width: u32,
+    height: u32,
+    size: usize,
+    alpha: bool,
+) -> bool {
+    let dimensions = &spec["dimensions"];
+    let (Some(min_width), Some(max_width), Some(min_height), Some(max_height)) = (
+        dimensions["minWidth"].as_u64(),
+        dimensions["maxWidth"].as_u64(),
+        dimensions["minHeight"].as_u64(),
+        dimensions["maxHeight"].as_u64(),
+    ) else {
+        return false;
+    };
+    if min_width > max_width
+        || min_height > max_height
+        || !(min_width..=max_width).contains(&(width as u64))
+        || !(min_height..=max_height).contains(&(height as u64))
+        || !spec["compatiblePlacementTypes"]
+            .as_array()
+            .is_some_and(|types| types.iter().any(|kind| kind == placement_type))
+        || !spec["maxFileSize"]
+            .as_u64()
+            .is_some_and(|limit| size as u64 <= limit)
+        || !spec["fileExtensions"]
+            .as_array()
+            .is_some_and(|extensions| extensions.iter().any(|extension| extension == ".png"))
+        || !spec["mimeTypes"]
+            .as_array()
+            .is_some_and(|mime_types| mime_types.iter().any(|mime| mime == "image/png"))
+        || (alpha && spec["alphaAllowed"] != true)
+    {
+        return false;
+    }
+
+    let exact_size = min_width == max_width && min_height == max_height;
+    exact_size || aspect_ratio_matches(&spec["aspectRatio"], width, height)
+}
+
+fn aspect_ratio_matches(value: &Value, width: u32, height: u32) -> bool {
+    let Some(ratio) = value.as_str() else {
+        return false;
+    };
+    let Some((numerator, denominator)) = ratio.split_once(':') else {
+        return false;
+    };
+    let (Ok(numerator), Ok(denominator)) = (numerator.parse::<u64>(), denominator.parse::<u64>())
+    else {
+        return false;
+    };
+    if numerator == 0 || denominator == 0 {
+        return false;
+    }
+    let Some(actual) = u128::from(width).checked_mul(u128::from(denominator)) else {
+        return false;
+    };
+    let Some(expected) = u128::from(height).checked_mul(u128::from(numerator)) else {
+        return false;
+    };
+    actual.abs_diff(expected) <= u128::from(numerator.max(denominator))
+}
+
+type UploadOperation = (
+    Url,
+    usize,
+    usize,
+    Vec<(header::HeaderName, header::HeaderValue)>,
+);
+
+fn upload_destination_allowed(url: &Url) -> bool {
+    let host = url.host_str().unwrap_or("");
+    let apple_host = host == "blobstore.apple.com"
+        || host.ends_with(".blobstore.apple.com")
+        || host == "object-storage.apple.com"
+        || host.ends_with(".object-storage.apple.com");
+    url.scheme() == "https"
+        && apple_host
+        && url.port().is_none()
+        && url.username().is_empty()
+        && url.password().is_none()
+        && url.fragment().is_none()
 }
 
 async fn raw(client: &Client, method: Method, path: &str, body: Option<&Value>) -> Result<Value> {
@@ -314,19 +409,7 @@ async fn raw(client: &Client, method: Method, path: &str, body: Option<&Value>) 
         .await
 }
 
-#[allow(unused_variables)]
-fn operations(
-    client: &Client,
-    image: &Value,
-    png: &[u8],
-) -> Result<
-    Vec<(
-        Url,
-        usize,
-        usize,
-        Vec<(header::HeaderName, header::HeaderValue)>,
-    )>,
-> {
+fn operations(_client: &Client, image: &Value, png: &[u8]) -> Result<Vec<UploadOperation>> {
     let arr = image["data"]["attributes"]["uploadOperations"]
         .as_array()
         .filter(|v| !v.is_empty() && v.len() <= MAX_OPERATIONS)
@@ -338,20 +421,15 @@ fn operations(
             return Err(Error::invalid_upstream());
         }
         let url = Url::parse(text(op, "url")?).map_err(|_| Error::invalid_upstream())?;
-        let host = url.host_str().unwrap_or("");
-        let apple_host = url.scheme() == "https"
-            && (host == "blobstore.apple.com" || host.ends_with(".blobstore.apple.com"))
-            && url.port().is_none();
+        let apple_destination = upload_destination_allowed(&url);
         #[cfg(test)]
-        let test_origin = url.origin() == client.inner.origin.origin();
+        let test_origin = url.origin() == _client.inner.origin.origin();
         #[cfg(not(test))]
         let test_origin = false;
-        if !(apple_host || test_origin)
-            || !url.username().is_empty()
-            || url.password().is_some()
-            || url.fragment().is_some()
-        {
-            return Err(Error::invalid_upstream());
+        if !(apple_destination || test_origin) {
+            let mut error = Error::invalid_upstream();
+            error.message = "Apple returned an unsupported upload destination.".into();
+            return Err(error);
         }
         let offset = op["offset"]
             .as_u64()
@@ -414,16 +492,7 @@ fn operations(
     Ok(result)
 }
 
-async fn transfer(
-    client: &Client,
-    ops: Vec<(
-        Url,
-        usize,
-        usize,
-        Vec<(header::HeaderName, header::HeaderValue)>,
-    )>,
-    png: &[u8],
-) -> Result<()> {
+async fn transfer(client: &Client, ops: Vec<UploadOperation>, png: &[u8]) -> Result<()> {
     let deadline = Instant::now() + Duration::from_secs(120);
     for (url, offset, length, headers) in ops {
         let timeout =
@@ -452,8 +521,16 @@ async fn transfer(
 }
 
 impl Client {
+    /// Read Apple's live asset specifications and placement groups without making writes.
+    /// The returned value preserves Apple's JSON:API envelope for diagnostics.
+    pub async fn listing_image_reference_data(&self) -> Result<Value> {
+        raw(self, Method::GET, "/v1/appAssetLibraryRefData", None).await
+    }
+
     /// Upload one PNG for a version localization and create its listing image placement.
     /// The persistence callback runs before each write and after recording each returned ID.
+    /// It must durably save the checkpoint before returning `Ok(())`; serialize access to each
+    /// checkpoint so another caller cannot start a concurrent upload from stale state.
     pub async fn upload_listing_image<F>(
         &self,
         request: &ListingImageUpload,
@@ -480,6 +557,17 @@ impl Client {
         }
         let (w, h, alpha) = validate_png(request, png)?;
         let binding = bind(request, png);
+        if checkpoint.binding.is_none()
+            && (checkpoint.phase.is_some()
+                || checkpoint.image_id.is_some()
+                || checkpoint.placement_id.is_some()
+                || checkpoint.placement_group.is_some())
+        {
+            return Err(failure(
+                "invalid_checkpoint",
+                "An in-progress checkpoint must include its request binding.",
+            ));
+        }
         if checkpoint.binding.as_deref().is_some_and(|v| v != binding) {
             return Err(failure(
                 "checkpoint_mismatch",
@@ -493,21 +581,51 @@ impl Client {
             checkpoint.phase.as_deref(),
             None | Some("reservation_started")
                 | Some("reserved")
+                | Some("upload_started")
                 | Some("commit_started")
                 | Some("committed")
                 | Some("placement_started")
                 | Some("placement_created")
         );
         if !valid_phase
+            || (checkpoint.phase.is_none() && checkpoint.image_id.is_some())
             || (checkpoint.phase.as_deref() == Some("reservation_started")
                 && checkpoint.image_id.is_some())
-            || (checkpoint.phase.as_deref().is_some_and(|p| p != "reservation_started")
+            || (checkpoint
+                .phase
+                .as_deref()
+                .is_some_and(|p| p != "reservation_started")
                 && checkpoint.image_id.is_none())
             || (checkpoint.placement_id.is_some() && checkpoint.image_id.is_none())
             || (checkpoint.placement_group.is_some()
-                && !matches!(checkpoint.phase.as_deref(), Some("placement_started" | "placement_created")))
+                && !matches!(
+                    checkpoint.phase.as_deref(),
+                    Some("placement_started" | "placement_created")
+                ))
         {
-            return Err(failure("invalid_checkpoint", "The upload checkpoint state is invalid."));
+            return Err(failure(
+                "invalid_checkpoint",
+                "The upload checkpoint state is invalid.",
+            ));
+        }
+        for id in [
+            checkpoint.image_id.as_deref(),
+            checkpoint.placement_id.as_deref(),
+        ]
+        .into_iter()
+        .flatten()
+        {
+            contract::validate_id(id).map_err(|_| {
+                failure(
+                    "invalid_checkpoint",
+                    "The upload checkpoint contains an invalid ID.",
+                )
+            })?;
+        }
+        if checkpoint.phase.as_deref() == Some("reservation_started")
+            && checkpoint.image_id.is_none()
+        {
+            return Err(unknown());
         }
         let localization = self
             .version_localization(
@@ -631,7 +749,7 @@ impl Client {
             }
             checkpoint.phase = Some("reservation_started".into());
             persist(checkpoint)?;
-            let payload = json!({"data":{"type":"appAssetLibraryImages","attributes":{"fileName":request.file_name,"fileSize":png.len(),"category":"CREATIVE_ASSETS","referenceName":format!("parsequerade-{}",sha(&binding.as_bytes()))},"relationships":{"assetLibrary":{"data":{"type":"appAssetLibraries","id":library_id}}}}});
+            let payload = json!({"data":{"type":"appAssetLibraryImages","attributes":{"fileName":request.file_name,"fileSize":png.len(),"category":"CREATIVE_ASSETS","referenceName":format!("parsequerade-{}",sha(binding.as_bytes()))},"relationships":{"assetLibrary":{"data":{"type":"appAssetLibraries","id":library_id}}}}});
             let response = raw(
                 self,
                 Method::POST,
@@ -644,11 +762,14 @@ impl Client {
             {
                 return Err(unknown());
             }
-            checkpoint.image_id = Some(text(&response["data"], "id")?.to_owned());
-            contract::validate_id(checkpoint.image_id.as_deref().unwrap())?;
+            let image_id = text(&response["data"], "id").map_err(|_| unknown())?;
+            contract::validate_id(image_id).map_err(|_| unknown())?;
+            checkpoint.image_id = Some(image_id.to_owned());
             checkpoint.phase = Some("reserved".into());
             persist(checkpoint)?;
             let ops = operations(self, &response, png)?;
+            checkpoint.phase = Some("upload_started".into());
+            persist(checkpoint)?;
             transfer(self, ops, png).await?;
             checkpoint.phase = Some("commit_started".into());
             persist(checkpoint)?;
@@ -675,7 +796,7 @@ impl Client {
             checkpoint.phase = Some("committed".into());
             persist(checkpoint)?;
         } else {
-            let image_id = checkpoint.image_id.as_ref().unwrap();
+            let image_id = checkpoint.image_id.as_ref().ok_or_else(unknown)?;
             if checkpoint.phase.as_deref() == Some("reservation_started") {
                 return Err(unknown());
             }
@@ -694,9 +815,14 @@ impl Client {
             contract::validate_id(image_id)?;
             match image["data"]["attributes"]["state"].as_str() {
                 Some("AWAITING_UPLOAD")
-                    if checkpoint.phase.as_deref() != Some("commit_started") =>
+                    if matches!(
+                        checkpoint.phase.as_deref(),
+                        Some("reserved" | "upload_started")
+                    ) =>
                 {
                     let ops = operations(self, &image, png)?;
+                    checkpoint.phase = Some("upload_started".into());
+                    persist(checkpoint)?;
                     transfer(self, ops, png).await?;
                     checkpoint.phase = Some("commit_started".into());
                     persist(checkpoint)?;
@@ -774,7 +900,9 @@ impl Client {
         if placement["data"]["type"] != "appAssetLibraryPlacements" {
             return Err(unknown());
         }
-        checkpoint.placement_id = Some(text(&placement["data"], "id")?.to_owned());
+        let placement_id = text(&placement["data"], "id").map_err(|_| unknown())?;
+        contract::validate_id(placement_id).map_err(|_| unknown())?;
+        checkpoint.placement_id = Some(placement_id.to_owned());
         checkpoint.phase = Some("placement_created".into());
         persist(checkpoint)?;
         let verified = self
@@ -815,5 +943,149 @@ fn receipt(
         placement_type: r.placement_type,
         image_id: image_id.into(),
         placement_id: placement_id.into(),
+    }
+}
+
+#[cfg(test)]
+mod reference_data_tests {
+    use super::resolve_placement_group;
+    use serde_json::{json, Value};
+
+    fn catalog() -> Value {
+        serde_json::from_str(include_str!("tests/fixtures/listing-reference-data.json")).unwrap()
+    }
+
+    fn resolve(
+        data: &Value,
+        placement: &str,
+        width: u32,
+        height: u32,
+        alpha: bool,
+    ) -> crate::Result<String> {
+        resolve_placement_group(data, placement, width, height, 2_600_000, alpha)
+    }
+
+    #[test]
+    fn live_catalog_resolves_header_and_variable_search_dimensions() {
+        let data = catalog();
+        assert_eq!(
+            resolve(&data, "PRODUCT_PAGE_HEADER_ASSET", 3840, 1646, false).unwrap(),
+            "DEFAULT_PROFILE"
+        );
+        assert_eq!(
+            resolve(&data, "APP_STORE_SEARCH_RESULTS_ASSET", 1920, 1280, false).unwrap(),
+            "DEFAULT_PROFILE"
+        );
+        assert_eq!(
+            resolve(&data, "APP_STORE_SEARCH_RESULTS_ASSET", 3840, 2560, false).unwrap(),
+            "DEFAULT_PROFILE"
+        );
+    }
+
+    #[test]
+    fn ranged_specs_enforce_bounds_ratio_compatibility_and_asset_constraints() {
+        let data = catalog();
+        assert!(resolve(&data, "APP_STORE_SEARCH_RESULTS_ASSET", 1919, 1280, false).is_err());
+        assert!(resolve(&data, "APP_STORE_SEARCH_RESULTS_ASSET", 1920, 1400, false).is_err());
+        assert!(resolve(&data, "APP_STORE_SEARCH_RESULTS_ASSET", 1920, 1280, true).is_err());
+
+        let mut incompatible = data.clone();
+        let specs = incompatible["data"][0]["attributes"]["imageSpecs"]
+            .as_array_mut()
+            .unwrap();
+        let search_spec = specs
+            .iter_mut()
+            .find(|spec| spec["specId"] == "d2ffa3b7-6c55-5cdf-8512-229d92791333")
+            .unwrap();
+        search_spec["compatiblePlacementTypes"] = json!(["PRODUCT_PAGE_HEADER_ASSET"]);
+        assert!(resolve(
+            &incompatible,
+            "APP_STORE_SEARCH_RESULTS_ASSET",
+            1920,
+            1280,
+            false
+        )
+        .is_err());
+
+        let mut malformed_ratio = data;
+        let specs = malformed_ratio["data"][0]["attributes"]["imageSpecs"]
+            .as_array_mut()
+            .unwrap();
+        let search_spec = specs
+            .iter_mut()
+            .find(|spec| spec["specId"] == "d2ffa3b7-6c55-5cdf-8512-229d92791333")
+            .unwrap();
+        search_spec["aspectRatio"] = json!("3:x");
+        assert!(resolve(
+            &malformed_ratio,
+            "APP_STORE_SEARCH_RESULTS_ASSET",
+            1920,
+            1280,
+            false
+        )
+        .is_err());
+    }
+
+    #[test]
+    fn any_platform_groups_are_allowed_but_other_platforms_are_not() {
+        let mut data = catalog();
+        data["data"][0]["attributes"]["placementProfileGroups"][0]["platform"] = json!("MAC_OS");
+        let error =
+            resolve(&data, "APP_STORE_SEARCH_RESULTS_ASSET", 1920, 1280, false).unwrap_err();
+        assert_eq!(error.code, "placement_spec_not_found");
+    }
+
+    #[test]
+    fn multiple_compatible_groups_remain_ambiguous() {
+        let mut data = catalog();
+        let attrs = &mut data["data"][0]["attributes"];
+        attrs["placementProfileGroups"]
+            .as_array_mut()
+            .unwrap()
+            .push(json!({"placementProfileGroupId":"SECOND_PROFILE","platform":"ANY"}));
+        attrs["features"][0]["placementPolicies"][1]["groupLimits"][0]["groupIds"]
+            .as_array_mut()
+            .unwrap()
+            .push(json!("SECOND_PROFILE"));
+        attrs["placementTypes"][1]["specMappings"]
+            .as_array_mut()
+            .unwrap()
+            .push(json!({"placementGroupId":"SECOND_PROFILE","specs":["d2ffa3b7-6c55-5cdf-8512-229d92791333"]}));
+        let error =
+            resolve(&data, "APP_STORE_SEARCH_RESULTS_ASSET", 1920, 1280, false).unwrap_err();
+        assert_eq!(error.code, "placement_ambiguous");
+    }
+
+    #[test]
+    fn upload_destinations_accept_only_apple_storage_families() {
+        use super::upload_destination_allowed;
+        use reqwest::Url;
+
+        for value in [
+            "https://northamerica-1.object-storage.apple.com/upload/part?signature=synthetic",
+            "https://object-storage.apple.com/upload/part?signature=synthetic",
+            "https://store-030.blobstore.apple.com/upload/part?signature=synthetic",
+            "https://blobstore.apple.com/upload/part?signature=synthetic",
+        ] {
+            assert!(
+                upload_destination_allowed(&Url::parse(value).unwrap()),
+                "{value}"
+            );
+        }
+        for value in [
+            "https://object-storage.apple.com.evil.invalid/upload",
+            "https://evilobject-storage.apple.com/upload",
+            "https://object-storage.apple.co/upload",
+            "https://example.invalid/upload",
+            "http://northamerica-1.object-storage.apple.com/upload",
+            "https://northamerica-1.object-storage.apple.com:444/upload",
+            "https://user@northamerica-1.object-storage.apple.com/upload",
+            "https://user:pass@northamerica-1.object-storage.apple.com/upload",
+        ] {
+            assert!(
+                !upload_destination_allowed(&Url::parse(value).unwrap()),
+                "{value}"
+            );
+        }
     }
 }

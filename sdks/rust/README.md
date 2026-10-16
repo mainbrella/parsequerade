@@ -149,16 +149,30 @@ The Rust SDK can upload one PNG as a product page header or App Store search res
 The runnable example reads Studio's flat credentials JSON (`connection.issuerId`, `connection.keyId`, and `connection.privateKey`), writes an atomic checkpoint before each Apple write, and prints a receipt only after reading the placement back:
 
 ```sh
-cargo run --manifest-path sdks/rust/Cargo.toml --example upload_listing_image -- \\
-  --credentials ./credentials.json \\
-  --app-id 1234567890 --version-id VERSION_ID --locale en-US \\
-  --placement-type PRODUCT_PAGE_HEADER_ASSET --png ./header.png \\
+cargo run --manifest-path sdks/rust/Cargo.toml --example upload_listing_image -- \
+  --credentials ./credentials.json \
+  --app-id 1234567890 --version-id VERSION_ID --locale en-US \
+  --placement-type PRODUCT_PAGE_HEADER_ASSET --png ./header.png \
   --receipt ./header.receipt.json
 ```
 
 Use `APP_STORE_SEARCH_RESULTS_ASSET` for search artwork. Header PNGs must be exactly 3840×1646; search PNGs must be exactly 1920×1280. The checkpoint defaults to `<receipt>.checkpoint.json`. Keep it with the same PNG and request to resume. A `write_outcome_unknown` error means Apple may have accepted the request; rerun with the same checkpoint so the SDK can reconcile the image or placement before continuing. The checkpoint contains IDs and a local content binding, never upload URLs or credentials. The command creates an exclusive `.lock` file while running; after a crash, inspect the checkpoint and remove a stale lock manually.
 
-The upload is a local SDK capability that calls App Store Connect and Apple's blob storage directly. It does not add hosted upload support.
+To inspect Apple's current listing image specifications without starting an upload, run the example's read-only catalog mode:
+
+```sh
+cargo run --manifest-path sdks/rust/Cargo.toml --example upload_listing_image -- \\
+  --credentials ./credentials.json \\
+  --reference-data ./listing-image-reference-data.json
+```
+
+This mode makes only the reference-data GET request and saves Apple's catalog JSON. It creates no upload checkpoint or lock and sends no upload, commit, or placement writes. Credentials are read locally and are never printed or copied into the output. The same read-only API is available as `Client::listing_image_reference_data().await?`, which returns the catalog as `serde_json::Value`.
+
+The public API is `Client::upload_listing_image(&request, &png_bytes, &mut checkpoint, persist).await`. `ListingImageUpload` contains `app_id`, `version_id`, `locale`, `placement_type` (`ListingImagePlacementType::ProductPageHeader` or `SearchResults`), and `file_name`. Begin with `ListingImageUploadCheckpoint::default()`, then deserialize the saved checkpoint when resuming. The `persist` callback accepts `&ListingImageUploadCheckpoint` and returns `parsequerade::Result<()>`; it must save every supplied state durably before returning `Ok(())`. Serialize access to each checkpoint. The CLI example implements atomic saves and an exclusive lock.
+
+An uncertain reservation without a returned image ID stops for manual reconciliation in the asset library; it never repeats the reservation. An uncertain placement is reconciled by the saved image ID and exact target. If Apple still returns no matching placement, the command remains uncertain and makes no additional placement request. Preserve the checkpoint rather than starting a fresh one.
+
+The upload is a local SDK capability that calls App Store Connect and Apple's blob storage directly. It does not add hosted upload support. Blob transfers allow at most 128 operations covering the PNG exactly, with a 60-second timeout per PUT and a 120-second total transfer deadline; each Apple API segment has the read/request bounds below.
 
 ## Pagination
 
