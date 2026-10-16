@@ -1,0 +1,1556 @@
+[
+  {
+    "name": "screenshot_sets_resolve_exact_locale",
+    "operation": "get",
+    "args": [
+      "/apps/app1/versions/version1/localizations/en-US/screenshot-sets",
+      {
+        "screenshotDisplayType": "APP_IPHONE_67"
+      }
+    ],
+    "pythonMethod": "screenshot_sets",
+    "pythonArgs": [
+      "app1",
+      "version1",
+      "en-US",
+      {
+        "screenshotDisplayType": "APP_IPHONE_67"
+      }
+    ],
+    "steps": [
+      {
+        "method": "GET",
+        "path": "/v1/apps/app1/appStoreVersions",
+        "query": {
+          "limit": "200",
+          "filter[id]": "version1"
+        },
+        "response": {
+          "data": [
+            {
+              "type": "appStoreVersions",
+              "id": "version1",
+              "attributes": {
+                "versionString": "2.0",
+                "platform": "IOS",
+                "appVersionState": "PREPARE_FOR_SUBMISSION"
+              }
+            }
+          ],
+          "links": {
+            "next": null
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/v1/appStoreVersions/version1/appStoreVersionLocalizations",
+        "query": {
+          "limit": "200",
+          "filter[locale]": "en-US",
+          "fields[appStoreVersionLocalizations]": "locale"
+        },
+        "response": {
+          "data": [
+            {
+              "type": "appStoreVersionLocalizations",
+              "id": "loc1",
+              "attributes": {
+                "locale": "en-US"
+              }
+            }
+          ],
+          "links": {
+            "next": null
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/v1/appStoreVersionLocalizations/loc1/appScreenshotSets",
+        "query": {
+          "limit": "50",
+          "filter[screenshotDisplayType]": "APP_IPHONE_67"
+        },
+        "response": {
+          "data": [
+            {
+              "type": "appScreenshotSets",
+              "id": "screens1",
+              "attributes": {
+                "screenshotDisplayType": "APP_IPHONE_67"
+              }
+            }
+          ],
+          "links": {
+            "next": null
+          }
+        }
+      }
+    ],
+    "expect": {
+      "items": [
+        {
+          "id": "screens1",
+          "appId": "app1",
+          "versionId": "version1",
+          "screenshotDisplayType": "APP_IPHONE_67"
+        }
+      ],
+      "nextCursor": null
+    }
+  },
+  {
+    "name": "screenshots_preserve_nested_assets_and_null",
+    "operation": "get",
+    "args": [
+      "/screenshot-sets/screens1/screenshots",
+      {}
+    ],
+    "pythonMethod": "screenshots",
+    "pythonArgs": [
+      "screens1",
+      {}
+    ],
+    "steps": [
+      {
+        "method": "GET",
+        "path": "/v1/appScreenshotSets/screens1/appScreenshots",
+        "query": {
+          "limit": "50"
+        },
+        "response": {
+          "data": [
+            {
+              "type": "appScreenshots",
+              "id": "shot1",
+              "attributes": {
+                "fileName": "first.png",
+                "fileSize": 42,
+                "imageAsset": {
+                  "templateUrl": "https://example.test/{w}x{h}.{f}",
+                  "width": 1290,
+                  "height": 2796,
+                  "futureField": true
+                },
+                "sourceFileChecksum": null
+              }
+            }
+          ],
+          "links": {
+            "next": null
+          }
+        }
+      }
+    ],
+    "expect": {
+      "items": [
+        {
+          "id": "shot1",
+          "fileName": "first.png",
+          "imageAsset": {
+            "width": 1290,
+            "height": 2796,
+            "futureField": true
+          },
+          "sourceFileChecksum": null
+        }
+      ],
+      "nextCursor": null
+    }
+  },
+  {
+    "name": "preview_sets_preserve_future_read_enums",
+    "operation": "get",
+    "args": [
+      "/apps/app1/versions/version1/localizations/en-US/preview-sets",
+      {}
+    ],
+    "pythonMethod": "preview_sets",
+    "pythonArgs": [
+      "app1",
+      "version1",
+      "en-US",
+      {}
+    ],
+    "steps": [
+      {
+        "method": "GET",
+        "path": "/v1/apps/app1/appStoreVersions",
+        "query": {
+          "limit": "200",
+          "filter[id]": "version1"
+        },
+        "response": {
+          "data": [
+            {
+              "type": "appStoreVersions",
+              "id": "version1",
+              "attributes": {
+                "versionString": "2.0",
+                "platform": "IOS",
+                "appVersionState": "PREPARE_FOR_SUBMISSION"
+              }
+            }
+          ],
+          "links": {
+            "next": null
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/v1/appStoreVersions/version1/appStoreVersionLocalizations",
+        "query": {
+          "limit": "200",
+          "filter[locale]": "en-US",
+          "fields[appStoreVersionLocalizations]": "locale"
+        },
+        "response": {
+          "data": [
+            {
+              "type": "appStoreVersionLocalizations",
+              "id": "loc1",
+              "attributes": {
+                "locale": "en-US"
+              }
+            }
+          ],
+          "links": {
+            "next": null
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/v1/appStoreVersionLocalizations/loc1/appPreviewSets",
+        "query": {
+          "limit": "50"
+        },
+        "response": {
+          "data": [
+            {
+              "type": "appPreviewSets",
+              "id": "previews1",
+              "attributes": {
+                "previewType": "FUTURE_DEVICE"
+              }
+            }
+          ],
+          "links": {
+            "next": null
+          }
+        }
+      }
+    ],
+    "expect": {
+      "items": [
+        {
+          "id": "previews1",
+          "appId": "app1",
+          "versionId": "version1",
+          "previewType": "FUTURE_DEVICE"
+        }
+      ],
+      "nextCursor": null
+    }
+  },
+  {
+    "name": "previews_preserve_delivery_and_upload_operations",
+    "operation": "get",
+    "args": [
+      "/preview-sets/previews1/previews",
+      {}
+    ],
+    "pythonMethod": "previews",
+    "pythonArgs": [
+      "previews1",
+      {}
+    ],
+    "steps": [
+      {
+        "method": "GET",
+        "path": "/v1/appPreviewSets/previews1/appPreviews",
+        "query": {
+          "limit": "50"
+        },
+        "response": {
+          "data": [
+            {
+              "type": "appPreviews",
+              "id": "preview1",
+              "attributes": {
+                "fileName": "demo.mov",
+                "videoDeliveryState": {
+                  "state": "PROCESSING",
+                  "warnings": [
+                    {
+                      "code": "WARNING",
+                      "description": "Processing"
+                    }
+                  ],
+                  "errors": []
+                },
+                "uploadOperations": [
+                  {
+                    "method": "PUT",
+                    "url": "https://example.test/upload",
+                    "length": 12345,
+                    "offset": 0,
+                    "requestHeaders": [
+                      {
+                        "name": "Content-Type",
+                        "value": "video/quicktime"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "links": {
+            "next": null
+          }
+        }
+      }
+    ],
+    "expect": {
+      "items": [
+        {
+          "id": "preview1",
+          "videoDeliveryState": {
+            "state": "PROCESSING",
+            "warnings": [
+              {
+                "code": "WARNING"
+              }
+            ]
+          },
+          "uploadOperations": [
+            {
+              "offset": 0,
+              "requestHeaders": [
+                {
+                  "name": "Content-Type",
+                  "value": "video/quicktime"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "nextCursor": null
+    }
+  },
+  {
+    "name": "placements_include_images_and_scoped_parent",
+    "operation": "get",
+    "args": [
+      "/apps/app1/versions/version1/localizations/en-US/placements",
+      {}
+    ],
+    "pythonMethod": "placements",
+    "pythonArgs": [
+      "app1",
+      "version1",
+      "en-US",
+      {}
+    ],
+    "steps": [
+      {
+        "method": "GET",
+        "path": "/v1/apps/app1/appStoreVersions",
+        "query": {
+          "limit": "200",
+          "filter[id]": "version1"
+        },
+        "response": {
+          "data": [
+            {
+              "type": "appStoreVersions",
+              "id": "version1",
+              "attributes": {
+                "versionString": "2.0",
+                "platform": "IOS",
+                "appVersionState": "PREPARE_FOR_SUBMISSION"
+              }
+            }
+          ],
+          "links": {
+            "next": null
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/v1/appStoreVersions/version1/appStoreVersionLocalizations",
+        "query": {
+          "limit": "200",
+          "filter[locale]": "en-US",
+          "fields[appStoreVersionLocalizations]": "locale"
+        },
+        "response": {
+          "data": [
+            {
+              "type": "appStoreVersionLocalizations",
+              "id": "loc1",
+              "attributes": {
+                "locale": "en-US"
+              }
+            }
+          ],
+          "links": {
+            "next": null
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/v1/appStoreVersionLocalizations/loc1/placements",
+        "query": {
+          "limit": "50",
+          "include": "image,video"
+        },
+        "response": {
+          "data": [
+            {
+              "type": "appAssetLibraryPlacements",
+              "id": "placement1",
+              "attributes": {
+                "mediaType": "IMAGE",
+                "placementType": "PRODUCT_PAGE_HEADER_ASSET",
+                "state": "ASSET_PROCESSING"
+              },
+              "relationships": {
+                "image": {
+                  "data": {
+                    "type": "appAssetLibraryImages",
+                    "id": "image1"
+                  }
+                }
+              }
+            }
+          ],
+          "links": {
+            "next": null
+          }
+        }
+      }
+    ],
+    "expect": {
+      "items": [
+        {
+          "id": "placement1",
+          "appId": "app1",
+          "versionId": "version1",
+          "appStoreVersionLocalizationId": "loc1",
+          "imageId": "image1",
+          "mediaType": "IMAGE"
+        }
+      ],
+      "nextCursor": null
+    }
+  },
+  {
+    "name": "library_image_preserves_nullable_upload_operations",
+    "operation": "get",
+    "args": [
+      "/library-images/image1",
+      {}
+    ],
+    "pythonMethod": "library_image",
+    "pythonArgs": [
+      "image1",
+      {}
+    ],
+    "steps": [
+      {
+        "method": "GET",
+        "path": "/v1/appAssetLibraryImages/image1",
+        "query": {},
+        "response": {
+          "data": {
+            "type": "appAssetLibraryImages",
+            "id": "image1",
+            "attributes": {
+              "fileName": "header.png",
+              "state": "UPLOAD_COMPLETE",
+              "imageAsset": {
+                "width": 3840,
+                "height": 1646
+              },
+              "uploadOperations": null
+            }
+          }
+        }
+      }
+    ],
+    "expect": {
+      "id": "image1",
+      "fileName": "header.png",
+      "state": "UPLOAD_COMPLETE",
+      "imageAsset": {
+        "width": 3840,
+        "height": 1646
+      },
+      "uploadOperations": null
+    }
+  },
+  {
+    "name": "builds_translate_app_platform_and_version_filters",
+    "operation": "get",
+    "args": [
+      "/apps/app1/builds",
+      {
+        "platform": "IOS",
+        "prereleaseVersion": "2.0",
+        "sort": "-uploadedDate",
+        "limit": 1
+      }
+    ],
+    "pythonMethod": "builds",
+    "pythonArgs": [
+      "app1",
+      {
+        "platform": "IOS",
+        "prereleaseVersion": "2.0",
+        "sort": "-uploadedDate",
+        "limit": 1
+      }
+    ],
+    "steps": [
+      {
+        "method": "GET",
+        "path": "/v1/builds",
+        "query": {
+          "limit": "1",
+          "filter[app]": "app1",
+          "filter[preReleaseVersion.platform]": "IOS",
+          "filter[preReleaseVersion.version]": "2.0",
+          "sort": "-uploadedDate"
+        },
+        "response": {
+          "data": [
+            {
+              "type": "builds",
+              "id": "build1",
+              "attributes": {
+                "version": "42",
+                "processingState": "VALID",
+                "expired": false,
+                "buildAudienceType": "APP_STORE_ELIGIBLE"
+              }
+            }
+          ],
+          "links": {
+            "next": null
+          }
+        }
+      }
+    ],
+    "expect": {
+      "items": [
+        {
+          "id": "build1",
+          "appId": "app1",
+          "processingState": "VALID",
+          "expired": false
+        }
+      ],
+      "nextCursor": null
+    }
+  },
+  {
+    "name": "build_proves_app_ownership",
+    "operation": "get",
+    "args": [
+      "/apps/app1/builds/build1",
+      {}
+    ],
+    "pythonMethod": "build",
+    "pythonArgs": [
+      "app1",
+      "build1",
+      {}
+    ],
+    "steps": [
+      {
+        "method": "GET",
+        "path": "/v1/builds",
+        "query": {
+          "limit": "200",
+          "filter[app]": "app1",
+          "filter[id]": "build1"
+        },
+        "response": {
+          "data": [
+            {
+              "type": "builds",
+              "id": "build1",
+              "attributes": {
+                "version": "42",
+                "processingState": "VALID",
+                "expired": false,
+                "buildAudienceType": "APP_STORE_ELIGIBLE"
+              }
+            }
+          ],
+          "links": {
+            "next": null
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/v1/builds/build1",
+        "query": {},
+        "response": {
+          "data": {
+            "type": "builds",
+            "id": "build1",
+            "attributes": {
+              "version": "42",
+              "processingState": "VALID",
+              "expired": false,
+              "buildAudienceType": "APP_STORE_ELIGIBLE"
+            }
+          }
+        }
+      }
+    ],
+    "expect": {
+      "id": "build1",
+      "appId": "app1",
+      "version": "42",
+      "expired": false
+    }
+  },
+  {
+    "name": "version_build_proves_version_ownership",
+    "operation": "get",
+    "args": [
+      "/apps/app1/versions/version1/build",
+      {}
+    ],
+    "pythonMethod": "version_build",
+    "pythonArgs": [
+      "app1",
+      "version1",
+      {}
+    ],
+    "steps": [
+      {
+        "method": "GET",
+        "path": "/v1/apps/app1/appStoreVersions",
+        "query": {
+          "limit": "200",
+          "filter[id]": "version1"
+        },
+        "response": {
+          "data": [
+            {
+              "type": "appStoreVersions",
+              "id": "version1",
+              "attributes": {
+                "versionString": "2.0",
+                "platform": "IOS",
+                "appVersionState": "PREPARE_FOR_SUBMISSION"
+              }
+            }
+          ],
+          "links": {
+            "next": null
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/v1/appStoreVersions/version1/build",
+        "query": {},
+        "response": {
+          "data": {
+            "type": "builds",
+            "id": "build1",
+            "attributes": {
+              "version": "42",
+              "processingState": "VALID",
+              "expired": false,
+              "buildAudienceType": "APP_STORE_ELIGIBLE"
+            }
+          }
+        }
+      }
+    ],
+    "expect": {
+      "id": "build1",
+      "appId": "app1",
+      "versionId": "version1"
+    }
+  },
+  {
+    "name": "prerelease_version_proves_build_ownership",
+    "operation": "get",
+    "args": [
+      "/apps/app1/builds/build1/prerelease-version",
+      {}
+    ],
+    "pythonMethod": "build_prerelease_version",
+    "pythonArgs": [
+      "app1",
+      "build1",
+      {}
+    ],
+    "steps": [
+      {
+        "method": "GET",
+        "path": "/v1/builds",
+        "query": {
+          "limit": "200",
+          "filter[app]": "app1",
+          "filter[id]": "build1"
+        },
+        "response": {
+          "data": [
+            {
+              "type": "builds",
+              "id": "build1",
+              "attributes": {
+                "version": "42",
+                "processingState": "VALID",
+                "expired": false,
+                "buildAudienceType": "APP_STORE_ELIGIBLE"
+              }
+            }
+          ],
+          "links": {
+            "next": null
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/v1/builds/build1/preReleaseVersion",
+        "query": {},
+        "response": {
+          "data": {
+            "type": "preReleaseVersions",
+            "id": "pre1",
+            "attributes": {
+              "version": "2.0",
+              "platform": "IOS"
+            }
+          }
+        }
+      }
+    ],
+    "expect": {
+      "id": "pre1",
+      "appId": "app1",
+      "version": "2.0",
+      "platform": "IOS"
+    }
+  },
+  {
+    "name": "metadata_patch_merges_unreturned_attributes",
+    "operation": "update_metadata",
+    "args": [
+      "/apps/app1",
+      {
+        "contentRightsDeclaration": "DOES_NOT_USE_THIRD_PARTY_CONTENT"
+      }
+    ],
+    "steps": [
+      {
+        "method": "GET",
+        "path": "/v1/apps/app1",
+        "query": {},
+        "response": {
+          "data": {
+            "type": "apps",
+            "id": "app1",
+            "attributes": {
+              "name": "Notes",
+              "contentRightsDeclaration": "USES_THIRD_PARTY_CONTENT"
+            }
+          }
+        }
+      },
+      {
+        "method": "PATCH",
+        "path": "/v1/apps/app1",
+        "query": {},
+        "response": {
+          "data": {
+            "type": "apps",
+            "id": "app1",
+            "attributes": {
+              "contentRightsDeclaration": "DOES_NOT_USE_THIRD_PARTY_CONTENT"
+            }
+          }
+        },
+        "body": {
+          "data": {
+            "type": "apps",
+            "id": "app1",
+            "attributes": {
+              "contentRightsDeclaration": "DOES_NOT_USE_THIRD_PARTY_CONTENT"
+            }
+          }
+        }
+      }
+    ],
+    "expect": {
+      "id": "app1",
+      "name": "Notes",
+      "contentRightsDeclaration": "DOES_NOT_USE_THIRD_PARTY_CONTENT"
+    }
+  },
+  {
+    "name": "create_version_posts_once_status_201",
+    "operation": "create_version",
+    "args": [
+      "app1",
+      "IOS",
+      "2.0"
+    ],
+    "steps": [
+      {
+        "method": "GET",
+        "path": "/v1/apps/app1",
+        "query": {},
+        "response": {
+          "data": {
+            "type": "apps",
+            "id": "app1",
+            "attributes": {}
+          }
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/v1/appStoreVersions",
+        "query": {},
+        "response": {
+          "data": {
+            "type": "appStoreVersions",
+            "id": "version1",
+            "attributes": {
+              "versionString": "2.0",
+              "platform": "IOS",
+              "appVersionState": "PREPARE_FOR_SUBMISSION"
+            }
+          }
+        },
+        "body": {
+          "data": {
+            "type": "appStoreVersions",
+            "attributes": {
+              "platform": "IOS",
+              "versionString": "2.0"
+            },
+            "relationships": {
+              "app": {
+                "data": {
+                  "type": "apps",
+                  "id": "app1"
+                }
+              }
+            }
+          }
+        },
+        "status": 201
+      }
+    ],
+    "expect": {
+      "id": "version1",
+      "appId": "app1",
+      "versionString": "2.0",
+      "platform": "IOS"
+    }
+  },
+  {
+    "name": "create_version_posts_once_status_409",
+    "operation": "create_version",
+    "args": [
+      "app1",
+      "IOS",
+      "2.0"
+    ],
+    "steps": [
+      {
+        "method": "GET",
+        "path": "/v1/apps/app1",
+        "query": {},
+        "response": {
+          "data": {
+            "type": "apps",
+            "id": "app1",
+            "attributes": {}
+          }
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/v1/appStoreVersions",
+        "query": {},
+        "response": {
+          "errors": []
+        },
+        "body": {
+          "data": {
+            "type": "appStoreVersions",
+            "attributes": {
+              "platform": "IOS",
+              "versionString": "2.0"
+            },
+            "relationships": {
+              "app": {
+                "data": {
+                  "type": "apps",
+                  "id": "app1"
+                }
+              }
+            }
+          }
+        },
+        "status": 409
+      }
+    ],
+    "error": {
+      "code": "upstream_conflict",
+      "retryable": false
+    }
+  },
+  {
+    "name": "create_version_posts_once_status_503",
+    "operation": "create_version",
+    "args": [
+      "app1",
+      "IOS",
+      "2.0"
+    ],
+    "steps": [
+      {
+        "method": "GET",
+        "path": "/v1/apps/app1",
+        "query": {},
+        "response": {
+          "data": {
+            "type": "apps",
+            "id": "app1",
+            "attributes": {}
+          }
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/v1/appStoreVersions",
+        "query": {},
+        "response": {
+          "errors": []
+        },
+        "body": {
+          "data": {
+            "type": "appStoreVersions",
+            "attributes": {
+              "platform": "IOS",
+              "versionString": "2.0"
+            },
+            "relationships": {
+              "app": {
+                "data": {
+                  "type": "apps",
+                  "id": "app1"
+                }
+              }
+            }
+          }
+        },
+        "status": 503
+      }
+    ],
+    "error": {
+      "code": "upstream_unavailable",
+      "retryable": false
+    }
+  },
+  {
+    "name": "attach_build_writes_once_and_confirms_selected_build",
+    "operation": "attach_build",
+    "args": [
+      "app1",
+      "version1",
+      "build1"
+    ],
+    "steps": [
+      {
+        "method": "GET",
+        "path": "/v1/apps/app1/appStoreVersions",
+        "query": {
+          "limit": "200",
+          "filter[id]": "version1"
+        },
+        "response": {
+          "data": [
+            {
+              "type": "appStoreVersions",
+              "id": "version1",
+              "attributes": {
+                "versionString": "2.0",
+                "platform": "IOS",
+                "appVersionState": "PREPARE_FOR_SUBMISSION"
+              }
+            }
+          ],
+          "links": {
+            "next": null
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/v1/appStoreVersions/version1",
+        "query": {},
+        "response": {
+          "data": {
+            "type": "appStoreVersions",
+            "id": "version1",
+            "attributes": {
+              "versionString": "2.0",
+              "platform": "IOS",
+              "appVersionState": "PREPARE_FOR_SUBMISSION"
+            }
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/v1/builds",
+        "query": {
+          "limit": "200",
+          "filter[app]": "app1",
+          "filter[id]": "build1"
+        },
+        "response": {
+          "data": [
+            {
+              "type": "builds",
+              "id": "build1",
+              "attributes": {
+                "version": "42",
+                "processingState": "VALID",
+                "expired": false,
+                "buildAudienceType": "APP_STORE_ELIGIBLE"
+              }
+            }
+          ],
+          "links": {
+            "next": null
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/v1/builds/build1",
+        "query": {},
+        "response": {
+          "data": {
+            "type": "builds",
+            "id": "build1",
+            "attributes": {
+              "version": "42",
+              "processingState": "VALID",
+              "expired": false,
+              "buildAudienceType": "APP_STORE_ELIGIBLE"
+            }
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/v1/builds",
+        "query": {
+          "limit": "200",
+          "filter[app]": "app1",
+          "filter[id]": "build1"
+        },
+        "response": {
+          "data": [
+            {
+              "type": "builds",
+              "id": "build1",
+              "attributes": {
+                "version": "42",
+                "processingState": "VALID",
+                "expired": false,
+                "buildAudienceType": "APP_STORE_ELIGIBLE"
+              }
+            }
+          ],
+          "links": {
+            "next": null
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/v1/builds/build1/preReleaseVersion",
+        "query": {},
+        "response": {
+          "data": {
+            "type": "preReleaseVersions",
+            "id": "pre1",
+            "attributes": {
+              "version": "2.0",
+              "platform": "IOS"
+            }
+          }
+        }
+      },
+      {
+        "method": "PATCH",
+        "path": "/v1/appStoreVersions/version1",
+        "query": {},
+        "response": {
+          "data": {
+            "type": "appStoreVersions",
+            "id": "version1",
+            "attributes": {
+              "versionString": "2.0",
+              "platform": "IOS",
+              "appVersionState": "PREPARE_FOR_SUBMISSION"
+            }
+          }
+        },
+        "body": {
+          "data": {
+            "type": "appStoreVersions",
+            "id": "version1",
+            "relationships": {
+              "build": {
+                "data": {
+                  "type": "builds",
+                  "id": "build1"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/v1/apps/app1/appStoreVersions",
+        "query": {
+          "limit": "200",
+          "filter[id]": "version1"
+        },
+        "response": {
+          "data": [
+            {
+              "type": "appStoreVersions",
+              "id": "version1",
+              "attributes": {
+                "versionString": "2.0",
+                "platform": "IOS",
+                "appVersionState": "PREPARE_FOR_SUBMISSION"
+              }
+            }
+          ],
+          "links": {
+            "next": null
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/v1/appStoreVersions/version1/build",
+        "query": {},
+        "response": {
+          "data": {
+            "type": "builds",
+            "id": "build1",
+            "attributes": {
+              "version": "42",
+              "processingState": "VALID",
+              "expired": false,
+              "buildAudienceType": "APP_STORE_ELIGIBLE"
+            }
+          }
+        }
+      }
+    ],
+    "expect": {
+      "id": "version1",
+      "appId": "app1",
+      "buildId": "build1"
+    }
+  },
+  {
+    "name": "foreign_build_stops_before_write",
+    "operation": "attach_build",
+    "args": [
+      "app1",
+      "version1",
+      "build1"
+    ],
+    "steps": [
+      {
+        "method": "GET",
+        "path": "/v1/apps/app1/appStoreVersions",
+        "query": {
+          "limit": "200",
+          "filter[id]": "version1"
+        },
+        "response": {
+          "data": [
+            {
+              "type": "appStoreVersions",
+              "id": "version1",
+              "attributes": {
+                "versionString": "2.0",
+                "platform": "IOS",
+                "appVersionState": "PREPARE_FOR_SUBMISSION"
+              }
+            }
+          ],
+          "links": {
+            "next": null
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/v1/appStoreVersions/version1",
+        "query": {},
+        "response": {
+          "data": {
+            "type": "appStoreVersions",
+            "id": "version1",
+            "attributes": {
+              "versionString": "2.0",
+              "platform": "IOS",
+              "appVersionState": "PREPARE_FOR_SUBMISSION"
+            }
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/v1/builds",
+        "query": {
+          "limit": "200",
+          "filter[app]": "app1",
+          "filter[id]": "build1"
+        },
+        "response": {
+          "data": [],
+          "links": {
+            "next": null
+          }
+        }
+      }
+    ],
+    "error": {
+      "code": "resource_not_found",
+      "status": 404,
+      "retryable": false
+    }
+  },
+  {
+    "name": "uncertain_build_confirmation_never_repeats_patch",
+    "operation": "attach_build",
+    "args": [
+      "app1",
+      "version1",
+      "build1"
+    ],
+    "steps": [
+      {
+        "method": "GET",
+        "path": "/v1/apps/app1/appStoreVersions",
+        "query": {
+          "limit": "200",
+          "filter[id]": "version1"
+        },
+        "response": {
+          "data": [
+            {
+              "type": "appStoreVersions",
+              "id": "version1",
+              "attributes": {
+                "versionString": "2.0",
+                "platform": "IOS",
+                "appVersionState": "PREPARE_FOR_SUBMISSION"
+              }
+            }
+          ],
+          "links": {
+            "next": null
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/v1/appStoreVersions/version1",
+        "query": {},
+        "response": {
+          "data": {
+            "type": "appStoreVersions",
+            "id": "version1",
+            "attributes": {
+              "versionString": "2.0",
+              "platform": "IOS",
+              "appVersionState": "PREPARE_FOR_SUBMISSION"
+            }
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/v1/builds",
+        "query": {
+          "limit": "200",
+          "filter[app]": "app1",
+          "filter[id]": "build1"
+        },
+        "response": {
+          "data": [
+            {
+              "type": "builds",
+              "id": "build1",
+              "attributes": {
+                "version": "42",
+                "processingState": "VALID",
+                "expired": false,
+                "buildAudienceType": "APP_STORE_ELIGIBLE"
+              }
+            }
+          ],
+          "links": {
+            "next": null
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/v1/builds/build1",
+        "query": {},
+        "response": {
+          "data": {
+            "type": "builds",
+            "id": "build1",
+            "attributes": {
+              "version": "42",
+              "processingState": "VALID",
+              "expired": false,
+              "buildAudienceType": "APP_STORE_ELIGIBLE"
+            }
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/v1/builds",
+        "query": {
+          "limit": "200",
+          "filter[app]": "app1",
+          "filter[id]": "build1"
+        },
+        "response": {
+          "data": [
+            {
+              "type": "builds",
+              "id": "build1",
+              "attributes": {
+                "version": "42",
+                "processingState": "VALID",
+                "expired": false,
+                "buildAudienceType": "APP_STORE_ELIGIBLE"
+              }
+            }
+          ],
+          "links": {
+            "next": null
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/v1/builds/build1/preReleaseVersion",
+        "query": {},
+        "response": {
+          "data": {
+            "type": "preReleaseVersions",
+            "id": "pre1",
+            "attributes": {
+              "version": "2.0",
+              "platform": "IOS"
+            }
+          }
+        }
+      },
+      {
+        "method": "PATCH",
+        "path": "/v1/appStoreVersions/version1",
+        "query": {},
+        "response": {
+          "data": {
+            "type": "appStoreVersions",
+            "id": "version1",
+            "attributes": {
+              "versionString": "2.0",
+              "platform": "IOS",
+              "appVersionState": "PREPARE_FOR_SUBMISSION"
+            }
+          }
+        },
+        "body": {
+          "data": {
+            "type": "appStoreVersions",
+            "id": "version1",
+            "relationships": {
+              "build": {
+                "data": {
+                  "type": "builds",
+                  "id": "build1"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/v1/apps/app1/appStoreVersions",
+        "query": {
+          "limit": "200",
+          "filter[id]": "version1"
+        },
+        "response": {
+          "data": [
+            {
+              "type": "appStoreVersions",
+              "id": "version1",
+              "attributes": {
+                "versionString": "2.0",
+                "platform": "IOS",
+                "appVersionState": "PREPARE_FOR_SUBMISSION"
+              }
+            }
+          ],
+          "links": {
+            "next": null
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/v1/appStoreVersions/version1/build",
+        "query": {},
+        "response": {
+          "data": {
+            "type": "builds",
+            "id": "another-build",
+            "attributes": {}
+          }
+        }
+      }
+    ],
+    "error": {
+      "code": "write_outcome_unknown",
+      "retryable": false
+    }
+  },
+  {
+    "name": "duplicate_locale_across_pages_stops_before_media_read",
+    "operation": "get",
+    "args": [
+      "/apps/app1/versions/version1/localizations/en-US/screenshot-sets",
+      {}
+    ],
+    "pythonMethod": "screenshot_sets",
+    "pythonArgs": [
+      "app1",
+      "version1",
+      "en-US",
+      {}
+    ],
+    "steps": [
+      {
+        "method": "GET",
+        "path": "/v1/apps/app1/appStoreVersions",
+        "query": {
+          "limit": "200",
+          "filter[id]": "version1"
+        },
+        "response": {
+          "data": [
+            {
+              "type": "appStoreVersions",
+              "id": "version1",
+              "attributes": {
+                "versionString": "2.0",
+                "platform": "IOS",
+                "appVersionState": "PREPARE_FOR_SUBMISSION"
+              }
+            }
+          ],
+          "links": {
+            "next": null
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/v1/appStoreVersions/version1/appStoreVersionLocalizations",
+        "query": {
+          "limit": "200",
+          "filter[locale]": "en-US",
+          "fields[appStoreVersionLocalizations]": "locale"
+        },
+        "response": {
+          "data": [
+            {
+              "type": "appStoreVersionLocalizations",
+              "id": "loc1",
+              "attributes": {
+                "locale": "en-US"
+              }
+            }
+          ],
+          "links": {
+            "next": "?cursor=more"
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/v1/appStoreVersions/version1/appStoreVersionLocalizations",
+        "query": {
+          "limit": "200",
+          "filter[locale]": "en-US",
+          "fields[appStoreVersionLocalizations]": "locale",
+          "cursor": "more"
+        },
+        "response": {
+          "data": [
+            {
+              "type": "appStoreVersionLocalizations",
+              "id": "loc2",
+              "attributes": {
+                "locale": "en-US"
+              }
+            }
+          ],
+          "links": {
+            "next": null
+          }
+        }
+      }
+    ],
+    "error": {
+      "code": "ambiguous_selection",
+      "retryable": false
+    }
+  }
+]

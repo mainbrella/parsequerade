@@ -1,0 +1,17 @@
+[package]
+name = "parsequerade-node"
+version = "0.1.0"
+edition = "2024"
+license = "GPL-3.0-or-later"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+parsequerade-native = { path = "../../native" }
+napi = { version = "3", default-features = false, features = ["napi8", "async"] }
+napi-derive = "3"
+
+[build-dependencies]
+napi-build = "2"
