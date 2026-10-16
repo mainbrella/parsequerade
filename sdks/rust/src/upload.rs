@@ -76,6 +76,20 @@ fn failure(code: &'static str, message: &'static str) -> Error {
 fn unknown() -> Error {
     Error::unknown_write()
 }
+fn image_usable(state: Option<&str>) -> bool {
+    matches!(
+        state,
+        Some(
+            "UPLOAD_COMPLETE"
+                | "PREPARE_FOR_SUBMISSION"
+                | "READY_FOR_REVIEW"
+                | "WAITING_FOR_REVIEW"
+                | "IN_REVIEW"
+                | "ACCEPTED"
+                | "APPROVED"
+        )
+    )
+}
 fn text<'a>(v: &'a Value, key: &str) -> Result<&'a str> {
     v[key].as_str().ok_or_else(Error::invalid_upstream)
 }
@@ -473,14 +487,34 @@ impl Client {
             ));
         }
         if checkpoint.binding.is_none() {
-        checkpoint.binding = Some(binding.clone());
+            checkpoint.binding = Some(binding.clone());
+        }
+        let valid_phase = matches!(
+            checkpoint.phase.as_deref(),
+            None | Some("reservation_started")
+                | Some("reserved")
+                | Some("commit_started")
+                | Some("committed")
+                | Some("placement_started")
+                | Some("placement_created")
+        );
+        if !valid_phase
+            || (checkpoint.phase.as_deref() == Some("reservation_started")
+                && checkpoint.image_id.is_some())
+            || (checkpoint.phase.as_deref().is_some_and(|p| p != "reservation_started")
+                && checkpoint.image_id.is_none())
+            || (checkpoint.placement_id.is_some() && checkpoint.image_id.is_none())
+            || (checkpoint.placement_group.is_some()
+                && !matches!(checkpoint.phase.as_deref(), Some("placement_started" | "placement_created")))
+        {
+            return Err(failure("invalid_checkpoint", "The upload checkpoint state is invalid."));
         }
         let localization = self
             .version_localization(
                 &request.app_id,
                 &request.version_id,
                 &request.locale,
-                &Query::new(),
+                &Query::new().with("fields", "locale"),
             )
             .await?;
         contract::validate_id(&localization.id)?;
@@ -505,15 +539,40 @@ impl Client {
             .iter()
             .filter(|p| p.placement_type.as_deref() == Some(request.placement_type.apple()))
             .collect();
-        if matching.len() > 1 { return Err(Error::incomplete()); }
+        if matching.len() > 1 {
+            return Err(Error::incomplete());
+        }
         if let Some(p) = matching.first().copied() {
             if checkpoint.image_id.as_deref() == p.image_id.as_deref()
                 && p.app_store_version_localization_id.as_deref() == Some(localization.id.as_str())
-                && checkpoint.phase.as_deref().is_some_and(|v| matches!(v, "placement_started" | "placement_created"))
+                && checkpoint
+                    .phase
+                    .as_deref()
+                    .is_some_and(|v| matches!(v, "placement_started" | "placement_created"))
                 && checkpoint.placement_group.as_deref() == p.placement_group.as_deref()
                 && p.state.as_deref() != Some("FAILED")
             {
-                if checkpoint.placement_id.as_deref().is_some_and(|id| id != p.id) { return Err(unknown()); }
+                let image_id = checkpoint.image_id.as_deref().ok_or_else(unknown)?;
+                let image = raw(
+                    self,
+                    Method::GET,
+                    &format!("/v1/appAssetLibraryImages/{image_id}"),
+                    None,
+                )
+                .await?;
+                if image["data"]["type"] != "appAssetLibraryImages"
+                    || image["data"]["id"] != image_id
+                    || !image_usable(image["data"]["attributes"]["state"].as_str())
+                {
+                    return Err(unknown());
+                }
+                if checkpoint
+                    .placement_id
+                    .as_deref()
+                    .is_some_and(|id| id != p.id)
+                {
+                    return Err(unknown());
+                }
                 checkpoint.placement_id = Some(p.id.clone());
                 checkpoint.phase = Some("placement_created".into());
                 persist(checkpoint)?;
@@ -528,7 +587,13 @@ impl Client {
                 "A placement already exists for this type; the SDK will not replace it.",
             ));
         }
-        if checkpoint.phase.as_deref() == Some("placement_started") { return Err(unknown()); }
+        if checkpoint
+            .phase
+            .as_deref()
+            .is_some_and(|phase| matches!(phase, "placement_started" | "placement_created"))
+        {
+            return Err(unknown());
+        }
         let lib = raw(
             self,
             Method::GET,
@@ -540,6 +605,7 @@ impl Client {
             return Err(Error::invalid_upstream());
         }
         let library_id = text(&lib["data"], "id")?;
+        contract::validate_id(library_id)?;
         let refdata = raw(self, Method::GET, "/v1/appAssetLibraryRefData", None).await?;
         let group = resolve_placement_group(
             &refdata,
@@ -549,6 +615,16 @@ impl Client {
             png.len(),
             alpha,
         )?;
+        if checkpoint
+            .placement_group
+            .as_deref()
+            .is_some_and(|old| old != group)
+        {
+            return Err(failure(
+                "checkpoint_mismatch",
+                "The placement group resolved differently from the checkpoint.",
+            ));
+        }
         if checkpoint.image_id.is_none() {
             if checkpoint.phase.as_deref() == Some("reservation_started") {
                 return Err(unknown());
@@ -569,6 +645,7 @@ impl Client {
                 return Err(unknown());
             }
             checkpoint.image_id = Some(text(&response["data"], "id")?.to_owned());
+            contract::validate_id(checkpoint.image_id.as_deref().unwrap())?;
             checkpoint.phase = Some("reserved".into());
             persist(checkpoint)?;
             let ops = operations(self, &response, png)?;
@@ -588,6 +665,10 @@ impl Client {
             .await?;
             if committed["data"]["id"] != checkpoint.image_id.as_deref().unwrap_or("")
                 || committed["data"]["type"] != "appAssetLibraryImages"
+                || !matches!(
+                    committed["data"]["attributes"]["state"].as_str(),
+                    Some("UPLOAD_COMPLETE" | "PREPARE_FOR_SUBMISSION")
+                )
             {
                 return Err(unknown());
             }
@@ -610,6 +691,7 @@ impl Client {
             {
                 return Err(Error::invalid_upstream());
             }
+            contract::validate_id(image_id)?;
             match image["data"]["attributes"]["state"].as_str() {
                 Some("AWAITING_UPLOAD")
                     if checkpoint.phase.as_deref() != Some("commit_started") =>
@@ -626,14 +708,28 @@ impl Client {
                         Some(&body),
                     )
                     .await?;
-                    if c["data"]["id"] != image_id.as_str() {
+                    if c["data"]["id"] != image_id.as_str()
+                        || c["data"]["type"] != "appAssetLibraryImages"
+                        || !matches!(
+                            c["data"]["attributes"]["state"].as_str(),
+                            Some("UPLOAD_COMPLETE" | "PREPARE_FOR_SUBMISSION")
+                        )
+                    {
                         return Err(unknown());
                     }
                     checkpoint.phase = Some("committed".into());
                     persist(checkpoint)?;
                 }
                 Some("AWAITING_UPLOAD") => return Err(unknown()),
-                Some("UPLOAD_COMPLETE" | "PREPARE_FOR_SUBMISSION") => {}
+                Some(
+                    "UPLOAD_COMPLETE"
+                    | "PREPARE_FOR_SUBMISSION"
+                    | "READY_FOR_REVIEW"
+                    | "WAITING_FOR_REVIEW"
+                    | "IN_REVIEW"
+                    | "ACCEPTED"
+                    | "APPROVED",
+                ) => {}
                 _ => {
                     return Err(failure(
                         "image_not_ready",
@@ -643,6 +739,28 @@ impl Client {
             }
         }
         let image_id = checkpoint.image_id.as_ref().unwrap().clone();
+        let latest = self
+            .placements(
+                &request.app_id,
+                &request.version_id,
+                &request.locale,
+                &Query::new()
+                    .with("placementType", request.placement_type.apple())
+                    .with("limit", 200),
+            )
+            .await?;
+        if latest.next_cursor.is_some()
+            || latest
+                .items
+                .iter()
+                .any(|p| p.placement_type.as_deref() == Some(request.placement_type.apple()))
+        {
+            return Err(failure(
+                "existing_placement",
+                "A placement appeared during this upload; the SDK will not replace it.",
+            ));
+        }
+        checkpoint.placement_group = Some(group.clone());
         checkpoint.phase = Some("placement_started".into());
         persist(checkpoint)?;
         let body = json!({"data":{"type":"appAssetLibraryPlacements","attributes":{"placementType":request.placement_type.apple(),"placementGroup":group},"relationships":{"image":{"data":{"type":"appAssetLibraryImages","id":image_id}},"appStoreVersionLocalization":{"data":{"type":"appStoreVersionLocalizations","id":localization.id}}}}});

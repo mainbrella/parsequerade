@@ -180,3 +180,190 @@ async fn upload_invalid_pngs_and_dimensions_make_no_requests() {
     }
     task.await.unwrap();
 }
+
+fn reference_name() -> String {
+    use ring::digest::{digest, SHA256};
+    let sha = |bytes: &[u8]| {
+        digest(&SHA256, bytes)
+            .as_ref()
+            .iter()
+            .map(|v| format!("{v:02x}"))
+            .collect::<String>()
+    };
+    let binding = format!(
+        "app1:version1:en-US:PRODUCT_PAGE_HEADER_ASSET:listing.png:{}",
+        sha(HEADER)
+    );
+    format!("parsequerade-{}", sha(binding.as_bytes()))
+}
+
+fn reserve_body() -> Value {
+    json!({"data":{"type":"appAssetLibraryImages","attributes":{"fileName":"listing.png","fileSize":HEADER.len(),"category":"CREATIVE_ASSETS","referenceName":reference_name()},"relationships":{"assetLibrary":{"data":{"type":"appAssetLibraries","id":"library-different-from-app"}}}}})
+}
+
+fn upload_operation(path: &str, offset: usize, length: usize) -> Value {
+    json!({"method":"PUT","url":format!("__MOCK_ORIGIN__{path}"),"offset":offset,"length":length,
+        "requestHeaders":[{"name":"Content-Type","value":"image/png"},{"name":"X-Upload-Token","value":"signed-fixture"}]})
+}
+
+fn reservation(operations: Vec<Value>) -> Step {
+    Step::get(
+        "/v1/appAssetLibraryImages",
+        single(
+            "appAssetLibraryImages",
+            "image1",
+            json!({"state":"AWAITING_UPLOAD","uploadOperations":operations}),
+        ),
+    )
+    .post(reserve_body())
+}
+
+fn preflight() -> Vec<Step> {
+    let mut steps = scope();
+    steps.extend(placements(vec![]));
+    steps.extend(library_and_catalog());
+    steps
+}
+
+fn commit() -> Step {
+    Step::get("/v1/appAssetLibraryImages/image1",single("appAssetLibraryImages","image1",json!({"state":"UPLOAD_COMPLETE"})))
+        .patch(json!({"data":{"type":"appAssetLibraryImages","id":"image1","attributes":{"uploaded":true}}}))
+}
+
+fn create_placement() -> Step {
+    Step::get("/v1/appAssetLibraryPlacements",single("appAssetLibraryPlacements","placement1",json!({"state":"ASSET_PROCESSING"})))
+        .post(json!({"data":{"type":"appAssetLibraryPlacements","attributes":{"placementType":"PRODUCT_PAGE_HEADER_ASSET","placementGroup":"CREATIVE_IOS"},"relationships":{"image":{"data":{"type":"appAssetLibraryImages","id":"image1"}},"appStoreVersionLocalization":{"data":{"type":"appStoreVersionLocalizations","id":"loc1"}}}}}))
+}
+
+#[tokio::test]
+async fn upload_sends_exact_chunks_and_commit_and_verifies_placement() {
+    let half = HEADER.len() / 2;
+    let mut steps = preflight();
+    steps.push(reservation(vec![
+        upload_operation("/upload/second", half, HEADER.len() - half),
+        upload_operation("/upload/first", 0, half),
+    ]));
+    steps.push(
+        Step::get("/upload/second", json!({}))
+            .put(&HEADER[half..])
+            .request_header("content-type", "image/png")
+            .request_header("x-upload-token", "signed-fixture"),
+    );
+    steps.push(
+        Step::get("/upload/first", json!({}))
+            .put(&HEADER[..half])
+            .request_header("content-type", "image/png")
+            .request_header("x-upload-token", "signed-fixture"),
+    );
+    steps.push(commit());
+    steps.extend(placements(vec![]));
+    steps.push(create_placement());
+    steps.extend(placements(vec![placement("image1")]));
+    let (client, task) = mock(steps).await;
+    let mut checkpoint = ListingImageUploadCheckpoint::default();
+    let mut saves = Vec::new();
+    let result = client
+        .upload_listing_image(
+            &request(ListingImagePlacementType::ProductPageHeader),
+            HEADER,
+            &mut checkpoint,
+            |c| {
+                saves.push(serde_json::to_value(c).unwrap());
+                Ok(())
+            },
+        )
+        .await
+        .unwrap();
+    assert_eq!(
+        serde_json::to_value(result).unwrap(),
+        json!({"appId":"app1","versionId":"version1","locale":"en-US","placementType":"PRODUCT_PAGE_HEADER_ASSET","imageId":"image1","placementId":"placement1"})
+    );
+    assert!(saves
+        .iter()
+        .any(|v| v["phase"] == "reservation_started" && v.get("imageId").is_none()));
+    assert!(saves
+        .iter()
+        .any(|v| v["phase"] == "commit_started" && v["imageId"] == "image1"));
+    assert!(saves
+        .iter()
+        .any(|v| v["phase"] == "placement_started" && v["imageId"] == "image1"));
+    let serialized = serde_json::to_string(&checkpoint).unwrap();
+    assert!(!serialized.contains("signed-fixture"));
+    assert!(!serialized.contains("__MOCK_ORIGIN__"));
+    task.await.unwrap();
+}
+
+#[tokio::test]
+async fn malformed_upload_operations_never_dispatch_put_or_commit() {
+    let mut malicious = upload_operation("/upload", 0, HEADER.len());
+    malicious["requestHeaders"] = json!([{"name":"Authorization","value":"Bearer malicious"}]);
+    let mut wrong_host = upload_operation("/upload", 0, HEADER.len());
+    wrong_host["url"] = "https://blobstore.apple.com.evil.invalid/upload".into();
+    let mut redirect_host = upload_operation("/upload", 0, HEADER.len());
+    redirect_host["url"] = "http://store-030.blobstore.apple.com/upload".into();
+    for ops in [
+        vec![upload_operation("/upload", 1, HEADER.len() - 1)],
+        vec![
+            upload_operation("/a", 0, HEADER.len()),
+            upload_operation("/b", 0, 1),
+        ],
+        vec![upload_operation("/upload", 0, HEADER.len() + 1)],
+        vec![malicious],
+        vec![wrong_host],
+        vec![redirect_host],
+    ] {
+        let mut steps = preflight();
+        steps.push(reservation(ops));
+        let (client, task) = mock(steps).await;
+        let mut checkpoint = ListingImageUploadCheckpoint::default();
+        let error = client
+            .upload_listing_image(
+                &request(ListingImagePlacementType::ProductPageHeader),
+                HEADER,
+                &mut checkpoint,
+                |_| Ok(()),
+            )
+            .await
+            .unwrap_err();
+        assert_eq!(error.code, "upstream_invalid_response");
+        assert_eq!(
+            serde_json::to_value(checkpoint).unwrap()["imageId"],
+            "image1"
+        );
+        task.await.unwrap();
+    }
+}
+
+#[tokio::test]
+async fn uncertain_reservation_is_not_retried_and_checkpoint_blocks_duplicate() {
+    let mut steps = preflight();
+    let mut reserve = reservation(vec![upload_operation("/upload", 0, HEADER.len())]);
+    reserve.disconnect = true;
+    steps.push(reserve);
+    let (client, task) = mock(steps).await;
+    let mut checkpoint = ListingImageUploadCheckpoint::default();
+    let error = client
+        .upload_listing_image(
+            &request(ListingImagePlacementType::ProductPageHeader),
+            HEADER,
+            &mut checkpoint,
+            |_| Ok(()),
+        )
+        .await
+        .unwrap_err();
+    assert_eq!(error.code, "write_outcome_unknown");
+    assert!(!error.retryable);
+    task.await.unwrap();
+    let (client, task) = mock(preflight()).await;
+    let error = client
+        .upload_listing_image(
+            &request(ListingImagePlacementType::ProductPageHeader),
+            HEADER,
+            &mut checkpoint,
+            |_| Ok(()),
+        )
+        .await
+        .unwrap_err();
+    assert_eq!(error.code, "write_outcome_unknown");
+    task.await.unwrap();
+}
