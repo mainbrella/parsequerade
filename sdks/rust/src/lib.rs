@@ -160,6 +160,119 @@ impl Client {
             .map_err(|_| Error::unknown_write())?;
         serde_json::from_value(flat).map_err(|_| Error::unknown_write())
     }
+
+    /// Update the supported editable Store metadata on an existing app, version, or
+    /// localization facade path. Reads the scoped resource first, then sends one Apple
+    /// PATCH containing only `attributes`. Empty strings are sent through to clear values.
+    /// Writes are never retried; read the affected resource before retrying an uncertain write.
+    pub async fn update_metadata(&self, path: &str, attributes: &Value) -> Result<Value> {
+        let (route, params) = contract::match_route(path)?;
+        let supported = match route.handler.as_str() {
+            "app" => &["contentRightsDeclaration"][..],
+            "version" => &["versionString", "copyright"][..],
+            "appInfoLocalization" => &["privacyPolicyUrl"][..],
+            "versionLocalization" => &[
+                "promotionalText",
+                "description",
+                "whatsNew",
+                "keywords",
+                "supportUrl",
+                "marketingUrl",
+            ][..],
+            _ => &[][..],
+        };
+        let Some(values) = attributes.as_object() else {
+            return Err(invalid_metadata("attributes"));
+        };
+        if values.is_empty()
+            || supported.is_empty()
+            || values
+                .iter()
+                .any(|(name, value)| !supported.contains(&name.as_str()) || !value.is_string())
+        {
+            return Err(invalid_metadata("attributes"));
+        }
+
+        let mut budget = transport::Budget::new();
+        let current = self.read(path, &Query::new(), &mut budget).await?;
+        let id = current["id"].as_str().ok_or_else(Error::invalid_upstream)?;
+        let url = self
+            .inner
+            .origin
+            .join(&format!("/v1/{}/{id}", route.resource_type))
+            .map_err(|_| Error::invalid_upstream())?;
+        let payload = self
+            .apple(
+                url,
+                Some(&json!({
+                    "data": {
+                        "type": route.resource_type,
+                        "id": id,
+                        "attributes": attributes
+                    }
+                })),
+                &mut budget,
+                route,
+            )
+            .await?;
+        let data = &payload["data"];
+        if data["id"].as_str() != Some(id)
+            || contract::resource(data, &route.resource_type).is_err()
+        {
+            return Err(Error::unknown_write());
+        }
+
+        let mut context = serde_json::Map::new();
+        for key in ["appId", "appInfoId", "versionId"] {
+            if let Some(value) = current.get(key) {
+                context.insert(key.into(), value.clone());
+            }
+        }
+        if let Some(locale) = params.get("locale") {
+            if data["attributes"]["locale"].as_str() != Some(locale) {
+                return Err(Error::unknown_write());
+            }
+            let (parent_relation, parent_id, parent_type) =
+                if route.handler == "appInfoLocalization" {
+                    ("appInfo", &params["appInfoId"], "appInfos")
+                } else {
+                    ("appStoreVersion", &params["versionId"], "appStoreVersions")
+                };
+            if contract::check_parent(data, parent_relation, parent_id, parent_type).is_err() {
+                return Err(Error::unknown_write());
+            }
+        } else if route.handler == "version" {
+            if contract::check_parent(data, "app", &params["appId"], "apps").is_err() {
+                return Err(Error::unknown_write());
+            }
+        }
+
+        let confirmed =
+            contract::flatten(data, route, &context, None).map_err(|_| Error::unknown_write())?;
+        let mut merged = current
+            .as_object()
+            .cloned()
+            .ok_or_else(Error::unknown_write)?;
+        for (name, value) in values {
+            merged.insert(name.clone(), value.clone());
+        }
+        if let Some(confirmed) = confirmed.as_object() {
+            merged.extend(confirmed.clone());
+        } else {
+            return Err(Error::unknown_write());
+        }
+        Ok(Value::Object(merged))
+    }
+}
+
+fn invalid_metadata(field: &str) -> Error {
+    let mut error = Error::new(400, "invalid_update", "The metadata update is invalid.");
+    error.details.push(ErrorDetail {
+        code: "invalid_attribute".into(),
+        message: "Provide supported string attributes only.".into(),
+        field: Some(field.into()),
+    });
+    error
 }
 
 #[cfg(test)]

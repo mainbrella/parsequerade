@@ -13,6 +13,7 @@ use tokio::{
 };
 
 mod media;
+mod metadata;
 mod upload;
 
 pub(super) struct Step {

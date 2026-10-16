@@ -201,6 +201,12 @@ This is the local equivalent of the hosted age-rating POST. It validates a nonem
 
 Writes are never retried, including authentication or throttle failures. An uncertain network outcome or malformed success response returns `write_outcome_unknown` with `retryable: false`. Read the age rating before deciding whether to submit another update. Dropping a write future after dispatch can also leave an uncertain outcome; the SDK cannot report an error after its future is dropped.
 
+## Update Store metadata
+
+`Client::update_metadata(path, &attributes).await` updates only these editable attributes on existing facade paths: `/apps/{appId}` (`contentRightsDeclaration`), `/apps/{appId}/versions/{versionId}` (`versionString`, `copyright`), `/apps/{appId}/app-infos/{appInfoId}/localizations/{locale}` (`privacyPolicyUrl`), and `/apps/{appId}/versions/{versionId}/localizations/{locale}` (`promotionalText`, `description`, `whatsNew`, `keywords`, `supportUrl`, `marketingUrl`). Every value must be a string; use `""` to clear a field. The method resolves the scoped resource and exact localization, sends one Apple PATCH containing only the supplied fields, and returns the merged flat resource.
+
+Writes are never retried. A rejected write returns Apple's sanitized error; an uncertain network outcome or malformed success response returns `write_outcome_unknown` with `retryable: false`. Read the affected resource before deciding whether to retry.
+
 ## Errors and request bounds
 
 Errors expose `status`, stable `code`, sanitized `message`, `retryable`, field `details`, and optional `retry_after` seconds. Raw Apple messages, request URLs, keys and tokens are excluded. Status values follow the facade's HTTP classifications, even though the caller receives a Rust error.
