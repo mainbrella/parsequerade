@@ -496,6 +496,62 @@ pub struct LibraryImage {
 }
 
 #[rustfmt::skip]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Build {
+    pub id: String,
+    pub app_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub version: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub uploaded_date: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub expiration_date: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub expired: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub min_os_version: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ls_minimum_system_version: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub computed_min_mac_os_version: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub computed_min_vision_os_version: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub icon_asset_token: Option<serde_json::Value>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub processing_state: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub build_audience_type: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub uses_non_exempt_encryption: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pre_release_version_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub app_encryption_declaration_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub beta_app_review_submission_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub build_beta_detail_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub version_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub build_upload_id: Option<String>,
+}
+
+#[rustfmt::skip]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PrereleaseVersion {
+    pub id: String,
+    pub app_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub version: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub platform: Option<String>,
+}
+
+#[rustfmt::skip]
 impl Client {
     /// Read `/apps` directly from Apple.
     pub async fn apps(&self, query: &Query) -> Result<Page<App>> {
@@ -618,6 +674,33 @@ impl Client {
     pub async fn library_image(&self, library_image_id: &str, query: &Query) -> Result<LibraryImage> {
         crate::contract::validate_id(library_image_id)?;
         self.get(&format!("/library-images/{library_image_id}"), query).await
+    }
+
+    /// Read `/apps/{appId}/builds` directly from Apple.
+    pub async fn builds(&self, app_id: &str, query: &Query) -> Result<Page<Build>> {
+        crate::contract::validate_id(app_id)?;
+        self.get(&format!("/apps/{app_id}/builds"), query).await
+    }
+
+    /// Read `/apps/{appId}/builds/{buildId}` directly from Apple.
+    pub async fn build(&self, app_id: &str, build_id: &str, query: &Query) -> Result<Build> {
+        crate::contract::validate_id(app_id)?;
+        crate::contract::validate_id(build_id)?;
+        self.get(&format!("/apps/{app_id}/builds/{build_id}"), query).await
+    }
+
+    /// Read `/apps/{appId}/versions/{versionId}/build` directly from Apple.
+    pub async fn version_build(&self, app_id: &str, version_id: &str, query: &Query) -> Result<Build> {
+        crate::contract::validate_id(app_id)?;
+        crate::contract::validate_id(version_id)?;
+        self.get(&format!("/apps/{app_id}/versions/{version_id}/build"), query).await
+    }
+
+    /// Read `/apps/{appId}/builds/{buildId}/prerelease-version` directly from Apple.
+    pub async fn build_prerelease_version(&self, app_id: &str, build_id: &str, query: &Query) -> Result<PrereleaseVersion> {
+        crate::contract::validate_id(app_id)?;
+        crate::contract::validate_id(build_id)?;
+        self.get(&format!("/apps/{app_id}/builds/{build_id}/prerelease-version"), query).await
     }
 
 }

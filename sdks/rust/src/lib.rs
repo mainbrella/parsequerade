@@ -1,6 +1,7 @@
 #![doc = include_str!("../README.md")]
 
 mod auth;
+mod builds;
 mod contract;
 mod error;
 mod generated;

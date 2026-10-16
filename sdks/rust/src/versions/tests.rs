@@ -9,12 +9,21 @@ async fn creates_one_draft_with_flat_response_and_never_retries_post() {
             "relationships": {"app": {"data": {"type": "apps", "id": "app1"}}}
         }});
         let reply = if status == 201 {
-            single("appStoreVersions", "draft1", json!({"platform":"IOS", "versionString":"1.2.8", "appVersionState":"PREPARE_FOR_SUBMISSION"}))
-        } else { json!({"errors": []}) };
+            single(
+                "appStoreVersions",
+                "draft1",
+                json!({"platform":"IOS", "versionString":"1.2.8", "appVersionState":"PREPARE_FOR_SUBMISSION"}),
+            )
+        } else {
+            json!({"errors": []})
+        };
         let (client, task) = mock(vec![
             Step::get("/v1/apps/app1", single("apps", "app1", json!({}))),
-            Step::get("/v1/appStoreVersions", reply).post(body).status(status),
-        ]).await;
+            Step::get("/v1/appStoreVersions", reply)
+                .post(body)
+                .status(status),
+        ])
+        .await;
         let result = client.create_version("app1", "IOS", "1.2.8").await;
         if status == 201 {
             let flat = result.unwrap();
@@ -32,7 +41,12 @@ async fn creates_one_draft_with_flat_response_and_never_retries_post() {
 #[tokio::test]
 async fn invalid_input_is_rejected_before_dispatch() {
     let (client, task) = mock(vec![]).await;
-    for (app, platform, number) in [("../app1", "IOS", "1.0"), ("app1", "ANDROID", "1.0"), ("app1", "IOS", "1..2"), ("app1", "IOS", "1.0-beta")] {
+    for (app, platform, number) in [
+        ("../app1", "IOS", "1.0"),
+        ("app1", "ANDROID", "1.0"),
+        ("app1", "IOS", "1..2"),
+        ("app1", "IOS", "1.0-beta"),
+    ] {
         assert!(client.create_version(app, platform, number).await.is_err());
     }
     task.await.unwrap();

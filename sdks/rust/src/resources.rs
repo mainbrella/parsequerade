@@ -109,6 +109,30 @@ impl Client {
                 return Err(Error::not_found("resource_not_found"));
             }
         }
+        if let Some(build_id) = p.get("buildId") {
+            let mut found = false;
+            self.traverse(
+                "/v1/builds",
+                BTreeMap::from([
+                    ("limit".into(), "200".into()),
+                    ("filter[app]".into(), app_id.into()),
+                    ("filter[id]".into(), build_id.clone()),
+                ]),
+                contract::route("builds"),
+                budget,
+                |items| {
+                    for item in items {
+                        check_parent(item, "app", app_id, "apps")?;
+                    }
+                    found = items.iter().any(|item| item["id"] == *build_id);
+                    Ok(found)
+                },
+            )
+            .await?;
+            if !found {
+                return Err(Error::not_found("resource_not_found"));
+            }
+        }
         let id = parent_id.unwrap_or("");
         let mut localization_id = None;
         let apple_path = match handler {
@@ -118,6 +142,13 @@ impl Client {
             "appInfo" => format!("/v1/appInfos/{id}"),
             "versions" => format!("/v1/apps/{app_id}/appStoreVersions"),
             "version" => format!("/v1/appStoreVersions/{id}"),
+            "builds" => {
+                query.upstream.insert("filter[app]".into(), app_id.into());
+                "/v1/builds".into()
+            }
+            "build" => format!("/v1/builds/{}", p["buildId"]),
+            "versionBuild" => format!("/v1/appStoreVersions/{id}/build"),
+            "buildPrereleaseVersion" => format!("/v1/builds/{}/preReleaseVersion", p["buildId"]),
             "appInfoLocalizations" => format!("/v1/appInfos/{id}/appInfoLocalizations"),
             "versionLocalizations" => {
                 format!("/v1/appStoreVersions/{id}/appStoreVersionLocalizations")
@@ -263,6 +294,8 @@ impl Client {
                 Some(app_id)
             } else if handler == "libraryImage" {
                 p.get("libraryImageId").map(String::as_str)
+            } else if handler == "build" {
+                p.get("buildId").map(String::as_str)
             } else if matches!(handler, "appInfo" | "version") {
                 parent_id
             } else if p.contains_key("locale") {
@@ -273,7 +306,10 @@ impl Client {
             if expected.is_some_and(|id| data["id"].as_str() != Some(id)) {
                 return Err(Error::invalid_upstream());
             }
-            if matches!(handler, "appInfo" | "version") {
+            if matches!(
+                handler,
+                "appInfo" | "version" | "build" | "versionBuild" | "buildPrereleaseVersion"
+            ) {
                 check_parent(data, "app", app_id, "apps")?;
             }
             if let Some(locale) = p.get("locale") {
@@ -315,7 +351,7 @@ impl Client {
         let payload = self.apple(url, None, budget, route).await?;
         let mut items = Vec::new();
         for item in page_data(&payload, &route.resource_type, query.limit)? {
-            if matches!(handler, "appInfos" | "versions") {
+            if matches!(handler, "appInfos" | "versions" | "builds") {
                 check_parent(item, "app", app_id, "apps")?;
             }
             if matches!(handler, "appInfoLocalizations" | "versionLocalizations") {

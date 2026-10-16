@@ -7,8 +7,11 @@ from sdk_contracts import ROOT, RESOURCE_NAMES, read_contracts, resource_models,
 
 SDK = ROOT / "sdks/rust/src"
 MEDIA = json.loads((ROOT / "api/rust-media-read-contracts.json").read_text())
+BUILDS = json.loads((ROOT / "api/rust-build-read-contracts.json").read_text())
+MEDIA["routes"] += BUILDS["routes"]
 NAMES = {**RESOURCE_NAMES, "appScreenshotSets": "ScreenshotSet", "appScreenshots": "Screenshot",
          "appPreviewSets": "PreviewSet", "appPreviews": "Preview",
+         "builds": "Build", "preReleaseVersions": "PrereleaseVersion",
          "appAssetLibraryPlacements": "LibraryPlacement", "appAssetLibraryImages": "LibraryImage"}
 
 
@@ -32,7 +35,7 @@ def rust_type(schema):
         return name if MEDIA["models"][name]["type"] == "object" else rust_type(MEDIA["models"][name])
     if schema["type"] == "array":
         return f'Vec<{rust_type(schema["items"])}>'
-    return {"string": "String", "boolean": "bool", "integer": "i64", "number": "f64"}[schema["type"]]
+    return {"object": "serde_json::Value", "string": "String", "boolean": "bool", "integer": "i64", "number": "f64"}[schema["type"]]
 
 
 def outputs():
@@ -52,7 +55,11 @@ def outputs():
     models += [(NAMES[route["type"]], route["responseSchema"]["properties"]["items"]["items"]
                if route["collection"] else route["responseSchema"])
                for route in MEDIA["routes"]]
+    seen_models = set()
     for name, schema in models:
+        if name in seen_models:
+            continue
+        seen_models.add(name)
         source += ["#[rustfmt::skip]", "#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]", '#[serde(rename_all = "camelCase")]', f'pub struct {name} {{']
         for field, value in schema["properties"].items():
             ty = rust_type(value)

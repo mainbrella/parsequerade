@@ -2363,6 +2363,547 @@
           "appleName": "fields[appAssetLibraryImages]"
         }
       ]
+    },
+    {
+      "handler": "builds",
+      "route": "/apps/{appId}/builds",
+      "type": "builds",
+      "collection": true,
+      "attributes": {
+        "version": {
+          "type": "string"
+        },
+        "uploadedDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expirationDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expired": {
+          "type": "boolean"
+        },
+        "minOsVersion": {
+          "type": "string"
+        },
+        "lsMinimumSystemVersion": {
+          "type": "string"
+        },
+        "computedMinMacOsVersion": {
+          "type": "string"
+        },
+        "computedMinVisionOsVersion": {
+          "type": "string"
+        },
+        "iconAssetToken": {
+          "type": "object",
+          "properties": {
+            "templateUrl": {
+              "type": "string"
+            },
+            "width": {
+              "type": "integer"
+            },
+            "height": {
+              "type": "integer"
+            }
+          }
+        },
+        "processingState": {
+          "type": "string"
+        },
+        "buildAudienceType": {
+          "type": "string"
+        },
+        "usesNonExemptEncryption": {
+          "type": "boolean"
+        }
+      },
+      "relationships": {
+        "preReleaseVersion": {
+          "field": "preReleaseVersionId",
+          "type": "preReleaseVersions"
+        },
+        "appEncryptionDeclaration": {
+          "field": "appEncryptionDeclarationId",
+          "type": "appEncryptionDeclarations"
+        },
+        "betaAppReviewSubmission": {
+          "field": "betaAppReviewSubmissionId",
+          "type": "betaAppReviewSubmissions"
+        },
+        "buildBetaDetail": {
+          "field": "buildBetaDetailId",
+          "type": "buildBetaDetails"
+        },
+        "appStoreVersion": {
+          "field": "versionId",
+          "type": "appStoreVersions"
+        },
+        "buildUpload": {
+          "field": "buildUploadId",
+          "type": "buildUploads"
+        }
+      },
+      "parameters": [
+        {
+          "name": "version",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "required": false,
+          "appleName": "filter[version]"
+        },
+        {
+          "name": "expired",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "required": false,
+          "appleName": "filter[expired]"
+        },
+        {
+          "name": "processingState",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "PROCESSING",
+                "FAILED",
+                "INVALID",
+                "VALID"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "filter[processingState]"
+        },
+        {
+          "name": "betaReviewState",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "WAITING_FOR_REVIEW",
+                "IN_REVIEW",
+                "REJECTED",
+                "APPROVED"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "filter[betaAppReviewSubmission.betaReviewState]"
+        },
+        {
+          "name": "usesNonExemptEncryption",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "required": false,
+          "appleName": "filter[usesNonExemptEncryption]"
+        },
+        {
+          "name": "prereleaseVersion",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "required": false,
+          "appleName": "filter[preReleaseVersion.version]"
+        },
+        {
+          "name": "platform",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "IOS",
+                "MAC_OS",
+                "TV_OS",
+                "VISION_OS"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "filter[preReleaseVersion.platform]"
+        },
+        {
+          "name": "buildAudienceType",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "INTERNAL_ONLY",
+                "APP_STORE_ELIGIBLE"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "filter[buildAudienceType]"
+        },
+        {
+          "name": "prereleaseVersionId",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "required": false,
+          "appleName": "filter[preReleaseVersion]"
+        },
+        {
+          "name": "betaGroupId",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "required": false,
+          "appleName": "filter[betaGroups]"
+        },
+        {
+          "name": "versionId",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "required": false,
+          "appleName": "filter[appStoreVersion]"
+        },
+        {
+          "name": "id",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "required": false,
+          "appleName": "filter[id]"
+        },
+        {
+          "name": "hasUsesNonExemptEncryption",
+          "schema": {
+            "type": "boolean"
+          },
+          "required": false,
+          "appleName": "exists[usesNonExemptEncryption]"
+        },
+        {
+          "name": "sort",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "version",
+                "-version",
+                "uploadedDate",
+                "-uploadedDate",
+                "preReleaseVersion",
+                "-preReleaseVersion"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "sort"
+        },
+        {
+          "name": "fields",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "version",
+                "uploadedDate",
+                "expirationDate",
+                "expired",
+                "minOsVersion",
+                "lsMinimumSystemVersion",
+                "computedMinMacOsVersion",
+                "computedMinVisionOsVersion",
+                "iconAssetToken",
+                "processingState",
+                "buildAudienceType",
+                "usesNonExemptEncryption"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "fields[builds]"
+        },
+        {
+          "name": "limit",
+          "schema": {
+            "type": "integer",
+            "maximum": 200
+          },
+          "required": false,
+          "appleName": "limit",
+          "default": 50
+        },
+        {
+          "name": "cursor",
+          "schema": {
+            "type": "string"
+          },
+          "required": false,
+          "appleName": null
+        }
+      ]
+    },
+    {
+      "handler": "build",
+      "route": "/apps/{appId}/builds/{buildId}",
+      "type": "builds",
+      "collection": false,
+      "attributes": {
+        "version": {
+          "type": "string"
+        },
+        "uploadedDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expirationDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expired": {
+          "type": "boolean"
+        },
+        "minOsVersion": {
+          "type": "string"
+        },
+        "lsMinimumSystemVersion": {
+          "type": "string"
+        },
+        "computedMinMacOsVersion": {
+          "type": "string"
+        },
+        "computedMinVisionOsVersion": {
+          "type": "string"
+        },
+        "iconAssetToken": {
+          "type": "object",
+          "properties": {
+            "templateUrl": {
+              "type": "string"
+            },
+            "width": {
+              "type": "integer"
+            },
+            "height": {
+              "type": "integer"
+            }
+          }
+        },
+        "processingState": {
+          "type": "string"
+        },
+        "buildAudienceType": {
+          "type": "string"
+        },
+        "usesNonExemptEncryption": {
+          "type": "boolean"
+        }
+      },
+      "relationships": {
+        "preReleaseVersion": {
+          "field": "preReleaseVersionId",
+          "type": "preReleaseVersions"
+        },
+        "appEncryptionDeclaration": {
+          "field": "appEncryptionDeclarationId",
+          "type": "appEncryptionDeclarations"
+        },
+        "betaAppReviewSubmission": {
+          "field": "betaAppReviewSubmissionId",
+          "type": "betaAppReviewSubmissions"
+        },
+        "buildBetaDetail": {
+          "field": "buildBetaDetailId",
+          "type": "buildBetaDetails"
+        },
+        "appStoreVersion": {
+          "field": "versionId",
+          "type": "appStoreVersions"
+        },
+        "buildUpload": {
+          "field": "buildUploadId",
+          "type": "buildUploads"
+        }
+      },
+      "parameters": [
+        {
+          "name": "fields",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "version",
+                "uploadedDate",
+                "expirationDate",
+                "expired",
+                "minOsVersion",
+                "lsMinimumSystemVersion",
+                "computedMinMacOsVersion",
+                "computedMinVisionOsVersion",
+                "iconAssetToken",
+                "processingState",
+                "buildAudienceType",
+                "usesNonExemptEncryption"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "fields[builds]"
+        }
+      ]
+    },
+    {
+      "handler": "versionBuild",
+      "route": "/apps/{appId}/versions/{versionId}/build",
+      "type": "builds",
+      "collection": false,
+      "attributes": {
+        "version": {
+          "type": "string"
+        },
+        "uploadedDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expirationDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expired": {
+          "type": "boolean"
+        },
+        "minOsVersion": {
+          "type": "string"
+        },
+        "lsMinimumSystemVersion": {
+          "type": "string"
+        },
+        "computedMinMacOsVersion": {
+          "type": "string"
+        },
+        "computedMinVisionOsVersion": {
+          "type": "string"
+        },
+        "iconAssetToken": {
+          "type": "object",
+          "properties": {
+            "templateUrl": {
+              "type": "string"
+            },
+            "width": {
+              "type": "integer"
+            },
+            "height": {
+              "type": "integer"
+            }
+          }
+        },
+        "processingState": {
+          "type": "string"
+        },
+        "buildAudienceType": {
+          "type": "string"
+        },
+        "usesNonExemptEncryption": {
+          "type": "boolean"
+        }
+      },
+      "relationships": {
+        "preReleaseVersion": {
+          "field": "preReleaseVersionId",
+          "type": "preReleaseVersions"
+        },
+        "appEncryptionDeclaration": {
+          "field": "appEncryptionDeclarationId",
+          "type": "appEncryptionDeclarations"
+        },
+        "betaAppReviewSubmission": {
+          "field": "betaAppReviewSubmissionId",
+          "type": "betaAppReviewSubmissions"
+        },
+        "buildBetaDetail": {
+          "field": "buildBetaDetailId",
+          "type": "buildBetaDetails"
+        },
+        "buildUpload": {
+          "field": "buildUploadId",
+          "type": "buildUploads"
+        }
+      },
+      "parameters": [
+        {
+          "name": "fields",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "version",
+                "uploadedDate",
+                "expirationDate",
+                "expired",
+                "minOsVersion",
+                "lsMinimumSystemVersion",
+                "computedMinMacOsVersion",
+                "computedMinVisionOsVersion",
+                "iconAssetToken",
+                "processingState",
+                "buildAudienceType",
+                "usesNonExemptEncryption"
+              ]
+            }
+          },
+          "required": false,
+          "appleName": "fields[builds]"
+        }
+      ]
+    },
+    {
+      "handler": "buildPrereleaseVersion",
+      "route": "/apps/{appId}/builds/{buildId}/prerelease-version",
+      "type": "preReleaseVersions",
+      "collection": false,
+      "attributes": {
+        "version": {
+          "type": "string"
+        },
+        "platform": {
+          "type": "string"
+        }
+      },
+      "relationships": {},
+      "parameters": []
     }
   ],
   "ageRatingWrite": {
