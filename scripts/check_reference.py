@@ -137,6 +137,16 @@ def check_contracts():
     for slug, required in special.items():
         c = contracts.make_contract(contracts.ENDPOINTS[slug])
         need(required <= {p["name"] for p in c["parameters"] if p["required"]}, f"{slug}: missing documented conditional requirement")
+    image_slug = "get-v1-appassetlibraryimages-_id_"
+    image = contracts.make_contract(contracts.ENDPOINTS[image_slug])
+    image_fields = {"category", "createdDate", "lastModifiedDate", "fileName", "fileSize", "imageAsset", "referenceName", "specId", "state", "stateDetails", "uploadOperations"}
+    need(image_fields <= set(image["shape"]["fields"]), f"{image_slug}: composed image attributes are missing")
+    image_field_query = next(p for p in image["parameters"] if p["name"] == "fields")
+    need(image_fields <= set(image_field_query["schema"]["items"]["enum"]), f"{image_slug}: composed image fields are not selectable")
+    placement_slug = "get-v1-appstoreversionlocalizations-_id_-placements"
+    placements = contracts.make_contract(contracts.ENDPOINTS[placement_slug])
+    placement_ids = {"imageId", "videoId", "appEventLocalizationId", "appStoreVersionLocalizationId", "appCustomProductPageLocalizationId", "appStoreVersionExperimentTreatmentLocalizationId"}
+    need(placement_ids <= set(placements["shape"]["fields"]), f"{placement_slug}: composed placement relationship IDs are missing")
     core_routes = {
         "get-v1-apps": "/apps",
         "get-v1-apps-_id_": "/apps/{appId}",

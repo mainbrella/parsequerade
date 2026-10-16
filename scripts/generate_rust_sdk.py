@@ -8,7 +8,8 @@ from sdk_contracts import ROOT, RESOURCE_NAMES, read_contracts, resource_models,
 SDK = ROOT / "sdks/rust/src"
 MEDIA = json.loads((ROOT / "api/rust-media-read-contracts.json").read_text())
 NAMES = {**RESOURCE_NAMES, "appScreenshotSets": "ScreenshotSet", "appScreenshots": "Screenshot",
-         "appPreviewSets": "PreviewSet", "appPreviews": "Preview"}
+         "appPreviewSets": "PreviewSet", "appPreviews": "Preview",
+         "appAssetLibraryPlacements": "LibraryPlacement", "appAssetLibraryImages": "LibraryImage"}
 
 
 def snake(value):
@@ -48,7 +49,9 @@ def outputs():
     ]
     models = list(resource_models(core_routes))
     models += [(name, schema) for name, schema in MEDIA["models"].items() if schema["type"] == "object"]
-    models += [(NAMES[route["type"]], route["responseSchema"]["properties"]["items"]["items"]) for route in MEDIA["routes"]]
+    models += [(NAMES[route["type"]], route["responseSchema"]["properties"]["items"]["items"]
+               if route["collection"] else route["responseSchema"])
+               for route in MEDIA["routes"]]
     for name, schema in models:
         source += ["#[rustfmt::skip]", "#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]", '#[serde(rename_all = "camelCase")]', f'pub struct {name} {{']
         for field, value in schema["properties"].items():

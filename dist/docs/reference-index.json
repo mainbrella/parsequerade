@@ -57,7 +57,7 @@
     "applePath": "/v1/appAssetLibraries/{id}/images",
     "group": "App Asset Libraries",
     "topic": "app-asset-libraries",
-    "keywords": "get-v1-appassetlibraries-_id_-images Extended read design id category state referenceName specId id sort limit cursor"
+    "keywords": "get-v1-appassetlibraries-_id_-images Extended read design id category createdDate lastModifiedDate fileName fileSize imageAsset referenceName specId state stateDetails uploadOperations category state referenceName specId id sort fields limit cursor"
   },
   {
     "title": "List the image IDs for an app asset library",
@@ -87,7 +87,7 @@
     "applePath": "/v1/appAssetLibraries/{id}/videos",
     "group": "App Asset Libraries",
     "topic": "app-asset-libraries",
-    "keywords": "get-v1-appassetlibraries-_id_-videos Extended read design id category state referenceName specId id sort limit cursor"
+    "keywords": "get-v1-appassetlibraries-_id_-videos Extended read design id category createdDate lastModifiedDate fileName fileSize previewFrameImage previewFrameTimeCode referenceName specId state stateDetails videoAsset uploadOperations category state referenceName specId id sort fields limit cursor"
   },
   {
     "title": "Read an app asset library image",
@@ -97,7 +97,7 @@
     "applePath": "/v1/appAssetLibraryImages/{id}",
     "group": "App Asset Library images",
     "topic": "app-asset-library-images",
-    "keywords": "get-v1-appassetlibraryimages-_id_ Extended read design id"
+    "keywords": "get-v1-appassetlibraryimages-_id_ Extended read design id category createdDate lastModifiedDate fileName fileSize imageAsset referenceName specId state stateDetails uploadOperations fields"
   },
   {
     "title": "List related placements",
@@ -107,7 +107,7 @@
     "applePath": "/v1/appAssetLibraryImages/{id}/placements",
     "group": "App Asset Library images",
     "topic": "app-asset-library-images",
-    "keywords": "get-v1-appassetlibraryimages-_id_-placements Extended read design id mediaType placementType placementGroup createdDate lastModifiedDate state stateDetails placementType placementGroup state video appEventLocalization appStoreVersionLocalization appCustomProductPageLocalization appStoreVersionExperimentTreatmentLocalization id sort fields limit cursor"
+    "keywords": "get-v1-appassetlibraryimages-_id_-placements Extended read design id mediaType placementType placementGroup createdDate lastModifiedDate state stateDetails appEventLocalizationId appStoreVersionLocalizationId appCustomProductPageLocalizationId appStoreVersionExperimentTreatmentLocalizationId imageId videoId placementType placementGroup state video appEventLocalization appStoreVersionLocalization appCustomProductPageLocalization appStoreVersionExperimentTreatmentLocalization id sort fields limit cursor"
   },
   {
     "title": "List the placement IDs for an app asset library image",
@@ -127,7 +127,7 @@
     "applePath": "/v1/appAssetLibraryPlacements/{id}",
     "group": "App Asset Library placements",
     "topic": "app-asset-library-placements",
-    "keywords": "get-v1-appassetlibraryplacements-_id_ Extended read design id mediaType placementType placementGroup createdDate lastModifiedDate state stateDetails fields"
+    "keywords": "get-v1-appassetlibraryplacements-_id_ Extended read design id mediaType placementType placementGroup createdDate lastModifiedDate state stateDetails appEventLocalizationId appStoreVersionLocalizationId appCustomProductPageLocalizationId appStoreVersionExperimentTreatmentLocalizationId imageId videoId fields"
   },
   {
     "title": "List app asset library ref data",
@@ -157,7 +157,7 @@
     "applePath": "/v1/appAssetLibraryVideos/{id}",
     "group": "App Asset Library videos",
     "topic": "app-asset-library-videos",
-    "keywords": "get-v1-appassetlibraryvideos-_id_ Extended read design id"
+    "keywords": "get-v1-appassetlibraryvideos-_id_ Extended read design id category createdDate lastModifiedDate fileName fileSize previewFrameImage previewFrameTimeCode referenceName specId state stateDetails videoAsset uploadOperations fields"
   },
   {
     "title": "List related placements",
@@ -167,7 +167,7 @@
     "applePath": "/v1/appAssetLibraryVideos/{id}/placements",
     "group": "App Asset Library videos",
     "topic": "app-asset-library-videos",
-    "keywords": "get-v1-appassetlibraryvideos-_id_-placements Extended read design id mediaType placementType placementGroup createdDate lastModifiedDate state stateDetails placementType placementGroup state image appEventLocalization appStoreVersionLocalization appCustomProductPageLocalization appStoreVersionExperimentTreatmentLocalization id sort fields limit cursor"
+    "keywords": "get-v1-appassetlibraryvideos-_id_-placements Extended read design id mediaType placementType placementGroup createdDate lastModifiedDate state stateDetails appEventLocalizationId appStoreVersionLocalizationId appCustomProductPageLocalizationId appStoreVersionExperimentTreatmentLocalizationId imageId videoId placementType placementGroup state image appEventLocalization appStoreVersionLocalization appCustomProductPageLocalization appStoreVersionExperimentTreatmentLocalization id sort fields limit cursor"
   },
   {
     "title": "List the placement IDs for an app asset library video",
@@ -467,7 +467,7 @@
     "applePath": "/v1/appCustomProductPageLocalizations/{id}/placements",
     "group": "App Custom Product Page Localizations",
     "topic": "app-custom-product-page-localizations",
-    "keywords": "get-v1-appcustomproductpagelocalizations-_id_-placements Extended read design id mediaType placementType placementGroup createdDate lastModifiedDate state stateDetails placementType placementGroup state image video appEventLocalization appStoreVersionLocalization appStoreVersionExperimentTreatmentLocalization id sort fields limit cursor"
+    "keywords": "get-v1-appcustomproductpagelocalizations-_id_-placements Extended read design id mediaType placementType placementGroup createdDate lastModifiedDate state stateDetails appEventLocalizationId appStoreVersionLocalizationId appCustomProductPageLocalizationId appStoreVersionExperimentTreatmentLocalizationId imageId videoId placementType placementGroup state image video appEventLocalization appStoreVersionLocalization appStoreVersionExperimentTreatmentLocalization id sort fields limit cursor"
   },
   {
     "title": "List app preview set IDs for a custom product page localization",
@@ -687,7 +687,7 @@
     "applePath": "/v1/appEventLocalizations/{id}/placements",
     "group": "App Event Localizations",
     "topic": "app-event-localizations",
-    "keywords": "get-v1-appeventlocalizations-_id_-placements Extended read design id mediaType placementType placementGroup createdDate lastModifiedDate state stateDetails placementType placementGroup state image video appStoreVersionLocalization appCustomProductPageLocalization appStoreVersionExperimentTreatmentLocalization id sort fields limit cursor"
+    "keywords": "get-v1-appeventlocalizations-_id_-placements Extended read design id mediaType placementType placementGroup createdDate lastModifiedDate state stateDetails appEventLocalizationId appStoreVersionLocalizationId appCustomProductPageLocalizationId appStoreVersionExperimentTreatmentLocalizationId imageId videoId placementType placementGroup state image video appStoreVersionLocalization appCustomProductPageLocalization appStoreVersionExperimentTreatmentLocalization id sort fields limit cursor"
   },
   {
     "title": "List app event screenshot IDs for an app event localization",
@@ -2067,7 +2067,7 @@
     "applePath": "/v1/appStoreVersionExperimentTreatmentLocalizations/{id}/placements",
     "group": "App Store Version Experiment Treatment Localizations",
     "topic": "app-store-version-experiment-treatment-localizations",
-    "keywords": "get-v1-appstoreversionexperimenttreatmentlocalizations-_id_-placements Extended read design id mediaType placementType placementGroup createdDate lastModifiedDate state stateDetails placementType placementGroup state image video appEventLocalization appStoreVersionLocalization appCustomProductPageLocalization id sort fields limit cursor"
+    "keywords": "get-v1-appstoreversionexperimenttreatmentlocalizations-_id_-placements Extended read design id mediaType placementType placementGroup createdDate lastModifiedDate state stateDetails appEventLocalizationId appStoreVersionLocalizationId appCustomProductPageLocalizationId appStoreVersionExperimentTreatmentLocalizationId imageId videoId placementType placementGroup state image video appEventLocalization appStoreVersionLocalization appCustomProductPageLocalization id sort fields limit cursor"
   },
   {
     "title": "List preview set IDs for an App Store version experiment treatment localization",
@@ -2167,7 +2167,7 @@
     "applePath": "/v1/appStoreVersionLocalizations/{id}/placements",
     "group": "App Store Version Localizations",
     "topic": "app-store-version-localizations",
-    "keywords": "get-v1-appstoreversionlocalizations-_id_-placements Extended read design id appId versionId mediaType placementType placementGroup createdDate lastModifiedDate state stateDetails placementType placementGroup state image video appEventLocalization appCustomProductPageLocalization appStoreVersionExperimentTreatmentLocalization id sort fields limit cursor"
+    "keywords": "get-v1-appstoreversionlocalizations-_id_-placements Extended read design id appId versionId mediaType placementType placementGroup createdDate lastModifiedDate state stateDetails appEventLocalizationId appStoreVersionLocalizationId appCustomProductPageLocalizationId appStoreVersionExperimentTreatmentLocalizationId imageId videoId placementType placementGroup state image video appEventLocalization appCustomProductPageLocalization appStoreVersionExperimentTreatmentLocalization id sort fields limit cursor"
   },
   {
     "title": "List preview set IDs for an App Store version localization",

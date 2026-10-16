@@ -124,12 +124,17 @@ impl Client {
             }
             "ageRating" => format!("/v1/appInfos/{id}/ageRatingDeclaration"),
             "reviewContact" => format!("/v1/appStoreVersions/{id}/appStoreReviewDetail"),
+            "libraryImage" => format!("/v1/appAssetLibraryImages/{}", p["libraryImageId"]),
             "screenshots" => format!(
                 "/v1/appScreenshotSets/{}/appScreenshots",
                 p["screenshotSetId"]
             ),
             "previews" => format!("/v1/appPreviewSets/{}/appPreviews", p["previewSetId"]),
-            "appInfoLocalization" | "versionLocalization" | "screenshotSets" | "previewSets" => {
+            "appInfoLocalization"
+            | "versionLocalization"
+            | "screenshotSets"
+            | "previewSets"
+            | "placements" => {
                 let localizations = if info {
                     "appInfoLocalizations"
                 } else {
@@ -180,14 +185,14 @@ impl Client {
                 .await?;
                 let selected =
                     selected.ok_or_else(|| Error::not_found("localization_not_found"))?;
-                if matches!(handler, "screenshotSets" | "previewSets") {
-                    let sets = if handler == "screenshotSets" {
-                        "appScreenshotSets"
-                    } else {
-                        "appPreviewSets"
-                    };
+                if matches!(handler, "screenshotSets" | "previewSets" | "placements") {
                     localization_id = Some(selected.clone());
-                    format!("/v1/{localizations}/{selected}/{sets}")
+                    let resource = match handler {
+                        "screenshotSets" => "appScreenshotSets",
+                        "previewSets" => "appPreviewSets",
+                        _ => "placements",
+                    };
+                    format!("/v1/{localizations}/{selected}/{resource}")
                 } else {
                     if let Some(fields) = &query.fields {
                         if !fields.iter().any(|f| f == "locale") {
@@ -213,6 +218,29 @@ impl Client {
                 );
             }
         }
+        if handler == "placements" {
+            query
+                .upstream
+                .insert("include".into(), "image,video".into());
+            if let Some(fields) = &query.fields {
+                let mut fields = fields.clone();
+                for relationship in [
+                    "image",
+                    "video",
+                    "appEventLocalization",
+                    "appStoreVersionLocalization",
+                    "appCustomProductPageLocalization",
+                    "appStoreVersionExperimentTreatmentLocalization",
+                ] {
+                    if !fields.iter().any(|field| field == relationship) {
+                        fields.push(relationship.into());
+                    }
+                }
+                query
+                    .upstream
+                    .insert("fields[appAssetLibraryPlacements]".into(), fields.join(","));
+            }
+        }
         let initial = apple_url(&self.inner.origin, &apple_path, &query.upstream)?;
         if !route.collection {
             let payload = self.apple(initial, None, budget, route).await?;
@@ -227,6 +255,8 @@ impl Client {
             resource(data, &route.resource_type)?;
             let expected = if handler == "app" {
                 Some(app_id)
+            } else if handler == "libraryImage" {
+                p.get("libraryImageId").map(String::as_str)
             } else if matches!(handler, "appInfo" | "version") {
                 parent_id
             } else if p.contains_key("locale") {

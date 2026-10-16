@@ -252,6 +252,36 @@ async fn media_exact_locale_is_required_and_unique_across_pages() {
 
 #[tokio::test]
 async fn media_rejects_foreign_parents_before_returning_data() {
+    let wrong_placement = linked(
+        data(
+            "appAssetLibraryPlacements",
+            "placement1",
+            json!({"mediaType":"IMAGE","placementType":"PRODUCT_PAGE_HEADER_ASSET"}),
+        ),
+        "appStoreVersionLocalization",
+        "appStoreVersionLocalizations",
+        "foreign",
+    );
+    let (client, task) = mock(vec![
+        version_parent(),
+        selected_locale(),
+        Step::get(
+            "/v1/appStoreVersionLocalizations/loc1/placements",
+            page(vec![wrong_placement], None),
+        )
+        .query(&[("limit", "50"), ("include", "image,video")]),
+    ])
+    .await;
+    assert_eq!(
+        client
+            .placements("app1", "version1", "en-US", &Query::new())
+            .await
+            .unwrap_err()
+            .code,
+        "upstream_invalid_response"
+    );
+    task.await.unwrap();
+
     let wrong_localization = linked(
         data(
             "appStoreVersionLocalizations",
@@ -396,15 +426,197 @@ async fn media_validates_nested_shapes_and_projects_only_requested_attributes() 
 }
 
 #[tokio::test]
+async fn placements_resolve_locale_include_assets_and_preserve_video_rows() {
+    let placement = linked(
+        data(
+            "appAssetLibraryPlacements",
+            "placement1",
+            json!({
+                "mediaType":"IMAGE",
+                "placementType":"PRODUCT_PAGE_HEADER_ASSET",
+                "state":"PARENT_READY_FOR_REVIEW",
+                "stateDetails":[{"code":"NOTICE","description":"Ready"}]
+            }),
+        ),
+        "appStoreVersionLocalization",
+        "appStoreVersionLocalizations",
+        "loc1",
+    );
+    let mut placement = placement;
+    placement["relationships"]["image"] =
+        json!({"data":{"type":"appAssetLibraryImages","id":"image1"}});
+    let placement_query = [
+        ("limit", "1"),
+        (
+            "filter[placementType]",
+            "PRODUCT_PAGE_HEADER_ASSET,APP_STORE_SEARCH_RESULTS_ASSET",
+        ),
+        ("sort", "-lastModifiedDate"),
+        (
+            "fields[appAssetLibraryPlacements]",
+            "mediaType,placementType,state,stateDetails,image,video,appEventLocalization,appStoreVersionLocalization,appCustomProductPageLocalization,appStoreVersionExperimentTreatmentLocalization",
+        ),
+        ("include", "image,video"),
+    ];
+    let mut video = linked(
+        data(
+            "appAssetLibraryPlacements",
+            "placement2",
+            json!({"mediaType":"VIDEO","placementType":"APP_STORE_SEARCH_RESULTS_ASSET"}),
+        ),
+        "appStoreVersionLocalization",
+        "appStoreVersionLocalizations",
+        "loc1",
+    );
+    video["relationships"]["video"] =
+        json!({"data":{"type":"appAssetLibraryVideos","id":"video2"}});
+    let (client, task) = mock(vec![
+        version_parent(),
+        selected_locale(),
+        Step::get(
+            "/v1/appStoreVersionLocalizations/loc1/placements",
+            page(vec![placement], Some("?cursor=more")),
+        )
+        .query(&placement_query),
+        version_parent(),
+        selected_locale(),
+        Step::get(
+            "/v1/appStoreVersionLocalizations/loc1/placements",
+            page(
+                vec![video],
+                None,
+            ),
+        )
+        .query(&[
+            ("limit", "1"),
+            (
+                "filter[placementType]",
+                "PRODUCT_PAGE_HEADER_ASSET,APP_STORE_SEARCH_RESULTS_ASSET",
+            ),
+            ("sort", "-lastModifiedDate"),
+            (
+                "fields[appAssetLibraryPlacements]",
+                "mediaType,placementType,state,stateDetails,image,video,appEventLocalization,appStoreVersionLocalization,appCustomProductPageLocalization,appStoreVersionExperimentTreatmentLocalization",
+            ),
+            ("include", "image,video"),
+            ("cursor", "more"),
+        ]),
+    ])
+    .await;
+    let query = Query::new()
+        .with("limit", 1)
+        .with(
+            "placementType",
+            "PRODUCT_PAGE_HEADER_ASSET,APP_STORE_SEARCH_RESULTS_ASSET",
+        )
+        .with("sort", "-lastModifiedDate")
+        .with("fields", "mediaType,placementType,state,stateDetails");
+    let placements = client
+        .placements("app1", "version1", "en-US", &query)
+        .await
+        .unwrap();
+    let placement = &placements.items[0];
+    assert_eq!(placement.app_id, "app1");
+    assert_eq!(placement.version_id, "version1");
+    assert_eq!(
+        placement.app_store_version_localization_id.as_deref(),
+        Some("loc1")
+    );
+    assert_eq!(placement.image_id.as_deref(), Some("image1"));
+    assert_eq!(placement.video_id, None);
+    assert_eq!(placement.media_type.as_deref(), Some("IMAGE"));
+    assert_eq!(
+        placement.state_details.as_ref().unwrap()[0].code.as_deref(),
+        Some("NOTICE")
+    );
+    let next = client
+        .placements(
+            "app1",
+            "version1",
+            "en-US",
+            &query.with("cursor", placements.next_cursor.unwrap()),
+        )
+        .await
+        .unwrap();
+    assert_eq!(next.items[0].media_type.as_deref(), Some("VIDEO"));
+    assert_eq!(next.items[0].video_id.as_deref(), Some("video2"));
+    task.await.unwrap();
+}
+
+#[tokio::test]
+async fn library_image_reads_nested_asset_and_rejects_wrong_identity() {
+    let (client, task) = mock(vec![Step::get(
+        "/v1/appAssetLibraryImages/image1",
+        single(
+            "appAssetLibraryImages",
+            "image1",
+            json!({
+                "fileName":"header.png",
+                "fileSize": 2048,
+                "referenceName":"Product page header",
+                "imageAsset":{"templateUrl":"https://example.test/{w}x{h}.{f}","width":4320,"height":1080},
+                "state":"COMPLETE",
+                "stateDetails":[],
+                "uploadOperations":null
+            }),
+        ),
+    )
+    .query(&[("fields[appAssetLibraryImages]", "fileName,fileSize,referenceName,imageAsset,state,stateDetails,uploadOperations")])])
+    .await;
+    let image = client
+        .library_image(
+            "image1",
+            &Query::new().with(
+                "fields",
+                "fileName,fileSize,referenceName,imageAsset,state,stateDetails,uploadOperations",
+            ),
+        )
+        .await
+        .unwrap();
+    assert_eq!(image.file_name.as_deref(), Some("header.png"));
+    assert_eq!(image.image_asset.as_ref().unwrap().width, Some(4320));
+    assert_eq!(image.image_asset.as_ref().unwrap().height, Some(1080));
+    assert_eq!(image.state.as_deref(), Some("COMPLETE"));
+    assert_eq!(image.upload_operations, None);
+    task.await.unwrap();
+
+    let (client, task) = mock(vec![Step::get(
+        "/v1/appAssetLibraryImages/image1",
+        single(
+            "appAssetLibraryImages",
+            "other",
+            json!({"fileName":"wrong.png"}),
+        ),
+    )
+    .query(&[("fields[appAssetLibraryImages]", "fileName")])])
+    .await;
+    assert_eq!(
+        client
+            .library_image("image1", &Query::new().with("fields", "fileName"))
+            .await
+            .unwrap_err()
+            .code,
+        "upstream_invalid_response"
+    );
+    task.await.unwrap();
+}
+
+#[tokio::test]
 async fn media_rejects_unsupported_queries_and_paths_without_network() {
     let (client, task) = mock(vec![]).await;
     for query in [
         Query::new().with("limit", 201),
         Query::new().with("fields", "notAField"),
         Query::new().with("sort", "fileName"),
+        Query::new().with("include", "placements"),
+        Query::new().with("limit[placements]", 20),
     ] {
         assert_eq!(
-            client.screenshots("set1", &query).await.unwrap_err().code,
+            client
+                .library_image("image1", &query)
+                .await
+                .unwrap_err()
+                .code,
             "invalid_query"
         );
     }
@@ -419,6 +631,27 @@ async fn media_rejects_unsupported_queries_and_paths_without_network() {
     assert_eq!(
         client
             .previews("../foreign", &Query::new())
+            .await
+            .unwrap_err()
+            .code,
+        "invalid_path"
+    );
+    assert_eq!(
+        client
+            .placements(
+                "app1",
+                "version1",
+                "en-US",
+                &Query::new().with("placementType", "NOT_A_PLACEMENT"),
+            )
+            .await
+            .unwrap_err()
+            .code,
+        "invalid_query"
+    );
+    assert_eq!(
+        client
+            .library_image("../foreign", &Query::new())
             .await
             .unwrap_err()
             .code,

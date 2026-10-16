@@ -142,6 +142,19 @@ def resolve(schema):
     return schema
 
 
+def composed_properties(schema):
+    """Return direct object properties, merging referenced composition variants."""
+    schema = resolve(schema)
+    properties = dict(schema.get("properties", {}))
+    for keyword in ("allOf", "oneOf", "anyOf"):
+        variants = schema.get(keyword, [])
+        if isinstance(variants, dict):
+            variants = [variants]
+        for variant in variants:
+            properties.update(composed_properties(variant))
+    return properties
+
+
 def normalize_name(value, root=False):
     value = re.sub(r"V\d+$", "", value)
     if root and value in ROOT_NAMES:
@@ -242,7 +255,7 @@ def response_shape(endpoint, contract):
         contexts.update(contract.get("context", {}))
         contract["context"] = contexts
         fields.update({name: {"type": "string"} for name in contexts})
-        attributes = resolve(model["properties"]["attributes"]).get("properties", {})
+        attributes = composed_properties(model["properties"]["attributes"])
         fields.update({name: schema for name, schema in attributes.items() if not schema.get("deprecated") or contract["legacy"]})
         # The facade preserves absent/null optional listing metadata. Apple’s
         # update schemas allow these clears even where read schemas omit nullable.
@@ -259,7 +272,7 @@ def response_shape(endpoint, contract):
             for name in attributes:
                 if name in fields:
                     fields[name] = {**fields[name], "nullable": True}
-        relationships = resolve(model["properties"].get("relationships", {})).get("properties", {})
+        relationships = composed_properties(model["properties"].get("relationships", {}))
         for name, relationship in relationships.items():
             data = resolve(relationship).get("properties", {}).get("data", {})
             if data and resolve(data).get("type") == "object":
@@ -325,7 +338,8 @@ def query_parameters(endpoint, contract, shape):
             if raw_name[7:-1] != type_name:
                 continue
             values = resolve(parameter["schema"]).get("items", {}).get("enum", [])
-            attributes = resolve(response_model(endpoint)[2].get("properties", {}).get("attributes", {})).get("properties", {})
+            model = response_model(endpoint)[2]
+            attributes = composed_properties(model.get("properties", {}).get("attributes", {}))
             allowed = [v for v in values if v in attributes and v in shape["fields"]]
             if not allowed or fields_added:
                 continue

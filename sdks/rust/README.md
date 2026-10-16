@@ -2,7 +2,7 @@
 
 An async Rust crate that implements the Parsequerade facade locally. Your program calls Apple directly at `https://api.appstoreconnect.apple.com`, with flat resources and facade query names. No Cloudflare deployment, hosted connection, or facade API key is needed.
 
-The SDK covers the 12 implemented core read routes, four documented screenshot/preview reads, and the scoped age-rating update. The media adapters are available in this Rust SDK; the hosted Worker and other SDKs still expose their existing route sets. Reports, other writes, copy workflows, and other proposed routes are not implemented.
+The SDK covers the 12 implemented core read routes, six documented media reads, and the scoped age-rating update. The media adapters are available in this Rust SDK; the hosted Worker and other SDKs still expose their existing route sets. Reports, other writes, copy workflows, and other proposed routes are not implemented.
 
 ## Add to your project
 
@@ -86,6 +86,8 @@ println!("{:?}", localization.description);
 | `screenshots(screenshot_set_id, query)` | `/screenshot-sets/{screenshotSetId}/screenshots` | `Page<Screenshot>` |
 | `preview_sets(app_id, version_id, locale, query)` | `…/versions/{versionId}/localizations/{locale}/preview-sets` | `Page<PreviewSet>` |
 | `previews(preview_set_id, query)` | `/preview-sets/{previewSetId}/previews` | `Page<Preview>` |
+| `placements(app_id, version_id, locale, query)` | `…/versions/{versionId}/localizations/{locale}/placements` | `Page<LibraryPlacement>` |
+| `library_image(library_image_id, query)` | `/library-images/{libraryImageId}` | `LibraryImage` |
 
 Responses have `id` and flattened attributes and relationship IDs. Child resources also carry `app_id` and, where applicable, `app_info_id` or `version_id`. Rust fields use snake case; Serde uses the hosted facade's camel case JSON names. Optional attributes use `Option`, so omitted and null values both deserialize to `None` and are omitted when reserialized. For exact JSON including explicit nulls, use the generic facade entry point:
 
@@ -101,6 +103,28 @@ Paths are relative to a connection; there is no `/v1/connections/{id}` prefix. T
 ## Screenshots and previews
 
 Media reads follow the [documented facade](https://parsequerade.mainbrella.com/docs/). Select sets for an exact version locale, then read each set's ordered assets. These are paginated collections, with the same cursor behavior as other reads. Set queries accept `screenshotDisplayType` or `previewType`, respectively, plus the documented localization filters, `fields`, `limit`, and `cursor`. Asset queries accept `fields`, `limit`, and `cursor`.
+
+`placements` reads the selected version localization's asset placements and includes image and video relationships so their IDs are available. Its query accepts the documented placement filters, `sort`, `fields`, `limit`, and `cursor`. `library_image` reads one asset and accepts `fields`. These adapters return metadata only; they do not fetch image bytes.
+
+```rust,ignore
+let placements = client
+    .placements(
+        "1234567890",
+        "version_123",
+        "en-US",
+        &Query::new().with(
+            "placementType",
+            "PRODUCT_PAGE_HEADER_ASSET,APP_STORE_SEARCH_RESULTS_ASSET",
+        ),
+    )
+    .await?;
+for placement in placements.items {
+    if let Some(image_id) = placement.image_id.as_deref() {
+        let image = client.library_image(image_id, &Query::new()).await?;
+        println!("{:?}: {:?}", placement.placement_type, image.image_asset);
+    }
+}
+```
 
 ```rust,ignore
 let sets = client.screenshot_sets(

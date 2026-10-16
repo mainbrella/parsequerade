@@ -338,6 +338,16 @@ pub struct AppMediaVideoState {
 #[rustfmt::skip]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct StateDetail {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub code: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
+}
+
+#[rustfmt::skip]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ScreenshotSet {
     pub id: String,
     pub app_id: String,
@@ -419,6 +429,70 @@ pub struct Preview {
     pub video_delivery_state: Option<AppMediaVideoState>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub app_preview_set_id: Option<String>,
+}
+
+#[rustfmt::skip]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LibraryPlacement {
+    pub id: String,
+    pub app_id: String,
+    pub version_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub media_type: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub placement_type: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub placement_group: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub created_date: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub last_modified_date: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub state: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub state_details: Option<Vec<StateDetail>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub image_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub video_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub app_event_localization_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub app_store_version_localization_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub app_custom_product_page_localization_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub app_store_version_experiment_treatment_localization_id: Option<String>,
+}
+
+#[rustfmt::skip]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LibraryImage {
+    pub id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub file_name: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub file_size: Option<i64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub reference_name: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub image_asset: Option<ImageAsset>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub state: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub state_details: Option<Vec<StateDetail>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub category: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub created_date: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub last_modified_date: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub spec_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub upload_operations: Option<Vec<UploadOperation>>,
 }
 
 #[rustfmt::skip]
@@ -530,6 +604,20 @@ impl Client {
     pub async fn previews(&self, preview_set_id: &str, query: &Query) -> Result<Page<Preview>> {
         crate::contract::validate_id(preview_set_id)?;
         self.get(&format!("/preview-sets/{preview_set_id}/previews"), query).await
+    }
+
+    /// Read `/apps/{appId}/versions/{versionId}/localizations/{locale}/placements` directly from Apple.
+    pub async fn placements(&self, app_id: &str, version_id: &str, locale: &str, query: &Query) -> Result<Page<LibraryPlacement>> {
+        crate::contract::validate_id(app_id)?;
+        crate::contract::validate_id(version_id)?;
+        crate::contract::validate_locale(locale)?;
+        self.get(&format!("/apps/{app_id}/versions/{version_id}/localizations/{locale}/placements"), query).await
+    }
+
+    /// Read `/library-images/{libraryImageId}` directly from Apple.
+    pub async fn library_image(&self, library_image_id: &str, query: &Query) -> Result<LibraryImage> {
+        crate::contract::validate_id(library_image_id)?;
+        self.get(&format!("/library-images/{library_image_id}"), query).await
     }
 
 }
