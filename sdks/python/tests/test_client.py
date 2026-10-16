@@ -1,27 +1,29 @@
 import base64
 import copy
+import gc
 import json
 from pathlib import Path
-import tempfile
 import threading
 import time
 import unittest
-from unittest.mock import patch
+import weakref
 from urllib.parse import parse_qs, urlsplit
 
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives.asymmetric.utils import encode_dss_signature
 
-from parsequerade import ApiError, Client
-from parsequerade._client import page_data
-from parsequerade._contracts import ROUTES
-from parsequerade._pagination import apple_url
-from parsequerade._transport import Budget, Response, b64, unb64
+from parsequerade import ApiError, Client, Response
 
 KEY = ec.generate_private_key(ec.SECP256R1())
 PEM = KEY.private_bytes(serialization.Encoding.PEM, serialization.PrivateFormat.PKCS8, serialization.NoEncryption()).decode()
+ROOT = Path(__file__).resolve().parents[3]
+SCENARIOS = json.loads((ROOT / "tests/sdk/scenarios.json").read_text())
 FIXTURES = json.loads((Path(__file__).resolve().parents[2] / 'swift/Tests/ParsequeradeTests/Fixtures/reads.json').read_text())
+
+
+def unb64(value):
+    return base64.urlsafe_b64decode(value + "=" * (-len(value) % 4))
 
 
 def envelope(data, next=None):
@@ -45,13 +47,14 @@ class Mock:
     def send(self, method, url, headers, body, timeout):
         assert urlsplit(url).netloc == "api.appstoreconnect.apple.com"
         assert 0 < timeout <= 8
-        token = headers["Authorization"].removeprefix("Bearer ")
+        headers = {name.lower(): value for name, value in headers.items()}
+        token = headers["authorization"].removeprefix("Bearer ")
         header, payload, sig = token.split(".")
         assert json.loads(unb64(header))["alg"] == "ES256"
         claims = json.loads(unb64(payload))
         assert claims["aud"] == "appstoreconnect-v1"
         assert claims["iss"] == "issuer"
-        assert 0 < claims["exp"] - time.time() <= 600
+        assert 0 < claims["exp"] - time.time() <= 1200
         signature = unb64(sig)
         KEY.public_key().verify(encode_dss_signature(int.from_bytes(signature[:32], "big"), int.from_bytes(signature[32:], "big")), f"{header}.{payload}".encode(), ec.ECDSA(hashes.SHA256()))
         self.calls.append((method, url, headers, body))
@@ -78,8 +81,7 @@ class ClientTests(unittest.TestCase):
                 mock = Mock(fixture["responses"])
                 self.assertEqual(mock.calls, [])
                 method = re.sub(r"(?<!^)(?=[A-Z])", "_", fixture["handler"]).lower()
-                params = {"appId": "123", "appInfoId": "info_1", "versionId": "version_1", "locale": "en-US"}
-                args = [params[p] for p in re.findall(r"\{(\w+)\}", ROUTES[fixture["handler"]]["route"])]
+                args = [part for part in fixture["path"].split("/") if part in ("123", "info_1", "version_1", "en-US")]
                 value = getattr(mock.client, method)(*args)
                 item = value["items"][0] if fixture["collection"] else value
                 self.assertEqual(item["id"], fixture["item"]["id"])
@@ -90,6 +92,69 @@ class ClientTests(unittest.TestCase):
                 if fixture["handler"] == "ageRating":
                     self.assertIs(item["gambling"], False)
                     self.assertEqual(item["ageRatingOverrideV2"], "FUTURE_READ_VALUE")
+
+    def assert_subset(self, actual, expected):
+        if isinstance(expected, dict):
+            self.assertIsInstance(actual, dict)
+            for key, value in expected.items():
+                self.assertIn(key, actual)
+                self.assert_subset(actual[key], value)
+        elif isinstance(expected, list):
+            self.assertIsInstance(actual, list)
+            self.assertEqual(len(actual), len(expected))
+            for item, value in zip(actual, expected):
+                self.assert_subset(item, value)
+        else:
+            self.assertEqual(actual, expected)
+
+    def test_rust_and_python_share_operation_scenarios(self):
+        for scenario in SCENARIOS:
+            with self.subTest(scenario=scenario["name"]):
+                def reply(step):
+                    def send(call):
+                        method, url, _, body = call
+                        self.assertEqual(method, step["method"])
+                        self.assertEqual(urlsplit(url).path, step["path"])
+                        self.assertEqual(parse_qs(urlsplit(url).query), {
+                            key: [value] for key, value in step.get("query", {}).items()
+                        })
+                        self.assertEqual(json.loads(body) if body else None, step.get("body"))
+                        return response(step["response"], step.get("status", 200))
+                    return send
+                mock = Mock([reply(step) for step in scenario["steps"]])
+                method = getattr(mock.client, scenario.get("pythonMethod", scenario["operation"]))
+                args = scenario.get("pythonArgs", scenario["args"])
+                if "error" in scenario:
+                    error = self.assert_error(scenario["error"]["code"], lambda: method(*args))
+                    for name, value in scenario["error"].items():
+                        self.assertEqual(getattr(error, name), value)
+                else:
+                    self.assert_subset(method(*args), scenario["expect"])
+                self.assertFalse(mock.responses)
+                self.assertEqual(len(mock.calls), len(scenario["steps"]))
+
+    def test_new_write_and_media_inputs_validate_before_dispatch(self):
+        mock = Mock([])
+        for attributes in ({}, {"name": "Not writable"}, {"contentRightsDeclaration": False}):
+            self.assert_error("invalid_update", lambda: mock.client.update_metadata("/apps/app1", attributes))
+        for app, platform, number in (("../app1", "IOS", "1.0"), ("app1", "ANDROID", "1.0"),
+                                      ("app1", "IOS", "1..2"), ("app1", "IOS", "1.0-beta")):
+            with self.assertRaises(ApiError):
+                mock.client.create_version(app, platform, number)
+        self.assert_error("invalid_path", lambda: mock.client.attach_build("../app", "version1", "build1"))
+        self.assert_error("invalid_path", lambda: mock.client.preview_sets("app1", "version1", "en_US"))
+        self.assert_error("invalid_query", lambda: mock.client.builds("app1", {"platform": "ANDROID"}))
+        self.assert_error("invalid_query", lambda: mock.client.library_image("image1", {"fields": "secret"}))
+        self.assertFalse(mock.calls)
+
+    def test_unrepresentable_write_values_use_public_api_errors(self):
+        mock = Mock([])
+        self.assert_error("invalid_request", lambda: mock.client.update_metadata(
+            "/apps/app1", {"contentRightsDeclaration": 10 ** 500}))
+        for attributes in ({"contentRightsDeclaration": float("nan")},
+                           {"contentRightsDeclaration": object()}):
+            self.assert_error("invalid_request", lambda: mock.client.update_metadata("/apps/app1", attributes))
+        self.assertFalse(mock.calls)
 
     def test_queries_projection_null_false_relationships(self):
         item = resource(name="Notes", isOrEverWasMadeForKids=False, subscriptionStatusUrl=None)
@@ -103,6 +168,33 @@ class ClientTests(unittest.TestCase):
         info["relationships"] = {"primaryCategory": {"data": {"id": "GAMES", "type": "appCategories"}}}
         mock = Mock([envelope([info])])
         self.assertEqual(mock.client.app_infos("123")["items"][0]["primaryCategoryId"], "GAMES")
+
+    def test_custom_transport_reference_cycles_are_collected(self):
+        mock = Mock([])
+        reference = weakref.ref(mock)
+        del mock
+        gc.collect()
+        self.assertIsNone(reference())
+
+    def test_callback_reentry_fails_cleanly(self):
+        observed = []
+        def send(*_):
+            with self.assertRaises(RuntimeError) as caught:
+                client.apps()
+            observed.append(str(caught.exception))
+            return response(envelope([]))
+        client = Client("issuer", "key", PEM, transport=send)
+        self.assertEqual(client.apps()["items"], [])
+        self.assertEqual(len(observed), 1)
+
+    def test_exported_types_describe_nested_arrays_and_checkpoint_optionality(self):
+        from typing import get_type_hints
+        from parsequerade import HttpHeader, ListingImageUpload, ListingImageUploadCheckpoint, UploadOperation
+        self.assertEqual(get_type_hints(UploadOperation)["requestHeaders"], list[HttpHeader] | None)
+        self.assertEqual(ListingImageUpload.__required_keys__, {
+            "appId", "versionId", "locale", "placementType", "fileName",
+        })
+        self.assertEqual(ListingImageUploadCheckpoint.__required_keys__, frozenset())
 
     def test_invalid_queries_and_paths_make_no_requests(self):
         mock = Mock([])
@@ -151,11 +243,10 @@ class ClientTests(unittest.TestCase):
         self.assert_error("upstream_invalid_response", lambda: mock.client.version_localization("123", "version_1", "en-US"))
 
     def test_reads_retry_refresh_and_sanitize_errors(self):
-        with patch("parsequerade._transport.time.sleep"):
-            mock = Mock([response({}, 401), response({}, 503), envelope([])])
-            self.assertEqual(mock.client.apps()["items"], [])
-        self.assertNotEqual(mock.calls[0][2]["Authorization"], mock.calls[1][2]["Authorization"])
-        self.assertEqual(mock.calls[1][2]["Authorization"], mock.calls[2][2]["Authorization"])
+        mock = Mock([response({}, 401), response({}, 503), envelope([])])
+        self.assertEqual(mock.client.apps()["items"], [])
+        self.assertNotEqual(mock.calls[0][2]["authorization"], mock.calls[1][2]["authorization"])
+        self.assertEqual(mock.calls[1][2]["authorization"], mock.calls[2][2]["authorization"])
         mock = Mock([response({"errors": [{"code": "BAD.PARAM", "detail": "secret", "source": {"parameter": "limit"}}]}, 422)])
         error = self.assert_error("validation_failed", mock.client.apps)
         self.assertEqual(error.status, 422)
@@ -190,12 +281,16 @@ class ClientTests(unittest.TestCase):
     def test_malformed_and_bounded_responses(self):
         for reply in (Response(200, {"content-type": "application/json"}, b"invalid"), response({}, 302), envelope([resource(), resource()]), envelope([resource(name=42)]), Response(200, {"content-type": "application/json"}, b"x" * (4 * 1024 * 1024 + 1))):
             self.assert_error("upstream_invalid_response", Mock([reply]).client.apps)
-        mock = Mock([])
-        for budget in (Budget(attempts=32), Budget(deadline=0)):
-            self.assert_error("upstream_budget_exceeded", lambda: mock.client._http.apple(apple_url("/v1/apps", {}), ROUTES["apps"], budget))
-        self.assertFalse(mock.calls)
-        mock = Mock([envelope([])])
-        self.assert_error("upstream_invalid_response", lambda: mock.client._http.apple(apple_url("/v1/apps", {}), ROUTES["apps"], Budget(bytes=16 * 1024 * 1024)))
+
+    def test_total_response_budget_is_shared_across_parent_lookup_pages(self):
+        replies = []
+        for number in range(6):
+            payload = envelope([], f"?cursor={number}")
+            payload["meta"] = {"padding": "x" * (3 * 1024 * 1024)}
+            replies.append(response(payload))
+        mock = Mock(replies)
+        self.assert_error("upstream_invalid_response", lambda: mock.client.app_info("123", "info_1"))
+        self.assertEqual(len(mock.calls), 6)
 
     def test_four_request_concurrency_bound(self):
         entered = threading.Barrier(5)
@@ -211,11 +306,14 @@ class ClientTests(unittest.TestCase):
             except Exception as error: errors.append(error)
         threads = [threading.Thread(target=run) for _ in range(4)]
         for thread in threads: thread.start()
-        entered.wait(timeout=5)
-        error = self.assert_error("rate_limited", client.apps)
-        self.assertEqual(error.retry_after, 1)
-        release.set()
-        for thread in threads: thread.join(timeout=5)
+        try:
+            entered.wait(timeout=5)
+            error = self.assert_error("rate_limited", client.apps)
+            self.assertEqual(error.retry_after, 1)
+        finally:
+            release.set()
+            for thread in threads: thread.join(timeout=5)
+        self.assertFalse(any(thread.is_alive() for thread in threads))
         self.assertFalse(errors)
 
     def test_resolvers_are_bounded(self):

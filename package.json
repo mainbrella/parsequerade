@@ -15,15 +15,16 @@
     "test:sdks": "npm run test:sdk:typescript && npm run test:sdk:rust && npm run test:sdk:python && npm run test:sdk:swift && npm run test:sdk:go",
     "test:sdk:typescript": "npm run build:sdk:typescript && node node_modules/typescript/bin/tsc -p sdks/typescript/tests/tsconfig.json && node --test sdks/typescript/tests/*.test.mjs",
     "test:sdk:rust": "cargo test --locked --manifest-path sdks/rust/Cargo.toml",
-    "check:sdks": "python3 scripts/generate_sdks.py --check && node scripts/export_sdk_fixtures.mjs --check && cargo fmt --manifest-path sdks/rust/Cargo.toml --check && cargo clippy --locked --manifest-path sdks/rust/Cargo.toml --all-targets -- -D warnings && npm run check:sdk:go && npm run test:sdks",
-    "check": "python3 scripts/export_api.py --check && python3 scripts/generate_sdks.py --check && node scripts/export_sdk_fixtures.mjs --check && python3 scripts/check_site.py && python3 scripts/check_reference.py && node --check dist/app.js && npm test && npm run test:sdk:typescript",
+    "check:sdks": "python3 scripts/test_sdk_contracts.py && python3 scripts/generate_sdks.py --check && node scripts/export_sdk_fixtures.mjs --check && cargo fmt --manifest-path sdks/rust/Cargo.toml --check && cargo clippy --locked --manifest-path sdks/rust/Cargo.toml --all-targets -- -D warnings && npm run check:sdk:python && npm run check:sdk:go && npm run test:sdks",
+    "check": "python3 scripts/export_api.py --check && python3 scripts/test_sdk_contracts.py && python3 scripts/generate_sdks.py --check && node scripts/export_sdk_fixtures.mjs --check && python3 scripts/check_site.py && python3 scripts/check_reference.py && node --check dist/app.js && npm test && npm run test:sdk:typescript",
     "build:sdk:python": "python3 -m pip wheel --no-deps ./sdks/python --wheel-dir sdks/python/dist",
     "build:sdk:swift": "swift build --package-path sdks/swift",
-    "test:sdk:python": "node scripts/export_sdk_fixtures.mjs --check && python3 -m unittest discover -s sdks/python/tests -v",
+    "test:sdk:python": "node scripts/export_sdk_fixtures.mjs --check && python3 -m pip install --no-deps -e ./sdks/python && python3 -m unittest discover -s sdks/python/tests -v",
     "test:sdk:swift": "node scripts/export_sdk_fixtures.mjs --check && swift test --package-path sdks/swift",
     "build:sdk:go": "cd sdks/go && go build ./...",
     "test:sdk:go": "node scripts/export_sdk_fixtures.mjs --check && cd sdks/go && go test -race ./...",
-    "check:sdk:go": "cd sdks/go && go vet ./..."
+    "check:sdk:go": "cd sdks/go && go vet ./...",
+    "check:sdk:python": "cargo fmt --manifest-path sdks/python/native/Cargo.toml --check && cargo clippy --locked --manifest-path sdks/python/native/Cargo.toml --lib -- -D warnings"
   },
   "devDependencies": {
     "esbuild": "^0.28.2",

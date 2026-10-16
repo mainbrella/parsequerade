@@ -1778,7 +1778,8 @@
             "height": {
               "type": "integer"
             }
-          }
+          },
+          "deprecated": true
         },
         "uploadOperations": {
           "type": "array",
@@ -1854,7 +1855,8 @@
                 "FAILED"
               ]
             }
-          }
+          },
+          "deprecated": true
         },
         "videoDeliveryState": {
           "type": "object",
@@ -3134,6 +3136,46 @@
       "type": "string",
       "format": "uri",
       "nullable": true
+    }
+  },
+  "metadataUpdates": {
+    "app": {
+      "contentRightsDeclaration": {
+        "type": "string"
+      }
+    },
+    "version": {
+      "versionString": {
+        "type": "string"
+      },
+      "copyright": {
+        "type": "string"
+      }
+    },
+    "appInfoLocalization": {
+      "privacyPolicyUrl": {
+        "type": "string"
+      }
+    },
+    "versionLocalization": {
+      "promotionalText": {
+        "type": "string"
+      },
+      "description": {
+        "type": "string"
+      },
+      "whatsNew": {
+        "type": "string"
+      },
+      "keywords": {
+        "type": "string"
+      },
+      "supportUrl": {
+        "type": "string"
+      },
+      "marketingUrl": {
+        "type": "string"
+      }
     }
   }
 }

@@ -15,6 +15,7 @@ use tokio::{
 mod builds;
 mod media;
 mod metadata;
+mod scenarios;
 mod upload;
 
 pub(super) struct Step {

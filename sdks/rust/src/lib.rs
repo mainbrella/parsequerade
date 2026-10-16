@@ -5,6 +5,7 @@ mod builds;
 mod contract;
 mod error;
 mod generated;
+mod http;
 mod pagination;
 mod resources;
 mod transport;
@@ -13,6 +14,7 @@ mod versions;
 
 pub use error::{Error, ErrorDetail, Result};
 pub use generated::*;
+pub use http::{HttpError, HttpRequest, HttpResponse, HttpTransport};
 use reqwest::Url;
 use ring::{hmac, rand::SystemRandom};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
@@ -51,6 +53,7 @@ pub struct Page<T> {
 
 struct Inner {
     http: reqwest::Client,
+    transport: Option<Arc<dyn HttpTransport>>,
     auth: auth::Auth,
     origin: Url,
     cursor_key: hmac::Key,
@@ -74,6 +77,26 @@ impl Client {
     /// Load an Apple team key. `private_key_pem` is the `.p8` contents, not a file path.
     /// Validates the key locally and makes no network requests.
     pub fn new(issuer_id: &str, key_id: &str, private_key_pem: &str) -> Result<Self> {
+        Self::configured(issuer_id, key_id, private_key_pem, None)
+    }
+
+    /// Construct a client with a trusted host HTTP adapter. The adapter receives signed
+    /// requests and must honor timeouts and size bounds without redirects or retries.
+    pub fn with_transport(
+        issuer_id: &str,
+        key_id: &str,
+        private_key_pem: &str,
+        transport: Arc<dyn HttpTransport>,
+    ) -> Result<Self> {
+        Self::configured(issuer_id, key_id, private_key_pem, Some(transport))
+    }
+
+    fn configured(
+        issuer_id: &str,
+        key_id: &str,
+        private_key_pem: &str,
+        transport: Option<Arc<dyn HttpTransport>>,
+    ) -> Result<Self> {
         let auth = auth::Auth::new(issuer_id, key_id, private_key_pem)?;
         let http = reqwest::Client::builder()
             .redirect(reqwest::redirect::Policy::none())
@@ -98,6 +121,7 @@ impl Client {
         Ok(Self {
             inner: Arc::new(Inner {
                 http,
+                transport,
                 auth,
                 origin: Url::parse("https://api.appstoreconnect.apple.com").expect("Apple origin"),
                 cursor_key,
@@ -131,6 +155,20 @@ impl Client {
         app_info_id: &str,
         attributes: &Value,
     ) -> Result<AgeRating> {
+        let flat = self
+            .update_age_rating_json(app_id, app_info_id, attributes)
+            .await?;
+        serde_json::from_value(flat).map_err(|_| Error::unknown_write())
+    }
+
+    /// Update an age rating while preserving explicit nulls in the flat response.
+    /// Language bindings use this entry point to retain their native JSON semantics.
+    pub async fn update_age_rating_json(
+        &self,
+        app_id: &str,
+        app_info_id: &str,
+        attributes: &Value,
+    ) -> Result<Value> {
         contract::validate_id(app_id)?;
         contract::validate_id(app_info_id)?;
         contract::validate_update(attributes)?;
@@ -157,9 +195,8 @@ impl Client {
             ("appId".into(), app_id.into()),
             ("appInfoId".into(), app_info_id.into()),
         ]);
-        let flat = contract::flatten(&payload["data"], route, &context, None)
-            .map_err(|_| Error::unknown_write())?;
-        serde_json::from_value(flat).map_err(|_| Error::unknown_write())
+        contract::flatten(&payload["data"], route, &context, None)
+            .map_err(|_| Error::unknown_write())
     }
 
     /// Update the supported editable Store metadata on an existing app, version, or
@@ -168,28 +205,15 @@ impl Client {
     /// Writes are never retried; read the affected resource before retrying an uncertain write.
     pub async fn update_metadata(&self, path: &str, attributes: &Value) -> Result<Value> {
         let (route, params) = contract::match_route(path)?;
-        let supported = match route.handler.as_str() {
-            "app" => &["contentRightsDeclaration"][..],
-            "version" => &["versionString", "copyright"][..],
-            "appInfoLocalization" => &["privacyPolicyUrl"][..],
-            "versionLocalization" => &[
-                "promotionalText",
-                "description",
-                "whatsNew",
-                "keywords",
-                "supportUrl",
-                "marketingUrl",
-            ][..],
-            _ => &[][..],
-        };
+        let supported = contract::contracts().metadata_updates.get(&route.handler);
         let Some(values) = attributes.as_object() else {
             return Err(invalid_metadata("attributes"));
         };
         if values.is_empty()
-            || supported.is_empty()
-            || values
-                .iter()
-                .any(|(name, value)| !supported.contains(&name.as_str()) || !value.is_string())
+            || supported.is_none_or(|fields| fields.is_empty())
+            || values.iter().any(|(name, value)| {
+                !supported.is_some_and(|fields| fields.contains_key(name)) || !value.is_string()
+            })
         {
             return Err(invalid_metadata("attributes"));
         }
@@ -242,10 +266,10 @@ impl Client {
             if contract::check_parent(data, parent_relation, parent_id, parent_type).is_err() {
                 return Err(Error::unknown_write());
             }
-        } else if route.handler == "version" {
-            if contract::check_parent(data, "app", &params["appId"], "apps").is_err() {
-                return Err(Error::unknown_write());
-            }
+        } else if route.handler == "version"
+            && contract::check_parent(data, "app", &params["appId"], "apps").is_err()
+        {
+            return Err(Error::unknown_write());
         }
 
         let confirmed =

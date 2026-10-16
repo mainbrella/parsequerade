@@ -12,6 +12,9 @@ sdks/typescript/.types/
 sdks/python/.venv/
 sdks/python/dist/
 sdks/python/build/
+sdks/python/native/target/
+sdks/python/src/parsequerade/*.so
+sdks/python/src/parsequerade/*.pyd
 *.egg-info/
 sdks/swift/.build/
 sdks/swift/.swiftpm/

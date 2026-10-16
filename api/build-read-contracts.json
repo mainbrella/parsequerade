@@ -1,5 +1,5 @@
 {
-  "description": "Rust-only adapters for documented build reads. Hosted Worker routes remain unchanged.",
+  "description": "Shared contracts for scoped build and prerelease-version reads. SDK and hosted Worker availability is declared in sdk-catalog.json.",
   "documentation": "https://parsequerade.mainbrella.com/docs/reference/topics/builds/",
   "routes": [
     {

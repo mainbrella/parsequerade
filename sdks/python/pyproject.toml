@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=77"]
-build-backend = "setuptools.build_meta"
+requires = ["maturin>=1.9,<2"]
+build-backend = "maturin"
 
 [project]
 name = "parsequerade"
@@ -9,7 +9,15 @@ description = "A local App Store Connect facade with flat resources and scoped u
 readme = "README.md"
 requires-python = ">=3.11"
 license = "GPL-3.0-or-later"
-dependencies = ["cryptography>=41"]
+dependencies = []
 
-[tool.setuptools.package-data]
-parsequerade = ["contracts.json", "py.typed"]
+[project.optional-dependencies]
+dev = ["cryptography>=41", "maturin>=1.9,<2"]
+
+[tool.maturin]
+manifest-path = "native/Cargo.toml"
+python-source = "src"
+module-name = "parsequerade._native"
+editable-profile = "dev"
+locked = true
+include = ["LICENSE", "src/parsequerade/py.typed"]

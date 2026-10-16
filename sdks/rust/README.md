@@ -2,7 +2,7 @@
 
 An async Rust crate that implements the Parsequerade facade locally. Your program calls Apple directly at `https://api.appstoreconnect.apple.com`, with flat resources and facade query names. No Cloudflare deployment, hosted connection, or facade API key is needed.
 
-The SDK covers the implemented core read routes, documented media reads, scoped age-rating updates, and a narrow PNG upload for App Store listing images. The media adapters and listing-image upload are available in this Rust SDK; the hosted Worker and other SDKs still expose their existing route sets. Reports, other writes, copy workflows, and other proposed routes are not implemented.
+The SDK supports 22 reads covering core resources, media, and builds; age-rating and metadata updates; version creation; build attachment; and checkpointed PNG uploads for App Store listing images. The Python SDK uses this same execution core and supports these operations. The hosted Worker, TypeScript, Swift, and Go retain their baseline route sets. Reports, copy workflows, and other proposed operations are not implemented.
 
 ## Add to your project
 
@@ -225,4 +225,22 @@ npm run check:sdks
 cargo package --locked --manifest-path sdks/rust/Cargo.toml --allow-dirty
 ```
 
-Generated response types and bundled contracts come from the repository's reviewed runtime manifests, including `api/rust-media-read-contracts.json` for the Rust media adapters. The packaged crate is self-contained and requires neither Python nor the Worker. Tests use generated keys and a local mock Apple server; they do not access a real Apple account. The crate uses the repository's GPL-3.0-or-later license.
+Generated response types, upload models, and bundled contracts come from the language-neutral `api/sdk-catalog.json` and its reviewed runtime manifests. The packaged crate is self-contained and requires neither Python nor the Worker. Tests use generated keys and a local mock Apple server; they do not access a real Apple account. The crate uses the repository's GPL-3.0-or-later license.
+
+## Shared execution core
+
+This crate is also the execution core for the Python SDK. Python's native extension
+calls these same read, metadata, version, build, and checkpointed upload operations;
+it does not maintain another implementation of the facade. The language-neutral
+`api/sdk-catalog.json` selects the implemented contracts and generates response types
+and resource methods. Other SDKs retain their existing implementations until migrated.
+
+`HttpTransport` and `Client::with_transport` provide a trusted host boundary for language
+bindings. The core prepares authentication and owns validation, retries, pagination,
+size limits, write outcomes, and upload reconciliation. An adapter sends one request,
+honors the supplied timeout and response-size limit, and never follows redirects or
+retries. It receives signed Apple requests, so treat it as trusted application code.
+Blob upload requests contain only Apple's supplied storage headers, without the API JWT.
+
+The Rust and Python suites also consume the same operation scenarios from
+`tests/sdk/scenarios.json`; `npm run generate:sdks` copies them into the packaged crate.

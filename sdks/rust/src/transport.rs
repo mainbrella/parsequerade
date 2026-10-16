@@ -1,7 +1,10 @@
-use crate::{contract::Route, Client, Error, ErrorDetail, Result};
-use reqwest::{header, Method, Url};
+use crate::{contract::Route, Client, Error, ErrorDetail, HttpError, HttpRequest, Result};
+use reqwest::{Method, Url};
 use serde_json::Value;
-use std::time::{Duration, Instant, SystemTime};
+use std::{
+    collections::BTreeMap,
+    time::{Duration, Instant, SystemTime},
+};
 
 const RESPONSE_BYTES: usize = 4 * 1024 * 1024;
 const TOTAL_BYTES: usize = 16 * 1024 * 1024;
@@ -177,36 +180,46 @@ impl Client {
                 .min(budget.deadline.saturating_duration_since(Instant::now()));
             let mut retry_auth = false;
             let operation = async {
-                let mut request = self
-                    .inner
-                    .http
-                    .request(method.clone(), url.clone())
-                    .bearer_auth(&jwt)
-                    .header(header::ACCEPT, "application/json");
-                if let Some(body) = body {
-                    request = request.json(body);
+                let mut headers = BTreeMap::from([
+                    ("Authorization".into(), format!("Bearer {jwt}")),
+                    ("Accept".into(), "application/json".into()),
+                ]);
+                let body = body.map(|body| body.to_string().into_bytes());
+                if body.is_some() {
+                    headers.insert("Content-Type".into(), "application/json".into());
                 }
-                let mut response = request.send().await.map_err(|_| transport_error(write))?;
-                let status = response.status().as_u16();
+                let response = self
+                    .send_http_counted(
+                        HttpRequest {
+                            method: method.to_string(),
+                            url: url.to_string(),
+                            headers,
+                            body,
+                            timeout,
+                            max_response_bytes: RESPONSE_BYTES
+                                .min(TOTAL_BYTES.saturating_sub(budget.bytes)),
+                        },
+                        &mut budget.bytes,
+                    )
+                    .await
+                    .map_err(|error| match error {
+                        HttpError::InvalidResponse => Error::invalid_upstream(),
+                        HttpError::Timeout if !write => {
+                            let mut error = transport_error(false);
+                            error.status = 504;
+                            error.code = "upstream_timeout".into();
+                            error
+                        }
+                        _ => transport_error(write),
+                    })?;
+                let status = response.status;
                 if (300..400).contains(&status) {
                     return Err(Error::invalid_upstream());
                 }
-                if response
-                    .content_length()
-                    .is_some_and(|n| n > RESPONSE_BYTES as u64)
-                {
-                    return Err(Error::invalid_upstream());
-                }
-                let after = response
-                    .headers()
-                    .get(header::RETRY_AFTER)
-                    .and_then(|v| v.to_str().ok())
-                    .map(str::to_owned);
-                if response.status().is_success() {
+                let after = response.header("retry-after").map(str::to_owned);
+                if (200..300).contains(&status) {
                     let mime = response
-                        .headers()
-                        .get(header::CONTENT_TYPE)
-                        .and_then(|v| v.to_str().ok())
+                        .header("content-type")
                         .unwrap_or("")
                         .split(';')
                         .next()
@@ -219,17 +232,7 @@ impl Client {
                         return Err(Error::invalid_upstream());
                     }
                 }
-                let mut bytes = Vec::new();
-                while let Some(chunk) =
-                    response.chunk().await.map_err(|_| transport_error(write))?
-                {
-                    budget.bytes += chunk.len();
-                    if bytes.len() + chunk.len() > RESPONSE_BYTES || budget.bytes > TOTAL_BYTES {
-                        return Err(Error::invalid_upstream());
-                    }
-                    bytes.extend_from_slice(&chunk);
-                }
-                let payload: Value = serde_json::from_slice(&bytes).unwrap_or(Value::Null);
+                let payload: Value = serde_json::from_slice(&response.body).unwrap_or(Value::Null);
                 if (200..300).contains(&status) {
                     if !payload.is_object() || payload.get("data").is_none() {
                         return Err(Error::invalid_upstream());

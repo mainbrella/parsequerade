@@ -1,4 +1,4 @@
-"""Stable, sanitized facade errors."""
+"""Stable, sanitized facade errors from the shared execution core."""
 
 
 class ApiError(Exception):
@@ -11,21 +11,11 @@ class ApiError(Exception):
         self.details = details or []
         self.retry_after = retry_after
 
-
-def invalid_upstream():
-    return ApiError(502, "upstream_invalid_response", "Apple returned an invalid response.")
-
-
-def not_found(code="resource_not_found"):
-    return ApiError(404, code, "The requested resource was not found.")
-
-
-def incomplete():
-    return ApiError(502, "upstream_incomplete_result", "Apple pagination exceeded its bound or repeated a page.")
-
-
-def unknown_write():
-    return ApiError(503, "write_outcome_unknown", "Apple did not confirm this update. Read the age rating before trying again.")
+    @classmethod
+    def from_dict(cls, error):
+        return cls(error["status"], error["code"], error["message"],
+                   retryable=error["retryable"], details=error["details"],
+                   retry_after=error.get("retryAfter"))
 
 
 def invalid_query(field):

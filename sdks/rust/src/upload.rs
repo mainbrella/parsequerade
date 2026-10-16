@@ -34,41 +34,7 @@ impl ListingImagePlacementType {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ListingImageUpload {
-    pub app_id: String,
-    pub version_id: String,
-    pub locale: String,
-    pub placement_type: ListingImagePlacementType,
-    pub file_name: String,
-}
-
-#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ListingImageUploadCheckpoint {
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    binding: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    image_id: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    placement_id: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    placement_group: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    phase: Option<String>,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ListingImageUploadReceipt {
-    pub app_id: String,
-    pub version_id: String,
-    pub locale: String,
-    pub placement_type: ListingImagePlacementType,
-    pub image_id: String,
-    pub placement_id: String,
-}
+include!("upload_models.rs");
 
 fn failure(code: &'static str, message: &'static str) -> Error {
     Error::new(422, code, message)
@@ -500,20 +466,27 @@ async fn transfer(client: &Client, ops: Vec<UploadOperation>, png: &[u8]) -> Res
         if timeout.is_zero() {
             return Err(unknown());
         }
-        let mut req = client
-            .inner
-            .http
-            .put(url)
-            .timeout(timeout)
-            .body(png[offset..offset + length].to_vec());
-        for (name, value) in headers {
-            req = req.header(name, value);
-        }
-        let response = tokio::time::timeout(timeout, req.send())
+        let headers = headers
+            .into_iter()
+            .map(|(name, value)| {
+                Ok((
+                    name.to_string(),
+                    value.to_str().map_err(|_| unknown())?.to_owned(),
+                ))
+            })
+            .collect::<Result<_>>()?;
+        let response = client
+            .send_http(crate::HttpRequest {
+                method: "PUT".into(),
+                url: url.to_string(),
+                headers,
+                body: Some(png[offset..offset + length].to_vec()),
+                timeout,
+                max_response_bytes: 64 * 1024,
+            })
             .await
-            .map_err(|_| unknown())?
             .map_err(|_| unknown())?;
-        if !response.status().is_success() {
+        if !(200..300).contains(&response.status) {
             return Err(unknown());
         }
     }

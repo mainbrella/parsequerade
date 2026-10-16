@@ -1,0 +1,229 @@
+{
+  "schemaVersion": 1,
+  "description": "Language-neutral SDK contracts and explicit implementation support. Listing a contract does not enable it in a runtime.",
+  "resourceNames": {
+    "apps": "App",
+    "appInfos": "AppInfo",
+    "appInfoLocalizations": "AppInfoLocalization",
+    "ageRatingDeclarations": "AgeRating",
+    "appStoreVersions": "Version",
+    "appStoreVersionLocalizations": "VersionLocalization",
+    "appStoreReviewDetails": "ReviewContact",
+    "appScreenshotSets": "ScreenshotSet",
+    "appScreenshots": "Screenshot",
+    "appPreviewSets": "PreviewSet",
+    "appPreviews": "Preview",
+    "builds": "Build",
+    "preReleaseVersions": "PrereleaseVersion",
+    "appAssetLibraryPlacements": "LibraryPlacement",
+    "appAssetLibraryImages": "LibraryImage"
+  },
+  "readGroups": [
+    {
+      "name": "baseline",
+      "source": "read-contracts.json",
+      "implementations": [
+        "worker",
+        "typescript",
+        "python",
+        "swift",
+        "go",
+        "rust"
+      ]
+    },
+    {
+      "name": "media",
+      "source": "media-read-contracts.json",
+      "implementations": [
+        "rust",
+        "python"
+      ]
+    },
+    {
+      "name": "builds",
+      "source": "build-read-contracts.json",
+      "implementations": [
+        "rust",
+        "python"
+      ]
+    }
+  ],
+  "ageRatingWrite": "age-rating-write-contract.json",
+  "operations": {
+    "updateAgeRating": {
+      "implementations": [
+        "worker",
+        "typescript",
+        "python",
+        "swift",
+        "go",
+        "rust"
+      ],
+      "contract": "ageRatingWrite"
+    },
+    "updateMetadata": {
+      "implementations": [
+        "rust",
+        "python"
+      ],
+      "contract": "metadataUpdates"
+    },
+    "createVersion": {
+      "implementations": [
+        "rust",
+        "python"
+      ],
+      "result": "Version"
+    },
+    "attachBuild": {
+      "implementations": [
+        "rust",
+        "python"
+      ],
+      "result": "Version"
+    },
+    "listingImageReferenceData": {
+      "implementations": [
+        "rust",
+        "python"
+      ]
+    },
+    "uploadListingImage": {
+      "implementations": [
+        "rust",
+        "python"
+      ],
+      "request": "ListingImageUpload",
+      "checkpoint": "ListingImageUploadCheckpoint",
+      "result": "ListingImageUploadReceipt"
+    }
+  },
+  "metadataUpdates": {
+    "app": {
+      "contentRightsDeclaration": {
+        "type": "string"
+      }
+    },
+    "version": {
+      "versionString": {
+        "type": "string"
+      },
+      "copyright": {
+        "type": "string"
+      }
+    },
+    "appInfoLocalization": {
+      "privacyPolicyUrl": {
+        "type": "string"
+      }
+    },
+    "versionLocalization": {
+      "promotionalText": {
+        "type": "string"
+      },
+      "description": {
+        "type": "string"
+      },
+      "whatsNew": {
+        "type": "string"
+      },
+      "keywords": {
+        "type": "string"
+      },
+      "supportUrl": {
+        "type": "string"
+      },
+      "marketingUrl": {
+        "type": "string"
+      }
+    }
+  },
+  "operationModels": {
+    "ListingImagePlacementType": {
+      "type": "string",
+      "enum": [
+        "PRODUCT_PAGE_HEADER_ASSET",
+        "APP_STORE_SEARCH_RESULTS_ASSET"
+      ]
+    },
+    "ListingImageUpload": {
+      "type": "object",
+      "properties": {
+        "appId": {
+          "type": "string"
+        },
+        "versionId": {
+          "type": "string"
+        },
+        "locale": {
+          "type": "string"
+        },
+        "placementType": {
+          "$ref": "#/components/schemas/ListingImagePlacementType"
+        },
+        "fileName": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "appId",
+        "versionId",
+        "locale",
+        "placementType",
+        "fileName"
+      ]
+    },
+    "ListingImageUploadCheckpoint": {
+      "type": "object",
+      "properties": {
+        "binding": {
+          "type": "string"
+        },
+        "imageId": {
+          "type": "string"
+        },
+        "placementId": {
+          "type": "string"
+        },
+        "placementGroup": {
+          "type": "string"
+        },
+        "phase": {
+          "type": "string"
+        }
+      },
+      "required": []
+    },
+    "ListingImageUploadReceipt": {
+      "type": "object",
+      "properties": {
+        "appId": {
+          "type": "string"
+        },
+        "versionId": {
+          "type": "string"
+        },
+        "locale": {
+          "type": "string"
+        },
+        "placementType": {
+          "$ref": "#/components/schemas/ListingImagePlacementType"
+        },
+        "imageId": {
+          "type": "string"
+        },
+        "placementId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "appId",
+        "versionId",
+        "locale",
+        "placementType",
+        "imageId",
+        "placementId"
+      ]
+    }
+  }
+}

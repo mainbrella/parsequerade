@@ -1,5 +1,5 @@
 {
-  "description": "Rust-only adapters for documented screenshot, preview, placement, and library-image reads. Shapes and queries match the reviewed Parsequerade reference; the hosted Worker and other SDKs do not implement these routes.",
+  "description": "Shared contracts for screenshot, preview, placement, and library-image reads. SDK and hosted Worker availability is declared in sdk-catalog.json.",
   "documentation": "https://parsequerade.mainbrella.com/docs/",
   "routes": [
     {

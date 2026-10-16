@@ -9,6 +9,7 @@ use std::{collections::BTreeMap, sync::OnceLock};
 pub(crate) struct Contracts {
     pub routes: Vec<Route>,
     pub age_rating_write: BTreeMap<String, Schema>,
+    pub metadata_updates: BTreeMap<String, BTreeMap<String, Schema>>,
 }
 #[derive(Deserialize)]
 pub(crate) struct Route {
