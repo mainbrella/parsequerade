@@ -282,6 +282,34 @@ async fn media_rejects_foreign_parents_before_returning_data() {
     );
     task.await.unwrap();
 
+    let mut null_placement = data(
+        "appAssetLibraryPlacements",
+        "placement-null-parent",
+        json!({"mediaType":"IMAGE","placementType":"PRODUCT_PAGE_HEADER_ASSET"}),
+    );
+    null_placement["relationships"] = json!({
+        "appStoreVersionLocalization":{"data":null}
+    });
+    let (client, task) = mock(vec![
+        version_parent(),
+        selected_locale(),
+        Step::get(
+            "/v1/appStoreVersionLocalizations/loc1/placements",
+            page(vec![null_placement], None),
+        )
+        .query(&[("limit", "50"), ("include", "image,video")]),
+    ])
+    .await;
+    assert_eq!(
+        client
+            .placements("app1", "version1", "en-US", &Query::new())
+            .await
+            .unwrap_err()
+            .code,
+        "upstream_invalid_response"
+    );
+    task.await.unwrap();
+
     let wrong_localization = linked(
         data(
             "appStoreVersionLocalizations",
@@ -427,22 +455,16 @@ async fn media_validates_nested_shapes_and_projects_only_requested_attributes() 
 
 #[tokio::test]
 async fn placements_resolve_locale_include_assets_and_preserve_video_rows() {
-    let placement = linked(
-        data(
-            "appAssetLibraryPlacements",
-            "placement1",
-            json!({
-                "mediaType":"IMAGE",
-                "placementType":"PRODUCT_PAGE_HEADER_ASSET",
-                "state":"PARENT_READY_FOR_REVIEW",
-                "stateDetails":[{"code":"NOTICE","description":"Ready"}]
-            }),
-        ),
-        "appStoreVersionLocalization",
-        "appStoreVersionLocalizations",
-        "loc1",
+    let mut placement = data(
+        "appAssetLibraryPlacements",
+        "placement1",
+        json!({
+            "mediaType":"IMAGE",
+            "placementType":"PRODUCT_PAGE_HEADER_ASSET",
+            "state":"PARENT_READY_FOR_REVIEW",
+            "stateDetails":[{"code":"NOTICE","description":"Ready"}]
+        }),
     );
-    let mut placement = placement;
     placement["relationships"]["image"] =
         json!({"data":{"type":"appAssetLibraryImages","id":"image1"}});
     let placement_query = [
@@ -523,6 +545,10 @@ async fn placements_resolve_locale_include_assets_and_preserve_video_rows() {
         Some("loc1")
     );
     assert_eq!(placement.image_id.as_deref(), Some("image1"));
+    assert_eq!(
+        placement.app_store_version_localization_id.as_deref(),
+        Some("loc1")
+    );
     assert_eq!(placement.video_id, None);
     assert_eq!(placement.media_type.as_deref(), Some("IMAGE"));
     assert_eq!(

@@ -8,6 +8,7 @@ mod pagination;
 mod resources;
 mod transport;
 mod upload;
+mod versions;
 
 pub use error::{Error, ErrorDetail, Result};
 pub use generated::*;

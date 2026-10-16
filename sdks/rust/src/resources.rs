@@ -187,6 +187,12 @@ impl Client {
                     selected.ok_or_else(|| Error::not_found("localization_not_found"))?;
                 if matches!(handler, "screenshotSets" | "previewSets" | "placements") {
                     localization_id = Some(selected.clone());
+                    if handler == "placements" {
+                        context.insert(
+                            "appStoreVersionLocalizationId".into(),
+                            selected.clone().into(),
+                        );
+                    }
                     let resource = match handler {
                         "screenshotSets" => "appScreenshotSets",
                         "previewSets" => "appPreviewSets",

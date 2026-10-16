@@ -505,6 +505,63 @@ async fn placement_readback_must_match_the_created_image() {
 }
 
 #[tokio::test]
+async fn omitted_localization_linkage_is_filled_from_scoped_upload_context_and_reconciled() {
+    let mut placement_without_parent = placement("image1");
+    placement_without_parent["relationships"]
+        .as_object_mut()
+        .unwrap()
+        .remove("appStoreVersionLocalization");
+
+    let mut steps = preflight();
+    steps.push(reservation(vec![upload_operation(
+        "/upload",
+        0,
+        HEADER.len(),
+    )]));
+    steps.push(Step::get("/upload", json!({})).put(HEADER));
+    steps.push(commit());
+    steps.extend(placements(vec![]));
+    steps.push(create_placement());
+    steps.extend(placements(vec![placement_without_parent.clone()]));
+
+    steps.extend(scope());
+    steps.extend(placements(vec![placement_without_parent]));
+    steps.push(Step::get(
+        "/v1/appAssetLibraryImages/image1",
+        single(
+            "appAssetLibraryImages",
+            "image1",
+            json!({"state":"UPLOAD_COMPLETE"}),
+        ),
+    ));
+
+    let (client, task) = mock(steps).await;
+    let mut checkpoint = ListingImageUploadCheckpoint::default();
+    let first = client
+        .upload_listing_image(
+            &request(ListingImagePlacementType::ProductPageHeader),
+            HEADER,
+            &mut checkpoint,
+            |_| Ok(()),
+        )
+        .await
+        .unwrap();
+    assert_eq!(first.placement_id, "placement1");
+
+    let resumed = client
+        .upload_listing_image(
+            &request(ListingImagePlacementType::ProductPageHeader),
+            HEADER,
+            &mut checkpoint,
+            |_| Ok(()),
+        )
+        .await
+        .unwrap();
+    assert_eq!(resumed, first);
+    task.await.unwrap();
+}
+
+#[tokio::test]
 async fn checkpoint_save_failure_prevents_reservation() {
     let (client, task) = mock(preflight()).await;
     let error = client

@@ -51,7 +51,7 @@ impl Step {
             .collect();
         self
     }
-    fn status(mut self, status: u16) -> Self {
+    pub(crate) fn status(mut self, status: u16) -> Self {
         self.status = status;
         self
     }
@@ -68,7 +68,7 @@ impl Step {
         self.body = Some(body);
         self
     }
-    fn post(mut self, body: Value) -> Self {
+    pub(crate) fn post(mut self, body: Value) -> Self {
         self.method = "POST";
         self.body = Some(body);
         self
@@ -89,7 +89,7 @@ fn data(kind: &str, id: &str, attributes: Value) -> Value {
 fn page(items: Vec<Value>, next: Option<&str>) -> Value {
     json!({"data":items, "links":{"next":next}})
 }
-fn single(kind: &str, id: &str, attributes: Value) -> Value {
+pub(crate) fn single(kind: &str, id: &str, attributes: Value) -> Value {
     json!({"data":data(kind, id, attributes)})
 }
 fn pem() -> (String, Vec<u8>) {
