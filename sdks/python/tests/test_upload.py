@@ -1,4 +1,6 @@
 """Exercise upload recovery through the Python API and the shared Rust runtime."""
+import base64
+import copy
 import hashlib
 import json
 import unittest
@@ -7,13 +9,12 @@ from urllib.parse import parse_qs, urlsplit
 from parsequerade import ApiError
 from test_client import Mock, ROOT, envelope, resource, response
 
-PNG = (ROOT / "sdks/rust/src/tests/fixtures/header.png").read_bytes()
-REQUEST = {"appId": "app1", "versionId": "version1", "locale": "en-US",
-           "placementType": "PRODUCT_PAGE_HEADER_ASSET", "fileName": "listing.png"}
-BINDING = "app1:version1:en-US:PRODUCT_PAGE_HEADER_ASSET:listing.png:" + hashlib.sha256(PNG).hexdigest()
+SHARED_UPLOADS = json.loads((ROOT / "tests/sdk/uploads.json").read_text())
+PNG = base64.b64decode(SHARED_UPLOADS["png"])
+REQUEST = SHARED_UPLOADS["request"]
+BINDING = SHARED_UPLOADS["binding"]
 BLOB_ORIGIN = "https://store-030.blobstore.apple.com"
-RECEIPT = {"appId": "app1", "versionId": "version1", "locale": "en-US",
-           "placementType": "PRODUCT_PAGE_HEADER_ASSET", "imageId": "image1", "placementId": "placement1"}
+RECEIPT = SHARED_UPLOADS["receipt"]
 
 
 def step(path, payload, *, query=None, method="GET", body=None, status=200, headers=None, error=None):
@@ -158,6 +159,36 @@ class UploadMock(Mock):
 
 
 class UploadTests(unittest.TestCase):
+    def test_shared_upload_scenarios(self):
+        for case in SHARED_UPLOADS["cases"]:
+            with self.subTest(case=case["name"]):
+                steps = copy.deepcopy(case["steps"])
+                for step in steps:
+                    if step.get("bodyBase64") is not None:
+                        step["body"] = base64.b64decode(step.pop("bodyBase64"))
+                    if step.get("error"):
+                        step["error"] = OSError("Simulated transport failure")
+                mock = UploadMock(self, steps)
+                state = copy.deepcopy(case.get("checkpoint", {}))
+                saves = []
+                failure = OSError("Checkpoint persistence failed")
+                def persist(snapshot):
+                    saves.append(snapshot)
+                    if case.get("persistFailure"):
+                        raise failure
+                operation = lambda: mock.client.upload_listing_image(REQUEST, PNG, state, persist)
+                if case.get("persistFailure"):
+                    with self.assertRaises(OSError) as caught:
+                        operation()
+                    self.assertIs(caught.exception, failure)
+                elif case.get("error"):
+                    self.assert_error(case["error"], operation)
+                else:
+                    self.assertEqual(operation(), case["expect"])
+                self.assertFalse(mock.responses)
+                if saves:
+                    self.assertEqual(state, saves[-1])
+
     def assert_error(self, code, operation):
         with self.assertRaises(ApiError) as caught:
             operation()

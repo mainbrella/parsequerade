@@ -2,358 +2,386 @@ package parsequerade
 
 import (
 	"context"
-	"crypto/rand"
+	"encoding/base64"
 	"encoding/json"
 	"net/http"
-	"net/url"
-	"strings"
-	"time"
+	"regexp"
+	"runtime"
+	"sort"
+	"sync"
 )
 
-// Client is safe for concurrent use. Reuse it to share JWT caching, cursor
-// signing, and the four-request concurrency bound. Do not copy a Client.
+// Client is safe for concurrent use. Reuse it to share the Rust core's JWT cache,
+// cursor signing, and concurrency bound. Do not copy a Client. Call Close when done.
 type Client struct {
-	auth      *auth
-	http      *http.Client
-	permits   chan struct{}
-	cursorKey [32]byte
+	mu        sync.Mutex
+	handle    uint64
+	active    map[uint64]context.CancelFunc
+	transport http.RoundTripper
 }
 
-// NewClient validates credentials locally without making a network request.
+// NewClient validates a P-256 PKCS#8 team key locally without a network request.
 func NewClient(credentials Credentials, options *Options) (*Client, error) {
-	a, err := newAuth(credentials)
+	config, err := json.Marshal(map[string]any{
+		"issuerId": credentials.IssuerID, "keyId": credentials.KeyID,
+		"privateKey": string(credentials.PrivateKey), "customTransport": true,
+	})
 	if err != nil {
 		return nil, err
 	}
-	var transport http.RoundTripper
-	if options != nil {
+	var result nativeResult
+	if err = decodeNative(nativeNew(config), &result); err != nil {
+		return nil, err
+	}
+	transport := http.DefaultTransport
+	if options != nil && options.Transport != nil {
 		transport = options.Transport
 	}
-	c := &Client{
-		auth:    a,
-		permits: make(chan struct{}, 4),
-		http: &http.Client{
-			Transport: transport,
-			CheckRedirect: func(*http.Request, []*http.Request) error {
-				return http.ErrUseLastResponse
-			},
-		},
-	}
-	if _, err := rand.Read(c.cursorKey[:]); err != nil {
-		return nil, apiError(500, "initialization_failed", "The client could not initialize cursor signing.")
-	}
-	return c, nil
+	client := &Client{handle: result.Client, active: map[uint64]context.CancelFunc{}, transport: transport}
+	runtime.SetFinalizer(client, (*Client).Close)
+	return client, nil
 }
 
-// Get reads an implemented relative facade path, such as /apps/123, and returns
-// flat JSON. Arbitrary URLs and hosted connection prefixes are unsupported.
-func (c *Client) Get(ctx context.Context, path string, query Query) (json.RawMessage, error) {
-	ctx, cancel := context.WithTimeout(ctx, 25*time.Second)
-	defer cancel()
-	value, err := c.read(ctx, path, query, &budget{})
-	if err != nil {
-		return nil, err
+// Close releases the client and cancels its active operations. It is idempotent
+// and may be called concurrently, including from a checkpoint callback.
+func (c *Client) Close() error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.handle != 0 {
+		handle := c.handle
+		c.handle = 0
+		for operation, cancel := range c.active {
+			cancel()
+			nativeCancel(operation)
+		}
+		nativeClientFree(handle)
+		runtime.SetFinalizer(c, nil)
 	}
-	return json.Marshal(value)
+	return nil
+}
+
+// Get reads an implemented relative facade path and returns flat JSON.
+func (c *Client) Get(ctx context.Context, path string, query Query) (json.RawMessage, error) {
+	pairs := make([][2]string, 0, len(query))
+	names := make([]string, 0, len(query))
+	for name := range query {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	for _, name := range names {
+		values := query[name]
+		if len(values) == 0 {
+			return nil, invalidQuery(name)
+		}
+		for _, value := range values {
+			pairs = append(pairs, [2]string{name, value})
+		}
+	}
+	return c.invoke(ctx, "get", []any{path, pairs}, nil, nil, nil)
 }
 
 func readTyped[T any](c *Client, ctx context.Context, path string, query Query) (T, error) {
 	var value T
-	data, err := c.Get(ctx, path, query)
-	if err != nil {
-		return value, err
+	raw, err := c.Get(ctx, path, query)
+	if err == nil && json.Unmarshal(raw, &value) != nil {
+		err = invalidUpstream()
 	}
-	if json.Unmarshal(data, &value) != nil {
-		return value, invalidUpstream()
-	}
-	return value, nil
+	return value, err
 }
 
-func pageData(payload map[string]any, kind string, limit int) ([]map[string]any, error) {
-	items, ok := payload["data"].([]any)
-	if !ok || len(items) > limit {
-		return nil, invalidUpstream()
+func operationTyped[T any](c *Client, ctx context.Context, operation string, args []any) (T, error) {
+	var value T
+	raw, err := c.invoke(ctx, operation, args, nil, nil, nil)
+	if err == nil && json.Unmarshal(raw, &value) != nil {
+		err = invalidUpstream()
 	}
-	if _, ok := payload["links"].(map[string]any); !ok {
-		return nil, invalidUpstream()
-	}
-	seen := map[any]bool{}
-	result := make([]map[string]any, 0, len(items))
-	for _, item := range items {
-		v, err := resource(item, kind)
-		if err != nil || seen[v["id"]] {
-			return nil, invalidUpstream()
-		}
-		seen[v["id"]] = true
-		result = append(result, v)
-	}
-	return result, nil
+	return value, err
 }
 
-func (c *Client) traverse(ctx context.Context, path string, query url.Values, r route, b *budget, visit func([]map[string]any) (bool, error)) error {
-	initial := appleURL(path, query)
-	current, seen := initial, map[string]bool{}
-	for page := 0; page < 20; page++ {
-		if seen[digest(current)] {
-			return incomplete()
-		}
-		seen[digest(current)] = true
-		payload, err := c.apple(ctx, current, r, b, nil)
-		if err != nil {
-			return err
-		}
-		items, err := pageData(payload, r.Type, 200)
-		if err != nil {
-			return err
-		}
-		stop, err := visit(items)
-		if err != nil || stop {
-			return err
-		}
-		current, err = nextPage(payload, initial)
-		if err != nil || current == "" {
-			return err
-		}
-	}
-	return incomplete()
-}
-
-func (c *Client) read(ctx context.Context, path string, query Query, b *budget) (map[string]any, error) {
-	r, params, err := matchRoute(path)
-	if err != nil {
-		return nil, err
-	}
-	upstream, fields, cursor, limit, err := parseQuery(r, query)
-	if err != nil {
-		return nil, err
-	}
-	handler := r.Handler
-	info := strings.HasPrefix(handler, "appInfo") || handler == "ageRating"
-	appID := params["appId"]
-	parentParam, parentType, parentHandler, localeHandler, localeType, parentRelation := "versionId", "appStoreVersions", "versions", "versionLocalizations", "appStoreVersionLocalizations", "appStoreVersion"
-	if info {
-		parentParam, parentType, parentHandler, localeHandler, localeType, parentRelation = "appInfoId", "appInfos", "appInfos", "appInfoLocalizations", "appInfoLocalizations", "appInfo"
-	}
-	parentID := params[parentParam]
-	context := map[string]any{}
-	if handler != "apps" && handler != "app" {
-		context["appId"] = appID
-		if parentID != "" && handler != "appInfo" && handler != "version" {
-			context[parentParam] = parentID
-		}
-	}
-	if parentID != "" {
-		found := false
-		q := url.Values{"limit": {"200"}}
-		if !info {
-			q.Set("filter[id]", parentID)
-		}
-		err = c.traverse(ctx, "/v1/apps/"+appID+"/"+parentType, q, routeByHandler(parentHandler), b, func(items []map[string]any) (bool, error) {
-			for _, item := range items {
-				if err := checkParent(item, "app", appID, "apps"); err != nil {
-					return false, err
-				}
-				found = found || item["id"] == parentID
-			}
-			return found, nil
-		})
-		if err != nil {
-			return nil, err
-		}
-		if !found {
-			return nil, notFound("resource_not_found")
-		}
-	}
-	paths := map[string]string{
-		"apps": "/v1/apps", "app": "/v1/apps/" + appID,
-		"appInfos": "/v1/apps/" + appID + "/appInfos", "appInfo": "/v1/appInfos/" + parentID,
-		"versions": "/v1/apps/" + appID + "/appStoreVersions", "version": "/v1/appStoreVersions/" + parentID,
-		"appInfoLocalizations": "/v1/appInfos/" + parentID + "/appInfoLocalizations",
-		"versionLocalizations": "/v1/appStoreVersions/" + parentID + "/appStoreVersionLocalizations",
-		"ageRating":            "/v1/appInfos/" + parentID + "/ageRatingDeclaration",
-		"reviewContact":        "/v1/appStoreVersions/" + parentID + "/appStoreReviewDetail",
-	}
-	selected := ""
-	if locale, exact := params["locale"]; exact {
-		q := url.Values{"limit": {"200"}, "filter[locale]": {locale}, "fields[" + localeType + "]": {"locale"}}
-		err = c.traverse(ctx, "/v1/"+parentType+"/"+parentID+"/"+localeType, q, routeByHandler(localeHandler), b, func(items []map[string]any) (bool, error) {
-			for _, item := range items {
-				if err := checkParent(item, parentRelation, parentID, parentType); err != nil {
-					return false, err
-				}
-				attrs, _ := item["attributes"].(map[string]any)
-				value, ok := attrs["locale"].(string)
-				if !ok {
-					return false, invalidUpstream()
-				}
-				if value == locale {
-					if selected != "" {
-						return false, apiError(409, "ambiguous_selection", "More than one localization matches this locale.")
-					}
-					selected = item["id"].(string)
-				}
-			}
-			return false, nil
-		})
-		if err != nil {
-			return nil, err
-		}
-		if selected == "" {
-			return nil, notFound("localization_not_found")
-		}
-		paths[handler] = "/v1/" + localeType + "/" + selected
-		if fields != nil && !contains(fields, "locale") {
-			upstream.Set("fields["+localeType+"]", strings.Join(fields, ",")+",locale")
-		}
-	}
-	if handler == "appInfos" || handler == "appInfo" {
-		upstream.Set("include", "primaryCategory,secondaryCategory")
-		if fields != nil {
-			upstream.Set("fields[appInfos]", strings.Join(fields, ",")+",primaryCategory,secondaryCategory")
-		}
-	}
-	initial := appleURL(paths[handler], upstream)
-	if !r.Collection {
-		payload, err := c.apple(ctx, initial, r, b, nil)
-		if err != nil {
-			return nil, err
-		}
-		if payload["data"] == nil {
-			code := "resource_not_found"
-			if handler == "reviewContact" {
-				code = "review_contact_not_found"
-			}
-			return nil, notFound(code)
-		}
-		item, err := resource(payload["data"], r.Type)
-		if err != nil {
-			return nil, err
-		}
-		expected := selected
-		if handler == "app" {
-			expected = appID
-		} else if handler == "appInfo" || handler == "version" {
-			expected = parentID
-			if err := checkParent(item, "app", appID, "apps"); err != nil {
-				return nil, err
-			}
-		}
-		if expected != "" && item["id"] != expected {
-			return nil, invalidUpstream()
-		}
-		if locale, exact := params["locale"]; exact {
-			attrs, _ := item["attributes"].(map[string]any)
-			if attrs["locale"] != locale {
-				return nil, invalidUpstream()
-			}
-			if err := checkParent(item, parentRelation, parentID, parentType); err != nil {
-				return nil, err
-			}
-		}
-		if handler == "reviewContact" {
-			if err := checkParent(item, parentRelation, parentID, parentType); err != nil {
-				return nil, err
-			}
-		}
-		return flatten(item, r, context, fields)
-	}
-	state := cursorState{Binding: digest(path + "\n" + initial), Seen: []string{}, Expires: time.Now().Unix() + 900}
-	current := initial
-	if cursor != "" {
-		state, err = c.decodeCursor(cursor, state.Binding)
-		if err != nil {
-			return nil, err
-		}
-		upstream.Set("cursor", state.Next)
-		current = appleURL(paths[handler], upstream)
-	}
-	if len(state.Seen) >= 100 || contains(state.Seen, digest(current)) {
-		return nil, incomplete()
-	}
-	state.Seen = append(state.Seen, digest(current))
-	payload, err := c.apple(ctx, current, r, b, nil)
-	if err != nil {
-		return nil, err
-	}
-	data, err := pageData(payload, r.Type, limit)
-	if err != nil {
-		return nil, err
-	}
-	items := make([]map[string]any, 0, len(data))
-	for _, item := range data {
-		if handler == "appInfos" || handler == "versions" {
-			if err := checkParent(item, "app", appID, "apps"); err != nil {
-				return nil, err
-			}
-		}
-		if handler == "appInfoLocalizations" || handler == "versionLocalizations" {
-			if err := checkParent(item, parentRelation, parentID, parentType); err != nil {
-				return nil, err
-			}
-		}
-		flat, err := flatten(item, r, context, fields)
-		if err != nil {
-			return nil, err
-		}
-		items = append(items, flat)
-	}
-	nextURL, err := nextPage(payload, initial)
-	if err != nil {
-		return nil, err
-	}
-	var nextCursor any
-	if nextURL != "" {
-		if contains(state.Seen, digest(nextURL)) {
-			return nil, incomplete()
-		}
-		u, _ := url.Parse(nextURL)
-		state.Next = u.Query().Get("cursor")
-		nextCursor, err = c.encodeCursor(state)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return map[string]any{"items": items, "nextCursor": nextCursor}, nil
-}
-
-// UpdateAgeRating snapshots and validates attributes, verifies ownership, and
-// sends one Apple PATCH. Writes are never retried, including authentication failures.
+// UpdateAgeRating validates the attributes, proves ownership, and sends one PATCH.
 func (c *Client) UpdateAgeRating(ctx context.Context, appID, appInfoID string, attributes AgeRatingUpdate) (AgeRating, error) {
-	var result AgeRating
-	for _, id := range []string{appID, appInfoID} {
-		if err := validateSegment(id, false); err != nil {
-			return result, err
+	return operationTyped[AgeRating](c, ctx, "update_age_rating", []any{appID, appInfoID, attributes})
+}
+
+// UpdateMetadata updates supported app, version, or exact-localization attributes.
+func (c *Client) UpdateMetadata(ctx context.Context, path string, attributes map[string]any) (json.RawMessage, error) {
+	return c.invoke(ctx, "update_metadata", []any{path, attributes}, nil, nil, nil)
+}
+
+// CreateVersion creates one unsubmitted version. Uncertain writes are not retried.
+func (c *Client) CreateVersion(ctx context.Context, appID, platform, versionString string) (Version, error) {
+	return operationTyped[Version](c, ctx, "create_version", []any{appID, platform, versionString})
+}
+
+// AttachBuild validates an eligible build, attaches it to its matching draft, and
+// reads back the version to verify the attachment.
+func (c *Client) AttachBuild(ctx context.Context, appID, versionID, buildID string) (Version, error) {
+	return operationTyped[Version](c, ctx, "attach_build", []any{appID, versionID, buildID})
+}
+
+// ListingImageReferenceData reads Apple's current placement and asset specifications.
+func (c *Client) ListingImageReferenceData(ctx context.Context) (json.RawMessage, error) {
+	return c.invoke(ctx, "listing_image_reference_data", []any{}, nil, nil, nil)
+}
+
+var checkpointGuards = struct {
+	sync.Mutex
+	active map[*ListingImageUploadCheckpoint]*checkpointLease
+}{active: map[*ListingImageUploadCheckpoint]*checkpointLease{}}
+
+// A cancelled operation can return before persistence finishes. Keep its
+// checkpoint busy until both lifetimes end so a late durable save cannot race
+// a resumed upload using the same checkpoint.
+type checkpointLease struct {
+	checkpoint *ListingImageUploadCheckpoint
+	finished   bool
+	pending    int
+}
+
+func (lease *checkpointLease) finishOperation() {
+	checkpointGuards.Lock()
+	defer checkpointGuards.Unlock()
+	lease.finished = true
+	if lease.pending == 0 && checkpointGuards.active[lease.checkpoint] == lease {
+		delete(checkpointGuards.active, lease.checkpoint)
+	}
+}
+
+func retainCheckpointCallback(checkpoint *ListingImageUploadCheckpoint) *checkpointLease {
+	checkpointGuards.Lock()
+	defer checkpointGuards.Unlock()
+	lease := checkpointGuards.active[checkpoint]
+	if lease != nil {
+		lease.pending++
+	}
+	return lease
+}
+
+func (lease *checkpointLease) finishCallback() {
+	if lease == nil {
+		return
+	}
+	checkpointGuards.Lock()
+	defer checkpointGuards.Unlock()
+	lease.pending--
+	if lease.finished && lease.pending == 0 && checkpointGuards.active[lease.checkpoint] == lease {
+		delete(checkpointGuards.active, lease.checkpoint)
+	}
+}
+
+// UploadListingImage uploads or resumes one PNG. Each independent snapshot must
+// be durably saved by persist before the next write. The checkpoint is updated
+// after each snapshot and on failure. Reuse it and the same PNG to reconcile an
+// uncertain write. Concurrent uploads must use distinct checkpoint pointers.
+func (c *Client) UploadListingImage(ctx context.Context, request ListingImageUpload, png []byte, checkpoint *ListingImageUploadCheckpoint, persist func(ListingImageUploadCheckpoint) error) (ListingImageUploadReceipt, error) {
+	var receipt ListingImageUploadReceipt
+	if checkpoint == nil || persist == nil {
+		return receipt, apiError(400, "invalid_request", "Provide a checkpoint and durable persistence callback.")
+	}
+	checkpointGuards.Lock()
+	if checkpointGuards.active[checkpoint] != nil {
+		checkpointGuards.Unlock()
+		return receipt, apiError(409, "checkpoint_in_use", "This checkpoint already has an upload in progress.")
+	}
+	lease := &checkpointLease{checkpoint: checkpoint}
+	checkpointGuards.active[checkpoint] = lease
+	checkpointGuards.Unlock()
+	defer lease.finishOperation()
+	raw, err := c.invoke(ctx, "upload_listing_image", []any{request, *checkpoint}, png, checkpoint, persist)
+	if err == nil && json.Unmarshal(raw, &receipt) != nil {
+		err = invalidUpstream()
+	}
+	return receipt, err
+}
+
+type nativeResult struct {
+	Client           uint64            `json:"client"`
+	Operation        uint64            `json:"operation"`
+	Kind             string            `json:"kind"`
+	ID               uint64            `json:"id"`
+	Method           string            `json:"method"`
+	URL              string            `json:"url"`
+	Headers          map[string]string `json:"headers"`
+	Body             *string           `json:"body"`
+	TimeoutMS        uint64            `json:"timeoutMs"`
+	DeadlineMS       int64             `json:"deadlineMs"`
+	MaxResponseBytes int64             `json:"maxResponseBytes"`
+	Value            json.RawMessage   `json:"value"`
+	Error            *APIError         `json:"error"`
+	Checkpoint       json.RawMessage   `json:"checkpoint"`
+}
+
+func decodeNative(raw []byte, result *nativeResult) error {
+	if len(raw) == 0 || json.Unmarshal(raw, result) != nil {
+		return apiError(500, "native_bridge_failed", "The native SDK bridge returned an invalid response.")
+	}
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
+
+func (c *Client) invoke(ctx context.Context, operation string, args []any, png []byte, checkpoint *ListingImageUploadCheckpoint, persist func(ListingImageUploadCheckpoint) error) (json.RawMessage, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	request := map[string]any{"operation": operation, "args": args}
+	if operation == "upload_listing_image" {
+		request["png"] = base64.StdEncoding.EncodeToString(png)
+	}
+	raw, err := json.Marshal(request)
+	if err != nil {
+		return nil, apiError(400, "invalid_request", "Provide a JSON-compatible request.")
+	}
+	opctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+	c.mu.Lock()
+	if err := opctx.Err(); err != nil {
+		c.mu.Unlock()
+		return nil, err
+	}
+	if c.handle == 0 {
+		c.mu.Unlock()
+		return nil, apiError(400, "client_closed", "The client is closed.")
+	}
+	var started nativeResult
+	err = decodeNative(nativeStart(c.handle, raw), &started)
+	if err != nil {
+		c.mu.Unlock()
+		return nil, err
+	}
+	id := started.Operation
+	c.active[id] = cancel
+	c.mu.Unlock()
+	finished, watchDone := make(chan struct{}), make(chan struct{})
+	go func() {
+		defer close(watchDone)
+		select {
+		case <-opctx.Done():
+			nativeCancel(id)
+		case <-finished:
+		}
+	}()
+	defer func() {
+		close(finished)
+		<-watchDone
+		c.mu.Lock()
+		delete(c.active, id)
+		nativeOperationFree(id)
+		c.mu.Unlock()
+		runtime.KeepAlive(c)
+	}()
+	var callbackError error
+	for {
+		if opctx.Err() != nil {
+			nativeCancel(id)
+		}
+		encoded := nativePoll(id, 25)
+		if string(encoded) == "null" {
+			continue
+		}
+		var event nativeResult
+		if err := decodeNative(encoded, &event); err != nil && event.Kind != "result" {
+			return nil, err
+		}
+		switch event.Kind {
+		case "http":
+			response := map[string]any{"error": "failed"}
+			if opctx.Err() == nil {
+				response = c.send(opctx, event)
+			}
+			nativeRespond(id, event.ID, response)
+		case "checkpoint":
+			response := map[string]any{"ok": true}
+			var snapshot ListingImageUploadCheckpoint
+			if checkpoint == nil || json.Unmarshal(event.Checkpoint, &snapshot) != nil {
+				response = map[string]any{"error": "checkpoint_persistence_failed"}
+			} else if opctx.Err() != nil {
+				*checkpoint = snapshot
+				nativeCancel(id)
+				response = map[string]any{"error": "checkpoint_persistence_failed"}
+			} else {
+				*checkpoint = snapshot
+				// Decode independently so future nested checkpoint fields cannot be
+				// shared between a detached callback and the caller's live state.
+				var callbackSnapshot ListingImageUploadCheckpoint
+				if json.Unmarshal(event.Checkpoint, &callbackSnapshot) != nil {
+					response = map[string]any{"error": "checkpoint_persistence_failed"}
+				} else {
+					saved := make(chan checkpointSaveResult, 1)
+					lease := retainCheckpointCallback(checkpoint)
+					go saveCheckpoint(callbackSnapshot, persist, saved, lease)
+					select {
+					case result := <-saved:
+						if result.panicked {
+							panic(result.panicValue)
+						}
+						if result.err != nil {
+							if callbackError == nil {
+								callbackError = result.err
+							}
+							response = map[string]any{"error": "checkpoint_persistence_failed"}
+						}
+					case <-opctx.Done():
+						nativeCancel(id)
+						response = map[string]any{"error": "checkpoint_persistence_failed"}
+					}
+				}
+			}
+			nativeRespond(id, event.ID, response)
+		case "result":
+			if checkpoint != nil && len(event.Checkpoint) != 0 {
+				var snapshot ListingImageUploadCheckpoint
+				if err := json.Unmarshal(event.Checkpoint, &snapshot); err != nil {
+					return nil, invalidUpstream()
+				}
+				*checkpoint = snapshot
+			}
+			if callbackError != nil {
+				return nil, callbackError
+			}
+			if event.Error != nil {
+				if event.Error.Code == "operation_cancelled" && opctx.Err() != nil {
+					return nil, opctx.Err()
+				}
+				return nil, event.Error
+			}
+			return event.Value, nil
+		default:
+			return nil, apiError(500, "native_bridge_failed", "The native SDK bridge returned an invalid event.")
 		}
 	}
-	attrs, err := validateUpdate(attributes)
-	if err != nil {
-		return result, err
+}
+
+type checkpointSaveResult struct {
+	err        error
+	panicked   bool
+	panicValue any
+}
+
+// A blocked callback must not prevent cancellation. Its single buffered result
+// cannot mutate operation state after the caller has stopped waiting.
+func saveCheckpoint(snapshot ListingImageUploadCheckpoint, persist func(ListingImageUploadCheckpoint) error, saved chan<- checkpointSaveResult, lease *checkpointLease) {
+	result := checkpointSaveResult{panicked: true}
+	defer func() {
+		result.panicValue = recover()
+		lease.finishCallback()
+		saved <- result
+	}()
+	result.err = persist(snapshot)
+	result.panicked = false
+}
+
+var idPattern = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$`)
+var localePattern = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9-]{1,34}$`)
+
+func validateSegment(value string, locale bool) error {
+	pattern := idPattern
+	if locale {
+		pattern = localePattern
 	}
-	ctx, cancel := context.WithTimeout(ctx, 25*time.Second)
-	defer cancel()
-	b := &budget{}
-	current, err := c.read(ctx, "/apps/"+appID+"/app-infos/"+appInfoID+"/age-rating", nil, b)
-	if err != nil {
-		return result, err
+	if !pattern.MatchString(value) {
+		return apiError(400, "invalid_path", "The resource path is invalid.")
 	}
-	id := current["id"].(string)
-	r := routeByHandler("ageRating")
-	body, _ := json.Marshal(map[string]any{"data": map[string]any{"type": r.Type, "id": id, "attributes": attrs}})
-	payload, err := c.apple(ctx, appleURL("/v1/ageRatingDeclarations/"+id, nil), r, b, body)
-	if err != nil {
-		return result, err
-	}
-	item, err := resource(payload["data"], r.Type)
-	if err != nil || item["id"] != id {
-		return result, unknownWrite()
-	}
-	flat, err := flatten(item, r, map[string]any{"appId": appID, "appInfoId": appInfoID}, nil)
-	if err != nil {
-		return result, unknownWrite()
-	}
-	data, _ := json.Marshal(flat)
-	if json.Unmarshal(data, &result) != nil {
-		return result, unknownWrite()
-	}
-	return result, nil
+	return nil
 }

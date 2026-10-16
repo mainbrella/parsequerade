@@ -5,6 +5,9 @@ node_modules/
 .parsequerade*
 __pycache__/
 sdks/rust/target/
+sdks/native/target/
+sdks/typescript/native/target/
+sdks/swift/ParsequeradeCore.xcframework/
 !dist/
 !dist/**
 sdks/typescript/dist/

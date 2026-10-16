@@ -1,26 +1,39 @@
 # Parsequerade for Swift
 
-An async Swift package that runs the Parsequerade facade locally and calls App Store Connect directly. It covers all 12 implemented reads and the scoped age-rating update, with Codable models, validated facade queries, exact-locale selection, ownership checks, and opaque pagination.
+An async Swift SDK backed by the shared Rust execution core. All 22 reads, age-rating and metadata updates, version creation, build attachment, and resumable listing-image uploads execute the same validation, ownership resolution, pagination, retry and reconciliation code as Rust and Python.
 
-The package uses Foundation and CryptoKit, with no external dependencies. It requires Swift 5.9+ on Apple platforms: macOS 12+, iOS/tvOS 15+, or watchOS 8+. Linux is not supported. Use it in private tooling or server processes where your Apple team key can remain private.
+Requires Swift 5.9+ and an XCFramework slice for the target platform. The package retains macOS 12+, iOS/tvOS 15+, and watchOS 8+ deployment declarations. A host-only development build contains only the current macOS architecture; an Apple platform declaration does not create its native binary slice. Linux is unsupported. Keep Apple team keys in private tooling or trusted processes.
 
-## Add to your project
+## Build and add the package
 
-The package is not yet published as a standalone repository. Add a local package dependency:
+From this checkout, build the native artifact before opening the package:
+
+```sh
+python3 scripts/build_swift_sdk.py --host
+swift test --package-path sdks/swift
+```
+
+Rust and Xcode are required to build native artifacts. Consumers of a prepared package need neither Rust, Python, Node.js nor this checkout. Distribute the complete `sdks/swift` directory, including `ParsequeradeCore.xcframework`, `Package.swift`, and `Sources`; the binary target contains its C header and module map and references no checkout paths. The repository does not check in generated binaries or download them automatically.
+
+Add a local Swift package dependency:
 
 ```swift
-// Package.swift
-.package(name: "Parsequerade", path: "/path/to/parsequerade/sdks/swift")
-
-// In your target's dependencies:
+.package(name: "Parsequerade", path: "/path/to/prepared/swift-package")
+// In the target dependencies:
 .product(name: "Parsequerade", package: "Parsequerade")
 ```
 
-In Xcode, use **Add Local Package** and select `sdks/swift`. The package bundles its contracts and requires neither Python, Node.js, nor Worker source at runtime.
+To prepare device and simulator slices, explicitly choose the Rust targets:
+
+```sh
+python3 scripts/build_swift_sdk.py --targets aarch64-apple-darwin,aarch64-apple-ios,aarch64-apple-ios-sim,aarch64-apple-watchos,aarch64-apple-watchos-sim
+```
+
+Install each supported target with `rustup target add` first. The helper merges architectures belonging to the same platform into universal libraries and replaces the XCFramework with exactly the requested slices. Intel macOS/iOS simulator builds require their corresponding `x86_64` targets. Older watches require `arm64_32-apple-watchos` or `armv7k-apple-watchos`; an `aarch64` watch binary alone does not establish compatibility with every watchOS 8 device. tvOS targets and some watch architectures require a Rust toolchain that supports building their standard library; with nightly and `rust-src` installed, use `--toolchain nightly --build-std --targets aarch64-apple-tvos,aarch64-apple-tvos-sim`. Select every platform/architecture needed by the package you distribute; an absent slice fails the consumer build. Cross-compilation verifies compilation and packaging, not execution on a device. The arm64 macOS, iOS/tvOS/watchOS device and simulator archives have been built and assembled together; the copied package runs on macOS arm64, and Swift source compiles for iOS 15, tvOS 15, and watchOS 9 simulators. The installed Xcode 27 SDK rejects watchOS 8 simulator deployment targets, so that declared minimum and older watch architectures remain unverified.
+
+`--skip-build` packages existing static libraries, `--debug` uses debug libraries, and `--test-package` builds and runs a macOS consumer from an isolated copy of the prepared package.
 
 ## Connect and read
-
-Supply an App Store Connect **team API key**, its issuer ID, key ID, and the PEM contents of the downloaded `.p8` file from private configuration:
 
 ```swift
 import Foundation
@@ -32,22 +45,13 @@ let client = try Client(
     keyID: env["ASC_KEY_ID"]!,
     privateKey: String(contentsOfFile: env["ASC_PRIVATE_KEY_PATH"]!, encoding: .utf8)
 )
-
 let apps = try await client.apps(query: ["bundleId": "com.example.notes", "limit": "50"])
 for app in apps.items { print(app.id, app.name ?? "(unnamed)") }
 ```
 
-Construction validates the P-256 PKCS#8 key locally without a network request. Reuse the `Client` actor to share cached JWTs, cursor signing, and a four-request concurrency bound. Apple key permissions govern access; hosted connections and facade API keys are unnecessary.
+Construction validates the P-256 PKCS#8 key locally without a network request. Reuse the client actor to share cached JWTs, cursor signing and the core's concurrency bound. Apple key permissions govern access. `close()` cancels outstanding operations and releases the client; repeated closes are safe. Cancellation after a mutation starts can return `write_outcome_unknown`, so read back or resume with the saved upload checkpoint before retrying.
 
-The [runnable example](Examples/ListApps.swift) uses the same environment variables:
-
-```sh
-swift run --package-path sdks/swift list-apps
-```
-
-## Resource methods
-
-All methods are `async throws`, with an optional trailing `query: Query = [:]`. Queries use facade names and comma-separated string values.
+All methods are `async throws`, with an optional trailing `query: Query = [:]`. Query values are comma-separated strings using facade names. Models are Codable and Sendable, with public initializers; nested media assets, integer dimensions, headers and upload operations are typed. Optional attributes combine absent and null values into `nil`; use `JSONValue` when the distinction matters. Read enums remain strings to allow new Apple values.
 
 | Method | Return type |
 | --- | --- |
@@ -63,79 +67,60 @@ All methods are `async throws`, with an optional trailing `query: Query = [:]`. 
 | `versionLocalizations(appId:versionId:query:)` | `Page<VersionLocalization>` |
 | `versionLocalization(appId:versionId:locale:query:)` | `VersionLocalization` |
 | `reviewContact(appId:versionId:query:)` | `ReviewContact` |
+| `screenshotSets(appId:versionId:locale:query:)` | `Page<ScreenshotSet>` |
+| `screenshots(screenshotSetId:query:)` | `Page<Screenshot>` |
+| `previewSets(appId:versionId:locale:query:)` | `Page<PreviewSet>` |
+| `previews(previewSetId:query:)` | `Page<Preview>` |
+| `placements(appId:versionId:locale:query:)` | `Page<LibraryPlacement>` |
+| `libraryImage(libraryImageId:query:)` | `LibraryImage` |
+| `builds(appId:query:)` | `Page<Build>` |
+| `build(appId:buildId:query:)` | `Build` |
+| `versionBuild(appId:versionId:query:)` | `Build` |
+| `buildPrereleaseVersion(appId:buildId:query:)` | `PrereleaseVersion` |
 
-```swift
-let versions = try await client.versions(appId: "1234567890", query: [
-    "platform": "IOS,MAC_OS", "state": "PREPARE_FOR_SUBMISSION",
-    "fields": "versionString,platform", "limit": "25",
-])
-let localization = try await client.versionLocalization(
-    appId: "1234567890", versionId: "version_123", locale: "en-US",
-    query: ["fields": "description"]
-)
-```
-
-Runtime validation rejects unknown query names, unsupported fields, invalid enums and limits before dispatch. Models use the facade's camel case property names. Optional attributes use `Optional`, combining missing and explicit null values into `nil`; re-encoding omits them. Read enums remain strings so new Apple values can be returned.
-
-For exact flat JSON, including explicit nulls, use the generic entry point with `JSONValue`:
+Generic reads preserve flat JSON and explicit nulls:
 
 ```swift
 let app: JSONValue = try await client.get("/apps/1234567890", query: ["fields": "name,bundleId"])
 ```
 
-Only implemented relative facade paths are accepted. Hosted connection prefixes, arbitrary URLs, and proposed routes are unsupported.
+Collections return `Page<Item>` with `items` and `nextCursor`. Keep the same path and original query while adding `query["cursor"] = page.nextCursor` until it becomes `nil`. Cursors expire after 15 minutes, bind the client and query, and permit up to 100 pages. Parent and locale resolvers permit 20 pages and reject incomplete or ambiguous results.
 
-## Pagination
-
-Collections return `Page<Item>` with `items` and `nextCursor`. Keep the original query and path arguments, adding each cursor:
-
-```swift
-var query: Query = ["bundleId": "com.example.notes", "limit": "50"]
-repeat {
-    let page = try await client.apps(query: query)
-    for app in page.items { print(app.id) }
-    query["cursor"] = page.nextCursor
-} while query["cursor"] != nil
-```
-
-Cursors expire after 15 minutes, bind the client and original request, and permit up to 100 pages. They cannot be exchanged with hosted or other SDK cursors. Apple continuation links must retain the origin, path, and query; missing filters are preserved. Repeated pages fail. Parent and exact-locale resolvers permit 20 pages and fail on incomplete or ambiguous results.
-
-## Update an age rating
+## Writes
 
 ```swift
 let rating = try await client.updateAgeRating(
-    appId: "1234567890", appInfoId: "app_info_123",
-    attributes: ["gambling": .bool(false), "ageRatingOverrideV2": .string("NONE"), "kidsAgeBand": .null]
+    appId: "123", appInfoId: "info1",
+    attributes: ["gambling": .bool(false), "kidsAgeBand": .null]
 )
+let metadata = try await client.updateMetadata(
+    "/apps/123/versions/version1/localizations/en-US",
+    attributes: ["promotionalText": "A clearer way to take notes."]
+)
+let version = try await client.createVersion(appId: "123", platform: "IOS", versionString: "2.0")
+let attached = try await client.attachBuild(appId: "123", versionId: version.id, buildId: "build1")
 ```
 
-`AgeRatingUpdate` is a dictionary of `JSONValue`. The SDK validates a nonempty flat object against the reviewed field allowlist, enums, nullability, URL rules, and 8 KiB limit; verifies ownership; resolves the declaration ID; then sends one Apple PATCH. Omitted fields stay unchanged. Supported nullable fields can be cleared with `.null`. Apple enforces key permissions and editable states.
+Writes validate scope, ownership and supported attributes in Rust. Build attachment also checks draft state, eligibility, platform/version matching and confirmation. Writes are never retried. An uncertain response or cancellation can return `write_outcome_unknown` with `retryable == false`; read back before deciding whether to resubmit.
 
-Writes are never retried. A lost or malformed update response throws `write_outcome_unknown`, with `retryable == false`. Read the age rating before deciding whether to resubmit. Cancellation after dispatch can also leave an uncertain write outcome. Other writes, reports, copy workflows, and proposed routes are unsupported.
-
-## Errors and bounds
+## Resumable listing images
 
 ```swift
-do {
-    _ = try await client.apps()
-} catch let error as ApiError {
-    print(error.status, error.code, error.message)
-    print(error.retryable, error.retryAfter as Any, error.details)
-}
+let request = ListingImageUpload(appId: "123", versionId: "version1", locale: "en-US",
+    placementType: .productPageHeaderAsset, fileName: "listing.png")
+let checkpoint = ListingImageUploadCheckpoint() // or restore with JSONDecoder
+let receipt = try await client.uploadListingImage(request,
+    png: Data(contentsOf: pngURL), checkpoint: checkpoint) { snapshot in
+        try JSONEncoder().encode(snapshot).write(to: checkpointURL, options: .atomic)
+    }
 ```
 
-Errors expose stable facade codes, sanitized messages and field details; raw Apple errors, URLs and credentials are excluded. Reads retry at most twice, refresh a rejected JWT once, and honor throttle delays up to two seconds. Redirects, shared cookies, and URL caching are disabled. Each operation has a 25-second budget, 32 Apple attempts, an eight-second attempt timeout, 4 MiB per response, and 16 MiB of total bodies.
+`listingImageReferenceData()` reads Apple's live placement and PNG specifications. Uploads validate the PNG and live policy, reserve once, transfer bounded chunks, commit once, and verify placement. The checkpoint is synchronized, Codable state and is updated even when an operation fails. Persist each independent snapshot durably before returning; a persistence error is propagated unchanged and prevents the next write. One checkpoint cannot be used concurrently, even across clients. If cancellation returns while a persistence callback is still running, the checkpoint remains busy until that callback exits. Reuse the original request, PNG and saved checkpoint to reconcile uncertainty; never start again with empty state after an uncertain reservation. Checkpoints exclude signed upload URLs and headers.
 
-For a trusted custom transport, pass an `AppleTransport` closure to the initializer. It receives signed `URLRequest`s and returns `(Data, HTTPURLResponse)`. It must honor `request.timeoutInterval`, bound body reading, and avoid redirects. The client still validates the response and total byte limits.
+## Errors and transport
 
-## Development
+`ApiError` exposes `status`, `code`, `message`, `retryable`, `retryAfter` and sanitized field `details`. The shared core owns authentication, retries, limits and response validation. Reads have a 25-second operation budget, up to 32 Apple attempts, an eight-second attempt timeout, 4 MiB per response and 16 MiB total bodies; uploads use their own larger bounded transfer budget.
 
-From the repository root:
+The default transport runs inside Rust. A trusted custom `AppleTransport` closure receives signed `URLRequest`s and returns `(Data, HTTPURLResponse)`; preserve the timeout and avoid redirects and retries. Upload blob requests receive no Apple authorization header. The adapter enforces response limits and races callbacks against cancellation and timeout, discarding late results. Blocking core polling runs on Dispatch workers, keeping Swift's cooperative executor available.
 
-```sh
-npm run generate:sdks
-npm run build:sdk:swift
-npm run test:sdk:swift
-```
-
-Generated models and bundled contracts use the same reviewed inputs as the other SDKs. Tests share the Worker's resource fixtures and verify generated JWT signatures without contacting Apple. The package uses GPL-3.0-or-later.
+Generated models come from the common SDK catalog. Tests cover the shared read/write/upload scenarios, JWT signatures, recovery, persistence failures and cancellation without contacting Apple. The package uses GPL-3.0-or-later.

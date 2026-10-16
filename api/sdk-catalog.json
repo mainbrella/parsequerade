@@ -36,7 +36,10 @@
       "source": "media-read-contracts.json",
       "implementations": [
         "rust",
-        "python"
+        "python",
+        "typescript",
+        "go",
+        "swift"
       ]
     },
     {
@@ -44,7 +47,10 @@
       "source": "build-read-contracts.json",
       "implementations": [
         "rust",
-        "python"
+        "python",
+        "typescript",
+        "go",
+        "swift"
       ]
     }
   ],
@@ -64,34 +70,49 @@
     "updateMetadata": {
       "implementations": [
         "rust",
-        "python"
+        "python",
+        "typescript",
+        "go",
+        "swift"
       ],
       "contract": "metadataUpdates"
     },
     "createVersion": {
       "implementations": [
         "rust",
-        "python"
+        "python",
+        "typescript",
+        "go",
+        "swift"
       ],
       "result": "Version"
     },
     "attachBuild": {
       "implementations": [
         "rust",
-        "python"
+        "python",
+        "typescript",
+        "go",
+        "swift"
       ],
       "result": "Version"
     },
     "listingImageReferenceData": {
       "implementations": [
         "rust",
-        "python"
+        "python",
+        "typescript",
+        "go",
+        "swift"
       ]
     },
     "uploadListingImage": {
       "implementations": [
         "rust",
-        "python"
+        "python",
+        "typescript",
+        "go",
+        "swift"
       ],
       "request": "ListingImageUpload",
       "checkpoint": "ListingImageUploadCheckpoint",

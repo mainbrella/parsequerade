@@ -1,21 +1,23 @@
 # Parsequerade SDKs
 
-SDKs execute the Parsequerade facade inside the caller's program and send requests directly to App Store Connect. This removes the hosted proxy hop. Apple credentials and JWT signing stay in the caller's process.
+All five SDKs execute the same Rust core in the caller's process and send requests directly to App Store Connect. Apple credentials and JWT signing stay local. They support 22 reads, age-rating and metadata updates, version creation, verified build attachment, and resumable listing-image uploads.
 
-| SDK | Requirements | Runtime dependencies |
+| SDK | Public API | Native integration |
 | --- | --- | --- |
-| [Rust](rust/README.md) | Async Rust with Tokio | See Cargo.toml |
-| [TypeScript](typescript/README.md) | Node.js 22+, ESM | None; bundles the Worker's facade |
-| [Python](python/README.md) | Python 3.11+, synchronous; Rust to build from source | None in Python; wheel bundles the Rust core |
-| [Swift](swift/README.md) | Swift 5.9+, Apple platforms | None; Foundation and CryptoKit |
-| [Go](go/README.md) | Go 1.22+ | None; Go standard library |
+| [Rust](rust/README.md) | Async Rust with Tokio | Canonical execution core |
+| [TypeScript](typescript/README.md) | Node.js 22+, promises and typed objects | Node native addon |
+| [Python](python/README.md) | Python 3.11+, synchronous typed dictionaries | Bundled Python extension |
+| [Go](go/README.md) | Go 1.22+, contexts and typed structs | cgo and a Rust static library |
+| [Swift](swift/README.md) | Swift 5.9+, async actor and Codable models | C interface in an Apple XCFramework |
 
-Rust and Python share one execution core and expose 22 reads, scoped age-rating and metadata updates, version creation, verified build attachment, and resumable listing-image uploads. Python is the first language binding of the Rust core: operation fixes and new behavior in Rust apply directly to Python. TypeScript, Swift, and Go retain their 12 core reads and scoped age-rating update. `api/sdk-catalog.json` declares contract groups and explicit runtime support; generating types alone does not enable an operation. Hosted connection creation, revocation, and facade grants belong to the hosted service and are not needed by direct SDKs. Apple key permissions govern SDK access. Packages are not yet published to their registries.
+`api/sdk-catalog.json` declares contracts, models, and explicit implementation support. The hosted Worker retains its 12 baseline reads and scoped age-rating update. Hosted connections and facade grants are unnecessary for SDKs; Apple's key permissions govern access. Packages are not yet published to their registries.
 
-`npm run generate:sdks` regenerates models, methods, bundled contracts, licenses, and shared native test fixtures. The generators share the language-independent catalog, contract loading, and model selection in `scripts/sdk_contracts.py`. The native tests reuse the Worker's core read fixtures through `scripts/export_sdk_fixtures.mjs`. Rust and Python also execute shared request/response operation scenarios from `tests/sdk/scenarios.json`, covering media and build reads, metadata writes, version creation, ownership failures, and uncertain build confirmation.
+The Python extension calls the Rust crate directly. TypeScript, Go, and Swift share the host bridge in `sdks/native`: operation dispatch and lifecycle, cancellation, transport events, and checkpoint acknowledgments. Host adapters supply their native transport hooks and durable persistence callbacks. They do not implement the facade's resource resolution, validation, retries, pagination, or upload workflow separately.
 
-`npm run build:sdks` regenerates artifacts, builds TypeScript, creates a Python wheel, compiles Swift, and builds Go. It requires Node.js, Python with pip, Rust, Swift, and Go. Python wheels and source distributions include the Rust core; a source build needs Cargo, while a compatible wheel needs no Rust installation. Individual builds are available as `build:sdk:typescript`, `build:sdk:python`, `build:sdk:swift`, and `build:sdk:go`; Rust builds through Cargo.
+`npm run generate:sdks` regenerates public models, thin resource methods, contracts, licenses, and test fixtures. Operation scenarios in `tests/sdk/scenarios.json` and upload/recovery cases in `tests/sdk/uploads.json` run through the shared bridge and language adapters. The original Rust and Python suites retain additional coverage of the underlying workflows and binding boundaries.
 
-`npm run check:sdks` checks generated-file drift, Rust formatting and Clippy, Go vet, and tests all five SDKs. Go tests include race detection. Install Rust, Swift, and Go, then install the Python SDK in your active environment with `python3 -m pip install -e 'sdks/python[dev]'`. Each SDK also has a `test:sdk:typescript`, `test:sdk:rust`, `test:sdk:python`, `test:sdk:swift`, or `test:sdk:go` command. Swift requires an Apple host.
+`npm run build:sdks` generates artifacts and builds each SDK. Source builds require Node.js, Python with pip, Rust, Swift/Xcode on macOS, Go, and a C compiler. TypeScript's npm package bundles its host-specific `.node` addon. Python wheels bundle their extension and need no Python runtime dependencies. Go distributions must include the matching static archive and require cgo. Swift distributions must include an XCFramework with the appropriate architecture and platform slices; the default build produces a host macOS artifact for local testing. See each SDK README for cross-target and distribution instructions.
 
-`npm run check` checks every SDK for generated-file drift and tests TypeScript alongside the Worker, without requiring Rust, Swift, Go, or Python development dependencies. SDK tests use mocked Apple responses and generated keys, never real Apple credentials.
+`npm run check:sdks` checks generated-file drift and formatting, runs Rust Clippy and Go vet, builds native bindings, and tests all SDKs. Go tests include race detection. Activate a Python environment and install development dependencies with `python3 -m pip install -e 'sdks/python[dev]'` first. Individual `build:sdk:*`, `test:sdk:*`, and `check:sdk:*` commands are available, including `native` for the common bridge. Swift builds require an Apple host. `npm run check` checks the hosted service and TypeScript SDK and now requires Rust for the Node addon.
+
+Tests use generated keys and mocked Apple responses, never real Apple credentials. Packaging checks run consumers outside the checkout.

@@ -10,15 +10,14 @@ from generate_python_sdk import lift_nested_models, py_type
 
 
 class CatalogTests(unittest.TestCase):
-    def test_explicit_support_preserves_existing_runtimes(self):
+    def test_sdk_parity_preserves_hosted_support_boundary(self):
         baseline = {route["handler"] for route in contracts.read_contracts()[0]}
         self.assertEqual(len(baseline), 12)
-        for sdk in ("worker", "typescript", "swift", "go"):
-            self.assertEqual({route["handler"] for route in contracts.read_contracts(sdk)[0]}, baseline)
         rust = contracts.read_contracts("rust")[0]
         self.assertEqual(len(rust), 22)
-        self.assertEqual(contracts.read_contracts("python")[0], rust)
-        self.assertEqual(contracts.runtime_contracts("python"), contracts.runtime_contracts("rust"))
+        for sdk in ("python", "typescript", "swift", "go"):
+            self.assertEqual(contracts.read_contracts(sdk)[0], rust)
+            self.assertEqual(contracts.runtime_contracts(sdk), contracts.runtime_contracts("rust"))
         self.assertNotIn("metadataUpdates", contracts.runtime_contracts("worker"))
 
     def test_unknown_runtime_is_rejected(self):

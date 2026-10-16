@@ -29,6 +29,7 @@ func run() error {
 	if err != nil {
 		return err
 	}
+	defer client.Close()
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 	query := &parsequerade.AppsQuery{Limit: 50}

@@ -8,6 +8,444 @@ import (
 	"strings"
 )
 
+type ScreenshotDisplayType = string
+
+type ImageAsset struct {
+	TemplateURL Optional[string]           `json:"templateUrl"`
+	Width       Optional[int64]            `json:"width"`
+	Height      Optional[int64]            `json:"height"`
+	Extra       map[string]json.RawMessage `json:"-"`
+}
+
+func (v ImageAsset) MarshalJSON() ([]byte, error) {
+	m := map[string]any{}
+	for name, value := range v.Extra {
+		m[name] = value
+	}
+	delete(m, "templateUrl")
+	addField(m, "templateUrl", v.TemplateURL)
+	delete(m, "width")
+	addField(m, "width", v.Width)
+	delete(m, "height")
+	addField(m, "height", v.Height)
+	return json.Marshal(m)
+}
+
+func (v *ImageAsset) UnmarshalJSON(data []byte) error {
+	type plain ImageAsset
+	var decoded plain
+	if err := json.Unmarshal(data, &decoded); err != nil {
+		return err
+	}
+	var extra map[string]json.RawMessage
+	if err := json.Unmarshal(data, &extra); err != nil {
+		return err
+	}
+	delete(extra, "templateUrl")
+	delete(extra, "width")
+	delete(extra, "height")
+	*v = ImageAsset(decoded)
+	if len(extra) != 0 {
+		v.Extra = extra
+	}
+	return nil
+}
+
+type UploadOperation struct {
+	Method         Optional[string]           `json:"method"`
+	URL            Optional[string]           `json:"url"`
+	Length         Optional[int64]            `json:"length"`
+	Offset         Optional[int64]            `json:"offset"`
+	RequestHeaders Optional[[]HttpHeader]     `json:"requestHeaders"`
+	Extra          map[string]json.RawMessage `json:"-"`
+}
+
+func (v UploadOperation) MarshalJSON() ([]byte, error) {
+	m := map[string]any{}
+	for name, value := range v.Extra {
+		m[name] = value
+	}
+	delete(m, "method")
+	addField(m, "method", v.Method)
+	delete(m, "url")
+	addField(m, "url", v.URL)
+	delete(m, "length")
+	addField(m, "length", v.Length)
+	delete(m, "offset")
+	addField(m, "offset", v.Offset)
+	delete(m, "requestHeaders")
+	addField(m, "requestHeaders", v.RequestHeaders)
+	return json.Marshal(m)
+}
+
+func (v *UploadOperation) UnmarshalJSON(data []byte) error {
+	type plain UploadOperation
+	var decoded plain
+	if err := json.Unmarshal(data, &decoded); err != nil {
+		return err
+	}
+	var extra map[string]json.RawMessage
+	if err := json.Unmarshal(data, &extra); err != nil {
+		return err
+	}
+	delete(extra, "method")
+	delete(extra, "url")
+	delete(extra, "length")
+	delete(extra, "offset")
+	delete(extra, "requestHeaders")
+	*v = UploadOperation(decoded)
+	if len(extra) != 0 {
+		v.Extra = extra
+	}
+	return nil
+}
+
+type HttpHeader struct {
+	Name  Optional[string]           `json:"name"`
+	Value Optional[string]           `json:"value"`
+	Extra map[string]json.RawMessage `json:"-"`
+}
+
+func (v HttpHeader) MarshalJSON() ([]byte, error) {
+	m := map[string]any{}
+	for name, value := range v.Extra {
+		m[name] = value
+	}
+	delete(m, "name")
+	addField(m, "name", v.Name)
+	delete(m, "value")
+	addField(m, "value", v.Value)
+	return json.Marshal(m)
+}
+
+func (v *HttpHeader) UnmarshalJSON(data []byte) error {
+	type plain HttpHeader
+	var decoded plain
+	if err := json.Unmarshal(data, &decoded); err != nil {
+		return err
+	}
+	var extra map[string]json.RawMessage
+	if err := json.Unmarshal(data, &extra); err != nil {
+		return err
+	}
+	delete(extra, "name")
+	delete(extra, "value")
+	*v = HttpHeader(decoded)
+	if len(extra) != 0 {
+		v.Extra = extra
+	}
+	return nil
+}
+
+type AppMediaAssetState struct {
+	Errors   Optional[[]AppMediaStateError] `json:"errors"`
+	Warnings Optional[[]AppMediaStateError] `json:"warnings"`
+	State    Optional[string]               `json:"state"`
+	Extra    map[string]json.RawMessage     `json:"-"`
+}
+
+func (v AppMediaAssetState) MarshalJSON() ([]byte, error) {
+	m := map[string]any{}
+	for name, value := range v.Extra {
+		m[name] = value
+	}
+	delete(m, "errors")
+	addField(m, "errors", v.Errors)
+	delete(m, "warnings")
+	addField(m, "warnings", v.Warnings)
+	delete(m, "state")
+	addField(m, "state", v.State)
+	return json.Marshal(m)
+}
+
+func (v *AppMediaAssetState) UnmarshalJSON(data []byte) error {
+	type plain AppMediaAssetState
+	var decoded plain
+	if err := json.Unmarshal(data, &decoded); err != nil {
+		return err
+	}
+	var extra map[string]json.RawMessage
+	if err := json.Unmarshal(data, &extra); err != nil {
+		return err
+	}
+	delete(extra, "errors")
+	delete(extra, "warnings")
+	delete(extra, "state")
+	*v = AppMediaAssetState(decoded)
+	if len(extra) != 0 {
+		v.Extra = extra
+	}
+	return nil
+}
+
+type AppMediaStateError struct {
+	Code        Optional[string]           `json:"code"`
+	Description Optional[string]           `json:"description"`
+	Extra       map[string]json.RawMessage `json:"-"`
+}
+
+func (v AppMediaStateError) MarshalJSON() ([]byte, error) {
+	m := map[string]any{}
+	for name, value := range v.Extra {
+		m[name] = value
+	}
+	delete(m, "code")
+	addField(m, "code", v.Code)
+	delete(m, "description")
+	addField(m, "description", v.Description)
+	return json.Marshal(m)
+}
+
+func (v *AppMediaStateError) UnmarshalJSON(data []byte) error {
+	type plain AppMediaStateError
+	var decoded plain
+	if err := json.Unmarshal(data, &decoded); err != nil {
+		return err
+	}
+	var extra map[string]json.RawMessage
+	if err := json.Unmarshal(data, &extra); err != nil {
+		return err
+	}
+	delete(extra, "code")
+	delete(extra, "description")
+	*v = AppMediaStateError(decoded)
+	if len(extra) != 0 {
+		v.Extra = extra
+	}
+	return nil
+}
+
+type PreviewType = string
+
+type PreviewFrameImage struct {
+	Image Optional[ImageAsset]                     `json:"image"`
+	State Optional[AppMediaPreviewFrameImageState] `json:"state"`
+	Extra map[string]json.RawMessage               `json:"-"`
+}
+
+func (v PreviewFrameImage) MarshalJSON() ([]byte, error) {
+	m := map[string]any{}
+	for name, value := range v.Extra {
+		m[name] = value
+	}
+	delete(m, "image")
+	addField(m, "image", v.Image)
+	delete(m, "state")
+	addField(m, "state", v.State)
+	return json.Marshal(m)
+}
+
+func (v *PreviewFrameImage) UnmarshalJSON(data []byte) error {
+	type plain PreviewFrameImage
+	var decoded plain
+	if err := json.Unmarshal(data, &decoded); err != nil {
+		return err
+	}
+	var extra map[string]json.RawMessage
+	if err := json.Unmarshal(data, &extra); err != nil {
+		return err
+	}
+	delete(extra, "image")
+	delete(extra, "state")
+	*v = PreviewFrameImage(decoded)
+	if len(extra) != 0 {
+		v.Extra = extra
+	}
+	return nil
+}
+
+type AppMediaPreviewFrameImageState struct {
+	Errors   Optional[[]AppMediaStateError] `json:"errors"`
+	Warnings Optional[[]AppMediaStateError] `json:"warnings"`
+	State    Optional[string]               `json:"state"`
+	Extra    map[string]json.RawMessage     `json:"-"`
+}
+
+func (v AppMediaPreviewFrameImageState) MarshalJSON() ([]byte, error) {
+	m := map[string]any{}
+	for name, value := range v.Extra {
+		m[name] = value
+	}
+	delete(m, "errors")
+	addField(m, "errors", v.Errors)
+	delete(m, "warnings")
+	addField(m, "warnings", v.Warnings)
+	delete(m, "state")
+	addField(m, "state", v.State)
+	return json.Marshal(m)
+}
+
+func (v *AppMediaPreviewFrameImageState) UnmarshalJSON(data []byte) error {
+	type plain AppMediaPreviewFrameImageState
+	var decoded plain
+	if err := json.Unmarshal(data, &decoded); err != nil {
+		return err
+	}
+	var extra map[string]json.RawMessage
+	if err := json.Unmarshal(data, &extra); err != nil {
+		return err
+	}
+	delete(extra, "errors")
+	delete(extra, "warnings")
+	delete(extra, "state")
+	*v = AppMediaPreviewFrameImageState(decoded)
+	if len(extra) != 0 {
+		v.Extra = extra
+	}
+	return nil
+}
+
+type AppMediaVideoState struct {
+	Errors   Optional[[]AppMediaStateError] `json:"errors"`
+	Warnings Optional[[]AppMediaStateError] `json:"warnings"`
+	State    Optional[string]               `json:"state"`
+	Extra    map[string]json.RawMessage     `json:"-"`
+}
+
+func (v AppMediaVideoState) MarshalJSON() ([]byte, error) {
+	m := map[string]any{}
+	for name, value := range v.Extra {
+		m[name] = value
+	}
+	delete(m, "errors")
+	addField(m, "errors", v.Errors)
+	delete(m, "warnings")
+	addField(m, "warnings", v.Warnings)
+	delete(m, "state")
+	addField(m, "state", v.State)
+	return json.Marshal(m)
+}
+
+func (v *AppMediaVideoState) UnmarshalJSON(data []byte) error {
+	type plain AppMediaVideoState
+	var decoded plain
+	if err := json.Unmarshal(data, &decoded); err != nil {
+		return err
+	}
+	var extra map[string]json.RawMessage
+	if err := json.Unmarshal(data, &extra); err != nil {
+		return err
+	}
+	delete(extra, "errors")
+	delete(extra, "warnings")
+	delete(extra, "state")
+	*v = AppMediaVideoState(decoded)
+	if len(extra) != 0 {
+		v.Extra = extra
+	}
+	return nil
+}
+
+type AppAssetLibraryMediaType = string
+
+type AppAssetLibraryPlacementType = string
+
+type AppAssetLibraryPlacementState = string
+
+type AppAssetLibraryAssetState = string
+
+type AppAssetLibraryAssetCategory = string
+
+type StateDetail struct {
+	Code        Optional[string]           `json:"code"`
+	Description Optional[string]           `json:"description"`
+	Extra       map[string]json.RawMessage `json:"-"`
+}
+
+func (v StateDetail) MarshalJSON() ([]byte, error) {
+	m := map[string]any{}
+	for name, value := range v.Extra {
+		m[name] = value
+	}
+	delete(m, "code")
+	addField(m, "code", v.Code)
+	delete(m, "description")
+	addField(m, "description", v.Description)
+	return json.Marshal(m)
+}
+
+func (v *StateDetail) UnmarshalJSON(data []byte) error {
+	type plain StateDetail
+	var decoded plain
+	if err := json.Unmarshal(data, &decoded); err != nil {
+		return err
+	}
+	var extra map[string]json.RawMessage
+	if err := json.Unmarshal(data, &extra); err != nil {
+		return err
+	}
+	delete(extra, "code")
+	delete(extra, "description")
+	*v = StateDetail(decoded)
+	if len(extra) != 0 {
+		v.Extra = extra
+	}
+	return nil
+}
+
+type ListingImagePlacementType = string
+
+type ListingImageUpload struct {
+	AppID         string                    `json:"appId"`
+	VersionID     string                    `json:"versionId"`
+	Locale        string                    `json:"locale"`
+	PlacementType ListingImagePlacementType `json:"placementType"`
+	FileName      string                    `json:"fileName"`
+}
+
+func (v ListingImageUpload) MarshalJSON() ([]byte, error) {
+	m := map[string]any{}
+	m["appId"] = v.AppID
+	m["versionId"] = v.VersionID
+	m["locale"] = v.Locale
+	m["placementType"] = v.PlacementType
+	m["fileName"] = v.FileName
+	return json.Marshal(m)
+}
+
+type ListingImageUploadCheckpoint struct {
+	Binding        Optional[string] `json:"binding"`
+	ImageID        Optional[string] `json:"imageId"`
+	PlacementID    Optional[string] `json:"placementId"`
+	PlacementGroup Optional[string] `json:"placementGroup"`
+	Phase          Optional[string] `json:"phase"`
+}
+
+func (v ListingImageUploadCheckpoint) MarshalJSON() ([]byte, error) {
+	m := map[string]any{}
+	delete(m, "binding")
+	addField(m, "binding", v.Binding)
+	delete(m, "imageId")
+	addField(m, "imageId", v.ImageID)
+	delete(m, "placementId")
+	addField(m, "placementId", v.PlacementID)
+	delete(m, "placementGroup")
+	addField(m, "placementGroup", v.PlacementGroup)
+	delete(m, "phase")
+	addField(m, "phase", v.Phase)
+	return json.Marshal(m)
+}
+
+type ListingImageUploadReceipt struct {
+	AppID         string                    `json:"appId"`
+	VersionID     string                    `json:"versionId"`
+	Locale        string                    `json:"locale"`
+	PlacementType ListingImagePlacementType `json:"placementType"`
+	ImageID       string                    `json:"imageId"`
+	PlacementID   string                    `json:"placementId"`
+}
+
+func (v ListingImageUploadReceipt) MarshalJSON() ([]byte, error) {
+	m := map[string]any{}
+	m["appId"] = v.AppID
+	m["versionId"] = v.VersionID
+	m["locale"] = v.Locale
+	m["placementType"] = v.PlacementType
+	m["imageId"] = v.ImageID
+	m["placementId"] = v.PlacementID
+	return json.Marshal(m)
+}
+
 type App struct {
 	ID                                     string           `json:"id"`
 	AccessibilityURL                       Optional[string] `json:"accessibilityUrl"`
@@ -34,24 +472,43 @@ type App struct {
 func (v App) MarshalJSON() ([]byte, error) {
 	m := map[string]any{}
 	m["id"] = v.ID
+	delete(m, "accessibilityUrl")
 	addField(m, "accessibilityUrl", v.AccessibilityURL)
+	delete(m, "name")
 	addField(m, "name", v.Name)
+	delete(m, "bundleId")
 	addField(m, "bundleId", v.BundleID)
+	delete(m, "sku")
 	addField(m, "sku", v.SKU)
+	delete(m, "primaryLocale")
 	addField(m, "primaryLocale", v.PrimaryLocale)
+	delete(m, "isOrEverWasMadeForKids")
 	addField(m, "isOrEverWasMadeForKids", v.IsOrEverWasMadeForKids)
+	delete(m, "subscriptionStatusUrl")
 	addField(m, "subscriptionStatusUrl", v.SubscriptionStatusURL)
+	delete(m, "subscriptionStatusUrlVersion")
 	addField(m, "subscriptionStatusUrlVersion", v.SubscriptionStatusURLVersion)
+	delete(m, "subscriptionStatusUrlForSandbox")
 	addField(m, "subscriptionStatusUrlForSandbox", v.SubscriptionStatusURLForSandbox)
+	delete(m, "subscriptionStatusUrlVersionForSandbox")
 	addField(m, "subscriptionStatusUrlVersionForSandbox", v.SubscriptionStatusURLVersionForSandbox)
+	delete(m, "contentRightsDeclaration")
 	addField(m, "contentRightsDeclaration", v.ContentRightsDeclaration)
+	delete(m, "streamlinedPurchasingEnabled")
 	addField(m, "streamlinedPurchasingEnabled", v.StreamlinedPurchasingEnabled)
+	delete(m, "appStoreIconId")
 	addField(m, "appStoreIconId", v.AppStoreIconID)
+	delete(m, "ciProductId")
 	addField(m, "ciProductId", v.CiProductID)
+	delete(m, "betaLicenseAgreementId")
 	addField(m, "betaLicenseAgreementId", v.BetaLicenseAgreementID)
+	delete(m, "betaAppReviewDetailId")
 	addField(m, "betaAppReviewDetailId", v.BetaAppReviewDetailID)
+	delete(m, "endUserLicenseAgreementId")
 	addField(m, "endUserLicenseAgreementId", v.EndUserLicenseAgreementID)
+	delete(m, "subscriptionGracePeriodId")
 	addField(m, "subscriptionGracePeriodId", v.SubscriptionGracePeriodID)
+	delete(m, "gameCenterDetailId")
 	addField(m, "gameCenterDetailId", v.GameCenterDetailID)
 	return json.Marshal(m)
 }
@@ -73,13 +530,21 @@ func (v AppInfo) MarshalJSON() ([]byte, error) {
 	m := map[string]any{}
 	m["id"] = v.ID
 	m["appId"] = v.AppID
+	delete(m, "state")
 	addField(m, "state", v.State)
+	delete(m, "ageRatingDeclarationId")
 	addField(m, "ageRatingDeclarationId", v.AgeRatingDeclarationID)
+	delete(m, "primaryCategoryId")
 	addField(m, "primaryCategoryId", v.PrimaryCategoryID)
+	delete(m, "primarySubcategoryOneId")
 	addField(m, "primarySubcategoryOneId", v.PrimarySubcategoryOneID)
+	delete(m, "primarySubcategoryTwoId")
 	addField(m, "primarySubcategoryTwoId", v.PrimarySubcategoryTwoID)
+	delete(m, "secondaryCategoryId")
 	addField(m, "secondaryCategoryId", v.SecondaryCategoryID)
+	delete(m, "secondarySubcategoryOneId")
 	addField(m, "secondarySubcategoryOneId", v.SecondarySubcategoryOneID)
+	delete(m, "secondarySubcategoryTwoId")
 	addField(m, "secondarySubcategoryTwoId", v.SecondarySubcategoryTwoID)
 	return json.Marshal(m)
 }
@@ -101,11 +566,17 @@ func (v AppInfoLocalization) MarshalJSON() ([]byte, error) {
 	m["id"] = v.ID
 	m["appId"] = v.AppID
 	m["appInfoId"] = v.AppInfoID
+	delete(m, "locale")
 	addField(m, "locale", v.Locale)
+	delete(m, "name")
 	addField(m, "name", v.Name)
+	delete(m, "subtitle")
 	addField(m, "subtitle", v.Subtitle)
+	delete(m, "privacyPolicyUrl")
 	addField(m, "privacyPolicyUrl", v.PrivacyPolicyURL)
+	delete(m, "privacyChoicesUrl")
 	addField(m, "privacyChoicesUrl", v.PrivacyChoicesURL)
+	delete(m, "privacyPolicyText")
 	addField(m, "privacyPolicyText", v.PrivacyPolicyText)
 	return json.Marshal(m)
 }
@@ -150,34 +621,63 @@ func (v AgeRating) MarshalJSON() ([]byte, error) {
 	m["id"] = v.ID
 	m["appId"] = v.AppID
 	m["appInfoId"] = v.AppInfoID
+	delete(m, "advertising")
 	addField(m, "advertising", v.Advertising)
+	delete(m, "alcoholTobaccoOrDrugUseOrReferences")
 	addField(m, "alcoholTobaccoOrDrugUseOrReferences", v.AlcoholTobaccoOrDrugUseOrReferences)
+	delete(m, "contests")
 	addField(m, "contests", v.Contests)
+	delete(m, "gambling")
 	addField(m, "gambling", v.Gambling)
+	delete(m, "gamblingSimulated")
 	addField(m, "gamblingSimulated", v.GamblingSimulated)
+	delete(m, "gunsOrOtherWeapons")
 	addField(m, "gunsOrOtherWeapons", v.GunsOrOtherWeapons)
+	delete(m, "healthOrWellnessTopics")
 	addField(m, "healthOrWellnessTopics", v.HealthOrWellnessTopics)
+	delete(m, "kidsAgeBand")
 	addField(m, "kidsAgeBand", v.KidsAgeBand)
+	delete(m, "lootBox")
 	addField(m, "lootBox", v.LootBox)
+	delete(m, "medicalOrTreatmentInformation")
 	addField(m, "medicalOrTreatmentInformation", v.MedicalOrTreatmentInformation)
+	delete(m, "messagingAndChat")
 	addField(m, "messagingAndChat", v.MessagingAndChat)
+	delete(m, "parentalControls")
 	addField(m, "parentalControls", v.ParentalControls)
+	delete(m, "profanityOrCrudeHumor")
 	addField(m, "profanityOrCrudeHumor", v.ProfanityOrCrudeHumor)
+	delete(m, "ageAssurance")
 	addField(m, "ageAssurance", v.AgeAssurance)
+	delete(m, "sexualContentGraphicAndNudity")
 	addField(m, "sexualContentGraphicAndNudity", v.SexualContentGraphicAndNudity)
+	delete(m, "sexualContentOrNudity")
 	addField(m, "sexualContentOrNudity", v.SexualContentOrNudity)
+	delete(m, "socialMedia")
 	addField(m, "socialMedia", v.SocialMedia)
+	delete(m, "socialMediaAgeRestricted")
 	addField(m, "socialMediaAgeRestricted", v.SocialMediaAgeRestricted)
+	delete(m, "horrorOrFearThemes")
 	addField(m, "horrorOrFearThemes", v.HorrorOrFearThemes)
+	delete(m, "matureOrSuggestiveThemes")
 	addField(m, "matureOrSuggestiveThemes", v.MatureOrSuggestiveThemes)
+	delete(m, "unrestrictedWebAccess")
 	addField(m, "unrestrictedWebAccess", v.UnrestrictedWebAccess)
+	delete(m, "userGeneratedContent")
 	addField(m, "userGeneratedContent", v.UserGeneratedContent)
+	delete(m, "violenceCartoonOrFantasy")
 	addField(m, "violenceCartoonOrFantasy", v.ViolenceCartoonOrFantasy)
+	delete(m, "violenceRealisticProlongedGraphicOrSadistic")
 	addField(m, "violenceRealisticProlongedGraphicOrSadistic", v.ViolenceRealisticProlongedGraphicOrSadistic)
+	delete(m, "violenceRealistic")
 	addField(m, "violenceRealistic", v.ViolenceRealistic)
+	delete(m, "ageRatingOverrideV2")
 	addField(m, "ageRatingOverrideV2", v.AgeRatingOverride2)
+	delete(m, "koreaAgeRatingOverride")
 	addField(m, "koreaAgeRatingOverride", v.KoreaAgeRatingOverride)
+	delete(m, "gracRatingClassificationNumber")
 	addField(m, "gracRatingClassificationNumber", v.GracRatingClassificationNumber)
+	delete(m, "developerAgeRatingInfoUrl")
 	addField(m, "developerAgeRatingInfoUrl", v.DeveloperAgeRatingInfoURL)
 	return json.Marshal(m)
 }
@@ -208,22 +708,39 @@ func (v Version) MarshalJSON() ([]byte, error) {
 	m := map[string]any{}
 	m["id"] = v.ID
 	m["appId"] = v.AppID
+	delete(m, "platform")
 	addField(m, "platform", v.Platform)
+	delete(m, "versionString")
 	addField(m, "versionString", v.VersionString)
+	delete(m, "appVersionState")
 	addField(m, "appVersionState", v.AppVersionState)
+	delete(m, "copyright")
 	addField(m, "copyright", v.Copyright)
+	delete(m, "reviewType")
 	addField(m, "reviewType", v.ReviewType)
+	delete(m, "releaseType")
 	addField(m, "releaseType", v.ReleaseType)
+	delete(m, "earliestReleaseDate")
 	addField(m, "earliestReleaseDate", v.EarliestReleaseDate)
+	delete(m, "downloadable")
 	addField(m, "downloadable", v.Downloadable)
+	delete(m, "createdDate")
 	addField(m, "createdDate", v.CreatedDate)
+	delete(m, "buildId")
 	addField(m, "buildId", v.BuildID)
+	delete(m, "appStoreVersionPhasedReleaseId")
 	addField(m, "appStoreVersionPhasedReleaseId", v.AppStoreVersionPhasedReleaseID)
+	delete(m, "gameCenterAppVersionId")
 	addField(m, "gameCenterAppVersionId", v.GameCenterAppVersionID)
+	delete(m, "routingAppCoverageId")
 	addField(m, "routingAppCoverageId", v.RoutingAppCoverageID)
+	delete(m, "appStoreReviewDetailId")
 	addField(m, "appStoreReviewDetailId", v.AppStoreReviewDetailID)
+	delete(m, "appStoreVersionSubmissionId")
 	addField(m, "appStoreVersionSubmissionId", v.AppStoreVersionSubmissionID)
+	delete(m, "experienceId")
 	addField(m, "experienceId", v.ExperienceID)
+	delete(m, "alternativeDistributionPackageId")
 	addField(m, "alternativeDistributionPackageId", v.AlternativeDistributionPackageID)
 	return json.Marshal(m)
 }
@@ -246,12 +763,19 @@ func (v VersionLocalization) MarshalJSON() ([]byte, error) {
 	m["id"] = v.ID
 	m["appId"] = v.AppID
 	m["versionId"] = v.VersionID
+	delete(m, "description")
 	addField(m, "description", v.Description)
+	delete(m, "locale")
 	addField(m, "locale", v.Locale)
+	delete(m, "keywords")
 	addField(m, "keywords", v.Keywords)
+	delete(m, "marketingUrl")
 	addField(m, "marketingUrl", v.MarketingURL)
+	delete(m, "promotionalText")
 	addField(m, "promotionalText", v.PromotionalText)
+	delete(m, "supportUrl")
 	addField(m, "supportUrl", v.SupportURL)
+	delete(m, "whatsNew")
 	addField(m, "whatsNew", v.WhatsNew)
 	return json.Marshal(m)
 }
@@ -271,10 +795,323 @@ func (v ReviewContact) MarshalJSON() ([]byte, error) {
 	m["id"] = v.ID
 	m["appId"] = v.AppID
 	m["versionId"] = v.VersionID
+	delete(m, "contactFirstName")
 	addField(m, "contactFirstName", v.ContactFirstName)
+	delete(m, "contactLastName")
 	addField(m, "contactLastName", v.ContactLastName)
+	delete(m, "contactPhone")
 	addField(m, "contactPhone", v.ContactPhone)
+	delete(m, "contactEmail")
 	addField(m, "contactEmail", v.ContactEmail)
+	return json.Marshal(m)
+}
+
+type ScreenshotSet struct {
+	ID                                               string                          `json:"id"`
+	AppID                                            string                          `json:"appId"`
+	VersionID                                        string                          `json:"versionId"`
+	ScreenshotDisplayType                            Optional[ScreenshotDisplayType] `json:"screenshotDisplayType"`
+	AppStoreVersionLocalizationID                    Optional[string]                `json:"appStoreVersionLocalizationId"`
+	AppCustomProductPageLocalizationID               Optional[string]                `json:"appCustomProductPageLocalizationId"`
+	AppStoreVersionExperimentTreatmentLocalizationID Optional[string]                `json:"appStoreVersionExperimentTreatmentLocalizationId"`
+}
+
+func (v ScreenshotSet) MarshalJSON() ([]byte, error) {
+	m := map[string]any{}
+	m["id"] = v.ID
+	m["appId"] = v.AppID
+	m["versionId"] = v.VersionID
+	delete(m, "screenshotDisplayType")
+	addField(m, "screenshotDisplayType", v.ScreenshotDisplayType)
+	delete(m, "appStoreVersionLocalizationId")
+	addField(m, "appStoreVersionLocalizationId", v.AppStoreVersionLocalizationID)
+	delete(m, "appCustomProductPageLocalizationId")
+	addField(m, "appCustomProductPageLocalizationId", v.AppCustomProductPageLocalizationID)
+	delete(m, "appStoreVersionExperimentTreatmentLocalizationId")
+	addField(m, "appStoreVersionExperimentTreatmentLocalizationId", v.AppStoreVersionExperimentTreatmentLocalizationID)
+	return json.Marshal(m)
+}
+
+type Screenshot struct {
+	ID                 string                       `json:"id"`
+	FileSize           Optional[int64]              `json:"fileSize"`
+	FileName           Optional[string]             `json:"fileName"`
+	SourceFileChecksum Optional[string]             `json:"sourceFileChecksum"`
+	ImageAsset         Optional[ImageAsset]         `json:"imageAsset"`
+	AssetToken         Optional[string]             `json:"assetToken"`
+	AssetType          Optional[string]             `json:"assetType"`
+	UploadOperations   Optional[[]UploadOperation]  `json:"uploadOperations"`
+	AssetDeliveryState Optional[AppMediaAssetState] `json:"assetDeliveryState"`
+	AppScreenshotSetID Optional[string]             `json:"appScreenshotSetId"`
+}
+
+func (v Screenshot) MarshalJSON() ([]byte, error) {
+	m := map[string]any{}
+	m["id"] = v.ID
+	delete(m, "fileSize")
+	addField(m, "fileSize", v.FileSize)
+	delete(m, "fileName")
+	addField(m, "fileName", v.FileName)
+	delete(m, "sourceFileChecksum")
+	addField(m, "sourceFileChecksum", v.SourceFileChecksum)
+	delete(m, "imageAsset")
+	addField(m, "imageAsset", v.ImageAsset)
+	delete(m, "assetToken")
+	addField(m, "assetToken", v.AssetToken)
+	delete(m, "assetType")
+	addField(m, "assetType", v.AssetType)
+	delete(m, "uploadOperations")
+	addField(m, "uploadOperations", v.UploadOperations)
+	delete(m, "assetDeliveryState")
+	addField(m, "assetDeliveryState", v.AssetDeliveryState)
+	delete(m, "appScreenshotSetId")
+	addField(m, "appScreenshotSetId", v.AppScreenshotSetID)
+	return json.Marshal(m)
+}
+
+type PreviewSet struct {
+	ID                                               string                `json:"id"`
+	AppID                                            string                `json:"appId"`
+	VersionID                                        string                `json:"versionId"`
+	PreviewType                                      Optional[PreviewType] `json:"previewType"`
+	AppStoreVersionLocalizationID                    Optional[string]      `json:"appStoreVersionLocalizationId"`
+	AppCustomProductPageLocalizationID               Optional[string]      `json:"appCustomProductPageLocalizationId"`
+	AppStoreVersionExperimentTreatmentLocalizationID Optional[string]      `json:"appStoreVersionExperimentTreatmentLocalizationId"`
+}
+
+func (v PreviewSet) MarshalJSON() ([]byte, error) {
+	m := map[string]any{}
+	m["id"] = v.ID
+	m["appId"] = v.AppID
+	m["versionId"] = v.VersionID
+	delete(m, "previewType")
+	addField(m, "previewType", v.PreviewType)
+	delete(m, "appStoreVersionLocalizationId")
+	addField(m, "appStoreVersionLocalizationId", v.AppStoreVersionLocalizationID)
+	delete(m, "appCustomProductPageLocalizationId")
+	addField(m, "appCustomProductPageLocalizationId", v.AppCustomProductPageLocalizationID)
+	delete(m, "appStoreVersionExperimentTreatmentLocalizationId")
+	addField(m, "appStoreVersionExperimentTreatmentLocalizationId", v.AppStoreVersionExperimentTreatmentLocalizationID)
+	return json.Marshal(m)
+}
+
+type Preview struct {
+	ID                   string                       `json:"id"`
+	FileSize             Optional[int64]              `json:"fileSize"`
+	FileName             Optional[string]             `json:"fileName"`
+	SourceFileChecksum   Optional[string]             `json:"sourceFileChecksum"`
+	PreviewFrameTimeCode Optional[string]             `json:"previewFrameTimeCode"`
+	MimeType             Optional[string]             `json:"mimeType"`
+	VideoURL             Optional[string]             `json:"videoUrl"`
+	PreviewFrameImage    Optional[PreviewFrameImage]  `json:"previewFrameImage"`
+	UploadOperations     Optional[[]UploadOperation]  `json:"uploadOperations"`
+	VideoDeliveryState   Optional[AppMediaVideoState] `json:"videoDeliveryState"`
+	AppPreviewSetID      Optional[string]             `json:"appPreviewSetId"`
+}
+
+func (v Preview) MarshalJSON() ([]byte, error) {
+	m := map[string]any{}
+	m["id"] = v.ID
+	delete(m, "fileSize")
+	addField(m, "fileSize", v.FileSize)
+	delete(m, "fileName")
+	addField(m, "fileName", v.FileName)
+	delete(m, "sourceFileChecksum")
+	addField(m, "sourceFileChecksum", v.SourceFileChecksum)
+	delete(m, "previewFrameTimeCode")
+	addField(m, "previewFrameTimeCode", v.PreviewFrameTimeCode)
+	delete(m, "mimeType")
+	addField(m, "mimeType", v.MimeType)
+	delete(m, "videoUrl")
+	addField(m, "videoUrl", v.VideoURL)
+	delete(m, "previewFrameImage")
+	addField(m, "previewFrameImage", v.PreviewFrameImage)
+	delete(m, "uploadOperations")
+	addField(m, "uploadOperations", v.UploadOperations)
+	delete(m, "videoDeliveryState")
+	addField(m, "videoDeliveryState", v.VideoDeliveryState)
+	delete(m, "appPreviewSetId")
+	addField(m, "appPreviewSetId", v.AppPreviewSetID)
+	return json.Marshal(m)
+}
+
+type LibraryPlacement struct {
+	ID                                               string                                  `json:"id"`
+	AppID                                            string                                  `json:"appId"`
+	VersionID                                        string                                  `json:"versionId"`
+	MediaType                                        Optional[AppAssetLibraryMediaType]      `json:"mediaType"`
+	PlacementType                                    Optional[AppAssetLibraryPlacementType]  `json:"placementType"`
+	PlacementGroup                                   Optional[string]                        `json:"placementGroup"`
+	CreatedDate                                      Optional[string]                        `json:"createdDate"`
+	LastModifiedDate                                 Optional[string]                        `json:"lastModifiedDate"`
+	State                                            Optional[AppAssetLibraryPlacementState] `json:"state"`
+	StateDetails                                     Optional[[]StateDetail]                 `json:"stateDetails"`
+	ImageID                                          Optional[string]                        `json:"imageId"`
+	VideoID                                          Optional[string]                        `json:"videoId"`
+	AppEventLocalizationID                           Optional[string]                        `json:"appEventLocalizationId"`
+	AppStoreVersionLocalizationID                    Optional[string]                        `json:"appStoreVersionLocalizationId"`
+	AppCustomProductPageLocalizationID               Optional[string]                        `json:"appCustomProductPageLocalizationId"`
+	AppStoreVersionExperimentTreatmentLocalizationID Optional[string]                        `json:"appStoreVersionExperimentTreatmentLocalizationId"`
+}
+
+func (v LibraryPlacement) MarshalJSON() ([]byte, error) {
+	m := map[string]any{}
+	m["id"] = v.ID
+	m["appId"] = v.AppID
+	m["versionId"] = v.VersionID
+	delete(m, "mediaType")
+	addField(m, "mediaType", v.MediaType)
+	delete(m, "placementType")
+	addField(m, "placementType", v.PlacementType)
+	delete(m, "placementGroup")
+	addField(m, "placementGroup", v.PlacementGroup)
+	delete(m, "createdDate")
+	addField(m, "createdDate", v.CreatedDate)
+	delete(m, "lastModifiedDate")
+	addField(m, "lastModifiedDate", v.LastModifiedDate)
+	delete(m, "state")
+	addField(m, "state", v.State)
+	delete(m, "stateDetails")
+	addField(m, "stateDetails", v.StateDetails)
+	delete(m, "imageId")
+	addField(m, "imageId", v.ImageID)
+	delete(m, "videoId")
+	addField(m, "videoId", v.VideoID)
+	delete(m, "appEventLocalizationId")
+	addField(m, "appEventLocalizationId", v.AppEventLocalizationID)
+	delete(m, "appStoreVersionLocalizationId")
+	addField(m, "appStoreVersionLocalizationId", v.AppStoreVersionLocalizationID)
+	delete(m, "appCustomProductPageLocalizationId")
+	addField(m, "appCustomProductPageLocalizationId", v.AppCustomProductPageLocalizationID)
+	delete(m, "appStoreVersionExperimentTreatmentLocalizationId")
+	addField(m, "appStoreVersionExperimentTreatmentLocalizationId", v.AppStoreVersionExperimentTreatmentLocalizationID)
+	return json.Marshal(m)
+}
+
+type LibraryImage struct {
+	ID               string                                 `json:"id"`
+	FileName         Optional[string]                       `json:"fileName"`
+	FileSize         Optional[int64]                        `json:"fileSize"`
+	ReferenceName    Optional[string]                       `json:"referenceName"`
+	ImageAsset       Optional[ImageAsset]                   `json:"imageAsset"`
+	State            Optional[AppAssetLibraryAssetState]    `json:"state"`
+	StateDetails     Optional[[]StateDetail]                `json:"stateDetails"`
+	Category         Optional[AppAssetLibraryAssetCategory] `json:"category"`
+	CreatedDate      Optional[string]                       `json:"createdDate"`
+	LastModifiedDate Optional[string]                       `json:"lastModifiedDate"`
+	SpecID           Optional[string]                       `json:"specId"`
+	UploadOperations Optional[[]UploadOperation]            `json:"uploadOperations"`
+}
+
+func (v LibraryImage) MarshalJSON() ([]byte, error) {
+	m := map[string]any{}
+	m["id"] = v.ID
+	delete(m, "fileName")
+	addField(m, "fileName", v.FileName)
+	delete(m, "fileSize")
+	addField(m, "fileSize", v.FileSize)
+	delete(m, "referenceName")
+	addField(m, "referenceName", v.ReferenceName)
+	delete(m, "imageAsset")
+	addField(m, "imageAsset", v.ImageAsset)
+	delete(m, "state")
+	addField(m, "state", v.State)
+	delete(m, "stateDetails")
+	addField(m, "stateDetails", v.StateDetails)
+	delete(m, "category")
+	addField(m, "category", v.Category)
+	delete(m, "createdDate")
+	addField(m, "createdDate", v.CreatedDate)
+	delete(m, "lastModifiedDate")
+	addField(m, "lastModifiedDate", v.LastModifiedDate)
+	delete(m, "specId")
+	addField(m, "specId", v.SpecID)
+	delete(m, "uploadOperations")
+	addField(m, "uploadOperations", v.UploadOperations)
+	return json.Marshal(m)
+}
+
+type Build struct {
+	ID                         string                   `json:"id"`
+	AppID                      string                   `json:"appId"`
+	Version                    Optional[string]         `json:"version"`
+	UploadedDate               Optional[string]         `json:"uploadedDate"`
+	ExpirationDate             Optional[string]         `json:"expirationDate"`
+	Expired                    Optional[bool]           `json:"expired"`
+	MinOsVersion               Optional[string]         `json:"minOsVersion"`
+	LsMinimumSystemVersion     Optional[string]         `json:"lsMinimumSystemVersion"`
+	ComputedMinMacOsVersion    Optional[string]         `json:"computedMinMacOsVersion"`
+	ComputedMinVisionOsVersion Optional[string]         `json:"computedMinVisionOsVersion"`
+	IconAssetToken             Optional[map[string]any] `json:"iconAssetToken"`
+	ProcessingState            Optional[string]         `json:"processingState"`
+	BuildAudienceType          Optional[string]         `json:"buildAudienceType"`
+	UsesNonExemptEncryption    Optional[bool]           `json:"usesNonExemptEncryption"`
+	PreReleaseVersionID        Optional[string]         `json:"preReleaseVersionId"`
+	AppEncryptionDeclarationID Optional[string]         `json:"appEncryptionDeclarationId"`
+	BetaAppReviewSubmissionID  Optional[string]         `json:"betaAppReviewSubmissionId"`
+	BuildBetaDetailID          Optional[string]         `json:"buildBetaDetailId"`
+	VersionID                  Optional[string]         `json:"versionId"`
+	BuildUploadID              Optional[string]         `json:"buildUploadId"`
+}
+
+func (v Build) MarshalJSON() ([]byte, error) {
+	m := map[string]any{}
+	m["id"] = v.ID
+	m["appId"] = v.AppID
+	delete(m, "version")
+	addField(m, "version", v.Version)
+	delete(m, "uploadedDate")
+	addField(m, "uploadedDate", v.UploadedDate)
+	delete(m, "expirationDate")
+	addField(m, "expirationDate", v.ExpirationDate)
+	delete(m, "expired")
+	addField(m, "expired", v.Expired)
+	delete(m, "minOsVersion")
+	addField(m, "minOsVersion", v.MinOsVersion)
+	delete(m, "lsMinimumSystemVersion")
+	addField(m, "lsMinimumSystemVersion", v.LsMinimumSystemVersion)
+	delete(m, "computedMinMacOsVersion")
+	addField(m, "computedMinMacOsVersion", v.ComputedMinMacOsVersion)
+	delete(m, "computedMinVisionOsVersion")
+	addField(m, "computedMinVisionOsVersion", v.ComputedMinVisionOsVersion)
+	delete(m, "iconAssetToken")
+	addField(m, "iconAssetToken", v.IconAssetToken)
+	delete(m, "processingState")
+	addField(m, "processingState", v.ProcessingState)
+	delete(m, "buildAudienceType")
+	addField(m, "buildAudienceType", v.BuildAudienceType)
+	delete(m, "usesNonExemptEncryption")
+	addField(m, "usesNonExemptEncryption", v.UsesNonExemptEncryption)
+	delete(m, "preReleaseVersionId")
+	addField(m, "preReleaseVersionId", v.PreReleaseVersionID)
+	delete(m, "appEncryptionDeclarationId")
+	addField(m, "appEncryptionDeclarationId", v.AppEncryptionDeclarationID)
+	delete(m, "betaAppReviewSubmissionId")
+	addField(m, "betaAppReviewSubmissionId", v.BetaAppReviewSubmissionID)
+	delete(m, "buildBetaDetailId")
+	addField(m, "buildBetaDetailId", v.BuildBetaDetailID)
+	delete(m, "versionId")
+	addField(m, "versionId", v.VersionID)
+	delete(m, "buildUploadId")
+	addField(m, "buildUploadId", v.BuildUploadID)
+	return json.Marshal(m)
+}
+
+type PrereleaseVersion struct {
+	ID       string           `json:"id"`
+	AppID    string           `json:"appId"`
+	Version  Optional[string] `json:"version"`
+	Platform Optional[string] `json:"platform"`
+}
+
+func (v PrereleaseVersion) MarshalJSON() ([]byte, error) {
+	m := map[string]any{}
+	m["id"] = v.ID
+	m["appId"] = v.AppID
+	delete(m, "version")
+	addField(m, "version", v.Version)
+	delete(m, "platform")
+	addField(m, "platform", v.Platform)
 	return json.Marshal(m)
 }
 
@@ -312,34 +1149,63 @@ type AgeRatingUpdate struct {
 
 func (v AgeRatingUpdate) MarshalJSON() ([]byte, error) {
 	m := map[string]any{}
+	delete(m, "advertising")
 	addField(m, "advertising", v.Advertising)
+	delete(m, "alcoholTobaccoOrDrugUseOrReferences")
 	addField(m, "alcoholTobaccoOrDrugUseOrReferences", v.AlcoholTobaccoOrDrugUseOrReferences)
+	delete(m, "contests")
 	addField(m, "contests", v.Contests)
+	delete(m, "gambling")
 	addField(m, "gambling", v.Gambling)
+	delete(m, "gamblingSimulated")
 	addField(m, "gamblingSimulated", v.GamblingSimulated)
+	delete(m, "gunsOrOtherWeapons")
 	addField(m, "gunsOrOtherWeapons", v.GunsOrOtherWeapons)
+	delete(m, "healthOrWellnessTopics")
 	addField(m, "healthOrWellnessTopics", v.HealthOrWellnessTopics)
+	delete(m, "kidsAgeBand")
 	addField(m, "kidsAgeBand", v.KidsAgeBand)
+	delete(m, "lootBox")
 	addField(m, "lootBox", v.LootBox)
+	delete(m, "medicalOrTreatmentInformation")
 	addField(m, "medicalOrTreatmentInformation", v.MedicalOrTreatmentInformation)
+	delete(m, "messagingAndChat")
 	addField(m, "messagingAndChat", v.MessagingAndChat)
+	delete(m, "parentalControls")
 	addField(m, "parentalControls", v.ParentalControls)
+	delete(m, "profanityOrCrudeHumor")
 	addField(m, "profanityOrCrudeHumor", v.ProfanityOrCrudeHumor)
+	delete(m, "ageAssurance")
 	addField(m, "ageAssurance", v.AgeAssurance)
+	delete(m, "sexualContentGraphicAndNudity")
 	addField(m, "sexualContentGraphicAndNudity", v.SexualContentGraphicAndNudity)
+	delete(m, "sexualContentOrNudity")
 	addField(m, "sexualContentOrNudity", v.SexualContentOrNudity)
+	delete(m, "socialMedia")
 	addField(m, "socialMedia", v.SocialMedia)
+	delete(m, "socialMediaAgeRestricted")
 	addField(m, "socialMediaAgeRestricted", v.SocialMediaAgeRestricted)
+	delete(m, "horrorOrFearThemes")
 	addField(m, "horrorOrFearThemes", v.HorrorOrFearThemes)
+	delete(m, "matureOrSuggestiveThemes")
 	addField(m, "matureOrSuggestiveThemes", v.MatureOrSuggestiveThemes)
+	delete(m, "unrestrictedWebAccess")
 	addField(m, "unrestrictedWebAccess", v.UnrestrictedWebAccess)
+	delete(m, "userGeneratedContent")
 	addField(m, "userGeneratedContent", v.UserGeneratedContent)
+	delete(m, "violenceCartoonOrFantasy")
 	addField(m, "violenceCartoonOrFantasy", v.ViolenceCartoonOrFantasy)
+	delete(m, "violenceRealisticProlongedGraphicOrSadistic")
 	addField(m, "violenceRealisticProlongedGraphicOrSadistic", v.ViolenceRealisticProlongedGraphicOrSadistic)
+	delete(m, "violenceRealistic")
 	addField(m, "violenceRealistic", v.ViolenceRealistic)
+	delete(m, "ageRatingOverrideV2")
 	addField(m, "ageRatingOverrideV2", v.AgeRatingOverride2)
+	delete(m, "koreaAgeRatingOverride")
 	addField(m, "koreaAgeRatingOverride", v.KoreaAgeRatingOverride)
+	delete(m, "gracRatingClassificationNumber")
 	addField(m, "gracRatingClassificationNumber", v.GracRatingClassificationNumber)
+	delete(m, "developerAgeRatingInfoUrl")
 	addField(m, "developerAgeRatingInfoUrl", v.DeveloperAgeRatingInfoURL)
 	return json.Marshal(m)
 }
@@ -407,7 +1273,7 @@ func (q *AppsQuery) Values() Query {
 	return v
 }
 
-// Apps reads /apps directly from Apple.
+// Apps reads /apps using the shared Rust core.
 func (c *Client) Apps(ctx context.Context, query *AppsQuery) (Page[App], error) {
 	return readTyped[Page[App]](c, ctx, "/apps", query.Values())
 }
@@ -427,7 +1293,7 @@ func (q *AppQuery) Values() Query {
 	return v
 }
 
-// App reads /apps/{appId} directly from Apple.
+// App reads /apps/{appId} using the shared Rust core.
 func (c *Client) App(ctx context.Context, appID string, query *AppQuery) (App, error) {
 	if err := validateSegment(appID, false); err != nil {
 		return App{}, err
@@ -458,7 +1324,7 @@ func (q *AppInfosQuery) Values() Query {
 	return v
 }
 
-// AppInfos reads /apps/{appId}/app-infos directly from Apple.
+// AppInfos reads /apps/{appId}/app-infos using the shared Rust core.
 func (c *Client) AppInfos(ctx context.Context, appID string, query *AppInfosQuery) (Page[AppInfo], error) {
 	if err := validateSegment(appID, false); err != nil {
 		return Page[AppInfo]{}, err
@@ -481,7 +1347,7 @@ func (q *AppInfoQuery) Values() Query {
 	return v
 }
 
-// AppInfo reads /apps/{appId}/app-infos/{appInfoId} directly from Apple.
+// AppInfo reads /apps/{appId}/app-infos/{appInfoId} using the shared Rust core.
 func (c *Client) AppInfo(ctx context.Context, appID string, appInfoID string, query *AppInfoQuery) (AppInfo, error) {
 	if err := validateSegment(appID, false); err != nil {
 		return AppInfo{}, err
@@ -519,7 +1385,7 @@ func (q *AppInfoLocalizationsQuery) Values() Query {
 	return v
 }
 
-// AppInfoLocalizations reads /apps/{appId}/app-infos/{appInfoId}/localizations directly from Apple.
+// AppInfoLocalizations reads /apps/{appId}/app-infos/{appInfoId}/localizations using the shared Rust core.
 func (c *Client) AppInfoLocalizations(ctx context.Context, appID string, appInfoID string, query *AppInfoLocalizationsQuery) (Page[AppInfoLocalization], error) {
 	if err := validateSegment(appID, false); err != nil {
 		return Page[AppInfoLocalization]{}, err
@@ -545,7 +1411,7 @@ func (q *AppInfoLocalizationQuery) Values() Query {
 	return v
 }
 
-// AppInfoLocalization reads /apps/{appId}/app-infos/{appInfoId}/localizations/{locale} directly from Apple.
+// AppInfoLocalization reads /apps/{appId}/app-infos/{appInfoId}/localizations/{locale} using the shared Rust core.
 func (c *Client) AppInfoLocalization(ctx context.Context, appID string, appInfoID string, locale string, query *AppInfoLocalizationQuery) (AppInfoLocalization, error) {
 	if err := validateSegment(appID, false); err != nil {
 		return AppInfoLocalization{}, err
@@ -574,7 +1440,7 @@ func (q *AgeRatingQuery) Values() Query {
 	return v
 }
 
-// AgeRating reads /apps/{appId}/app-infos/{appInfoId}/age-rating directly from Apple.
+// AgeRating reads /apps/{appId}/app-infos/{appInfoId}/age-rating using the shared Rust core.
 func (c *Client) AgeRating(ctx context.Context, appID string, appInfoID string, query *AgeRatingQuery) (AgeRating, error) {
 	if err := validateSegment(appID, false); err != nil {
 		return AgeRating{}, err
@@ -624,7 +1490,7 @@ func (q *VersionsQuery) Values() Query {
 	return v
 }
 
-// Versions reads /apps/{appId}/versions directly from Apple.
+// Versions reads /apps/{appId}/versions using the shared Rust core.
 func (c *Client) Versions(ctx context.Context, appID string, query *VersionsQuery) (Page[Version], error) {
 	if err := validateSegment(appID, false); err != nil {
 		return Page[Version]{}, err
@@ -647,7 +1513,7 @@ func (q *VersionQuery) Values() Query {
 	return v
 }
 
-// Version reads /apps/{appId}/versions/{versionId} directly from Apple.
+// Version reads /apps/{appId}/versions/{versionId} using the shared Rust core.
 func (c *Client) Version(ctx context.Context, appID string, versionID string, query *VersionQuery) (Version, error) {
 	if err := validateSegment(appID, false); err != nil {
 		return Version{}, err
@@ -685,7 +1551,7 @@ func (q *VersionLocalizationsQuery) Values() Query {
 	return v
 }
 
-// VersionLocalizations reads /apps/{appId}/versions/{versionId}/localizations directly from Apple.
+// VersionLocalizations reads /apps/{appId}/versions/{versionId}/localizations using the shared Rust core.
 func (c *Client) VersionLocalizations(ctx context.Context, appID string, versionID string, query *VersionLocalizationsQuery) (Page[VersionLocalization], error) {
 	if err := validateSegment(appID, false); err != nil {
 		return Page[VersionLocalization]{}, err
@@ -711,7 +1577,7 @@ func (q *VersionLocalizationQuery) Values() Query {
 	return v
 }
 
-// VersionLocalization reads /apps/{appId}/versions/{versionId}/localizations/{locale} directly from Apple.
+// VersionLocalization reads /apps/{appId}/versions/{versionId}/localizations/{locale} using the shared Rust core.
 func (c *Client) VersionLocalization(ctx context.Context, appID string, versionID string, locale string, query *VersionLocalizationQuery) (VersionLocalization, error) {
 	if err := validateSegment(appID, false); err != nil {
 		return VersionLocalization{}, err
@@ -740,7 +1606,7 @@ func (q *ReviewContactQuery) Values() Query {
 	return v
 }
 
-// ReviewContact reads /apps/{appId}/versions/{versionId}/review-contact directly from Apple.
+// ReviewContact reads /apps/{appId}/versions/{versionId}/review-contact using the shared Rust core.
 func (c *Client) ReviewContact(ctx context.Context, appID string, versionID string, query *ReviewContactQuery) (ReviewContact, error) {
 	if err := validateSegment(appID, false); err != nil {
 		return ReviewContact{}, err
@@ -749,4 +1615,425 @@ func (c *Client) ReviewContact(ctx context.Context, appID string, versionID stri
 		return ReviewContact{}, err
 	}
 	return readTyped[ReviewContact](c, ctx, "/apps/"+appID+"/versions/"+versionID+"/review-contact", query.Values())
+}
+
+type ScreenshotSetsQuery struct {
+	ScreenshotDisplayType                          []string
+	AppCustomProductPageLocalization               []string
+	AppStoreVersionExperimentTreatmentLocalization []string
+	Fields                                         []string
+	Limit                                          int
+	Cursor                                         string
+}
+
+func (q *ScreenshotSetsQuery) Values() Query {
+	v := Query{}
+	if q == nil {
+		return v
+	}
+	if q.ScreenshotDisplayType != nil {
+		v.Set("screenshotDisplayType", strings.Join(q.ScreenshotDisplayType, ","))
+	}
+	if q.AppCustomProductPageLocalization != nil {
+		v.Set("appCustomProductPageLocalization", strings.Join(q.AppCustomProductPageLocalization, ","))
+	}
+	if q.AppStoreVersionExperimentTreatmentLocalization != nil {
+		v.Set("appStoreVersionExperimentTreatmentLocalization", strings.Join(q.AppStoreVersionExperimentTreatmentLocalization, ","))
+	}
+	if q.Fields != nil {
+		v.Set("fields", strings.Join(q.Fields, ","))
+	}
+	if q.Limit != 0 {
+		v.Set("limit", strconv.Itoa(q.Limit))
+	}
+	if q.Cursor != "" {
+		v.Set("cursor", q.Cursor)
+	}
+	return v
+}
+
+// ScreenshotSets reads /apps/{appId}/versions/{versionId}/localizations/{locale}/screenshot-sets using the shared Rust core.
+func (c *Client) ScreenshotSets(ctx context.Context, appID string, versionID string, locale string, query *ScreenshotSetsQuery) (Page[ScreenshotSet], error) {
+	if err := validateSegment(appID, false); err != nil {
+		return Page[ScreenshotSet]{}, err
+	}
+	if err := validateSegment(versionID, false); err != nil {
+		return Page[ScreenshotSet]{}, err
+	}
+	if err := validateSegment(locale, true); err != nil {
+		return Page[ScreenshotSet]{}, err
+	}
+	return readTyped[Page[ScreenshotSet]](c, ctx, "/apps/"+appID+"/versions/"+versionID+"/localizations/"+locale+"/screenshot-sets", query.Values())
+}
+
+type ScreenshotsQuery struct {
+	Fields []string
+	Limit  int
+	Cursor string
+}
+
+func (q *ScreenshotsQuery) Values() Query {
+	v := Query{}
+	if q == nil {
+		return v
+	}
+	if q.Fields != nil {
+		v.Set("fields", strings.Join(q.Fields, ","))
+	}
+	if q.Limit != 0 {
+		v.Set("limit", strconv.Itoa(q.Limit))
+	}
+	if q.Cursor != "" {
+		v.Set("cursor", q.Cursor)
+	}
+	return v
+}
+
+// Screenshots reads /screenshot-sets/{screenshotSetId}/screenshots using the shared Rust core.
+func (c *Client) Screenshots(ctx context.Context, screenshotSetID string, query *ScreenshotsQuery) (Page[Screenshot], error) {
+	if err := validateSegment(screenshotSetID, false); err != nil {
+		return Page[Screenshot]{}, err
+	}
+	return readTyped[Page[Screenshot]](c, ctx, "/screenshot-sets/"+screenshotSetID+"/screenshots", query.Values())
+}
+
+type PreviewSetsQuery struct {
+	PreviewType                                    []string
+	AppCustomProductPageLocalization               []string
+	AppStoreVersionExperimentTreatmentLocalization []string
+	Fields                                         []string
+	Limit                                          int
+	Cursor                                         string
+}
+
+func (q *PreviewSetsQuery) Values() Query {
+	v := Query{}
+	if q == nil {
+		return v
+	}
+	if q.PreviewType != nil {
+		v.Set("previewType", strings.Join(q.PreviewType, ","))
+	}
+	if q.AppCustomProductPageLocalization != nil {
+		v.Set("appCustomProductPageLocalization", strings.Join(q.AppCustomProductPageLocalization, ","))
+	}
+	if q.AppStoreVersionExperimentTreatmentLocalization != nil {
+		v.Set("appStoreVersionExperimentTreatmentLocalization", strings.Join(q.AppStoreVersionExperimentTreatmentLocalization, ","))
+	}
+	if q.Fields != nil {
+		v.Set("fields", strings.Join(q.Fields, ","))
+	}
+	if q.Limit != 0 {
+		v.Set("limit", strconv.Itoa(q.Limit))
+	}
+	if q.Cursor != "" {
+		v.Set("cursor", q.Cursor)
+	}
+	return v
+}
+
+// PreviewSets reads /apps/{appId}/versions/{versionId}/localizations/{locale}/preview-sets using the shared Rust core.
+func (c *Client) PreviewSets(ctx context.Context, appID string, versionID string, locale string, query *PreviewSetsQuery) (Page[PreviewSet], error) {
+	if err := validateSegment(appID, false); err != nil {
+		return Page[PreviewSet]{}, err
+	}
+	if err := validateSegment(versionID, false); err != nil {
+		return Page[PreviewSet]{}, err
+	}
+	if err := validateSegment(locale, true); err != nil {
+		return Page[PreviewSet]{}, err
+	}
+	return readTyped[Page[PreviewSet]](c, ctx, "/apps/"+appID+"/versions/"+versionID+"/localizations/"+locale+"/preview-sets", query.Values())
+}
+
+type PreviewsQuery struct {
+	Fields []string
+	Limit  int
+	Cursor string
+}
+
+func (q *PreviewsQuery) Values() Query {
+	v := Query{}
+	if q == nil {
+		return v
+	}
+	if q.Fields != nil {
+		v.Set("fields", strings.Join(q.Fields, ","))
+	}
+	if q.Limit != 0 {
+		v.Set("limit", strconv.Itoa(q.Limit))
+	}
+	if q.Cursor != "" {
+		v.Set("cursor", q.Cursor)
+	}
+	return v
+}
+
+// Previews reads /preview-sets/{previewSetId}/previews using the shared Rust core.
+func (c *Client) Previews(ctx context.Context, previewSetID string, query *PreviewsQuery) (Page[Preview], error) {
+	if err := validateSegment(previewSetID, false); err != nil {
+		return Page[Preview]{}, err
+	}
+	return readTyped[Page[Preview]](c, ctx, "/preview-sets/"+previewSetID+"/previews", query.Values())
+}
+
+type PlacementsQuery struct {
+	PlacementType                                  []string
+	PlacementGroup                                 []string
+	State                                          []string
+	Image                                          []string
+	Video                                          []string
+	AppEventLocalization                           []string
+	AppCustomProductPageLocalization               []string
+	AppStoreVersionExperimentTreatmentLocalization []string
+	ID                                             []string
+	Sort                                           []string
+	Fields                                         []string
+	Limit                                          int
+	Cursor                                         string
+}
+
+func (q *PlacementsQuery) Values() Query {
+	v := Query{}
+	if q == nil {
+		return v
+	}
+	if q.PlacementType != nil {
+		v.Set("placementType", strings.Join(q.PlacementType, ","))
+	}
+	if q.PlacementGroup != nil {
+		v.Set("placementGroup", strings.Join(q.PlacementGroup, ","))
+	}
+	if q.State != nil {
+		v.Set("state", strings.Join(q.State, ","))
+	}
+	if q.Image != nil {
+		v.Set("image", strings.Join(q.Image, ","))
+	}
+	if q.Video != nil {
+		v.Set("video", strings.Join(q.Video, ","))
+	}
+	if q.AppEventLocalization != nil {
+		v.Set("appEventLocalization", strings.Join(q.AppEventLocalization, ","))
+	}
+	if q.AppCustomProductPageLocalization != nil {
+		v.Set("appCustomProductPageLocalization", strings.Join(q.AppCustomProductPageLocalization, ","))
+	}
+	if q.AppStoreVersionExperimentTreatmentLocalization != nil {
+		v.Set("appStoreVersionExperimentTreatmentLocalization", strings.Join(q.AppStoreVersionExperimentTreatmentLocalization, ","))
+	}
+	if q.ID != nil {
+		v.Set("id", strings.Join(q.ID, ","))
+	}
+	if q.Sort != nil {
+		v.Set("sort", strings.Join(q.Sort, ","))
+	}
+	if q.Fields != nil {
+		v.Set("fields", strings.Join(q.Fields, ","))
+	}
+	if q.Limit != 0 {
+		v.Set("limit", strconv.Itoa(q.Limit))
+	}
+	if q.Cursor != "" {
+		v.Set("cursor", q.Cursor)
+	}
+	return v
+}
+
+// Placements reads /apps/{appId}/versions/{versionId}/localizations/{locale}/placements using the shared Rust core.
+func (c *Client) Placements(ctx context.Context, appID string, versionID string, locale string, query *PlacementsQuery) (Page[LibraryPlacement], error) {
+	if err := validateSegment(appID, false); err != nil {
+		return Page[LibraryPlacement]{}, err
+	}
+	if err := validateSegment(versionID, false); err != nil {
+		return Page[LibraryPlacement]{}, err
+	}
+	if err := validateSegment(locale, true); err != nil {
+		return Page[LibraryPlacement]{}, err
+	}
+	return readTyped[Page[LibraryPlacement]](c, ctx, "/apps/"+appID+"/versions/"+versionID+"/localizations/"+locale+"/placements", query.Values())
+}
+
+type LibraryImageQuery struct {
+	Fields []string
+}
+
+func (q *LibraryImageQuery) Values() Query {
+	v := Query{}
+	if q == nil {
+		return v
+	}
+	if q.Fields != nil {
+		v.Set("fields", strings.Join(q.Fields, ","))
+	}
+	return v
+}
+
+// LibraryImage reads /library-images/{libraryImageId} using the shared Rust core.
+func (c *Client) LibraryImage(ctx context.Context, libraryImageID string, query *LibraryImageQuery) (LibraryImage, error) {
+	if err := validateSegment(libraryImageID, false); err != nil {
+		return LibraryImage{}, err
+	}
+	return readTyped[LibraryImage](c, ctx, "/library-images/"+libraryImageID, query.Values())
+}
+
+type BuildsQuery struct {
+	Version                    []string
+	Expired                    []string
+	ProcessingState            []string
+	BetaReviewState            []string
+	UsesNonExemptEncryption    []string
+	PrereleaseVersion          []string
+	Platform                   []string
+	BuildAudienceType          []string
+	PrereleaseVersionID        []string
+	BetaGroupID                []string
+	VersionID                  []string
+	ID                         []string
+	HasUsesNonExemptEncryption *bool
+	Sort                       []string
+	Fields                     []string
+	Limit                      int
+	Cursor                     string
+}
+
+func (q *BuildsQuery) Values() Query {
+	v := Query{}
+	if q == nil {
+		return v
+	}
+	if q.Version != nil {
+		v.Set("version", strings.Join(q.Version, ","))
+	}
+	if q.Expired != nil {
+		v.Set("expired", strings.Join(q.Expired, ","))
+	}
+	if q.ProcessingState != nil {
+		v.Set("processingState", strings.Join(q.ProcessingState, ","))
+	}
+	if q.BetaReviewState != nil {
+		v.Set("betaReviewState", strings.Join(q.BetaReviewState, ","))
+	}
+	if q.UsesNonExemptEncryption != nil {
+		v.Set("usesNonExemptEncryption", strings.Join(q.UsesNonExemptEncryption, ","))
+	}
+	if q.PrereleaseVersion != nil {
+		v.Set("prereleaseVersion", strings.Join(q.PrereleaseVersion, ","))
+	}
+	if q.Platform != nil {
+		v.Set("platform", strings.Join(q.Platform, ","))
+	}
+	if q.BuildAudienceType != nil {
+		v.Set("buildAudienceType", strings.Join(q.BuildAudienceType, ","))
+	}
+	if q.PrereleaseVersionID != nil {
+		v.Set("prereleaseVersionId", strings.Join(q.PrereleaseVersionID, ","))
+	}
+	if q.BetaGroupID != nil {
+		v.Set("betaGroupId", strings.Join(q.BetaGroupID, ","))
+	}
+	if q.VersionID != nil {
+		v.Set("versionId", strings.Join(q.VersionID, ","))
+	}
+	if q.ID != nil {
+		v.Set("id", strings.Join(q.ID, ","))
+	}
+	if q.HasUsesNonExemptEncryption != nil {
+		v.Set("hasUsesNonExemptEncryption", strconv.FormatBool(*q.HasUsesNonExemptEncryption))
+	}
+	if q.Sort != nil {
+		v.Set("sort", strings.Join(q.Sort, ","))
+	}
+	if q.Fields != nil {
+		v.Set("fields", strings.Join(q.Fields, ","))
+	}
+	if q.Limit != 0 {
+		v.Set("limit", strconv.Itoa(q.Limit))
+	}
+	if q.Cursor != "" {
+		v.Set("cursor", q.Cursor)
+	}
+	return v
+}
+
+// Builds reads /apps/{appId}/builds using the shared Rust core.
+func (c *Client) Builds(ctx context.Context, appID string, query *BuildsQuery) (Page[Build], error) {
+	if err := validateSegment(appID, false); err != nil {
+		return Page[Build]{}, err
+	}
+	return readTyped[Page[Build]](c, ctx, "/apps/"+appID+"/builds", query.Values())
+}
+
+type BuildQuery struct {
+	Fields []string
+}
+
+func (q *BuildQuery) Values() Query {
+	v := Query{}
+	if q == nil {
+		return v
+	}
+	if q.Fields != nil {
+		v.Set("fields", strings.Join(q.Fields, ","))
+	}
+	return v
+}
+
+// Build reads /apps/{appId}/builds/{buildId} using the shared Rust core.
+func (c *Client) Build(ctx context.Context, appID string, buildID string, query *BuildQuery) (Build, error) {
+	if err := validateSegment(appID, false); err != nil {
+		return Build{}, err
+	}
+	if err := validateSegment(buildID, false); err != nil {
+		return Build{}, err
+	}
+	return readTyped[Build](c, ctx, "/apps/"+appID+"/builds/"+buildID, query.Values())
+}
+
+type VersionBuildQuery struct {
+	Fields []string
+}
+
+func (q *VersionBuildQuery) Values() Query {
+	v := Query{}
+	if q == nil {
+		return v
+	}
+	if q.Fields != nil {
+		v.Set("fields", strings.Join(q.Fields, ","))
+	}
+	return v
+}
+
+// VersionBuild reads /apps/{appId}/versions/{versionId}/build using the shared Rust core.
+func (c *Client) VersionBuild(ctx context.Context, appID string, versionID string, query *VersionBuildQuery) (Build, error) {
+	if err := validateSegment(appID, false); err != nil {
+		return Build{}, err
+	}
+	if err := validateSegment(versionID, false); err != nil {
+		return Build{}, err
+	}
+	return readTyped[Build](c, ctx, "/apps/"+appID+"/versions/"+versionID+"/build", query.Values())
+}
+
+type BuildPrereleaseVersionQuery struct {
+}
+
+func (q *BuildPrereleaseVersionQuery) Values() Query {
+	v := Query{}
+	if q == nil {
+		return v
+	}
+	return v
+}
+
+// BuildPrereleaseVersion reads /apps/{appId}/builds/{buildId}/prerelease-version using the shared Rust core.
+func (c *Client) BuildPrereleaseVersion(ctx context.Context, appID string, buildID string, query *BuildPrereleaseVersionQuery) (PrereleaseVersion, error) {
+	if err := validateSegment(appID, false); err != nil {
+		return PrereleaseVersion{}, err
+	}
+	if err := validateSegment(buildID, false); err != nil {
+		return PrereleaseVersion{}, err
+	}
+	return readTyped[PrereleaseVersion](c, ctx, "/apps/"+appID+"/builds/"+buildID+"/prerelease-version", query.Values())
 }

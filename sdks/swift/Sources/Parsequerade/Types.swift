@@ -6,6 +6,13 @@ public typealias Query = [String: String]
 public struct Page<Item: Codable & Sendable>: Codable, Sendable {
     public let items: [Item]
     public let nextCursor: String?
+
+    enum CodingKeys: String, CodingKey { case items, nextCursor }
+    public func encode(to encoder: Encoder) throws {
+        var values = encoder.container(keyedBy: CodingKeys.self)
+        try values.encode(items, forKey: .items)
+        try values.encode(nextCursor, forKey: .nextCursor)
+    }
 }
 
 /// JSON that preserves explicit nulls. Used by raw reads and age-rating updates.
@@ -45,7 +52,7 @@ public struct ErrorDetail: Codable, Sendable, Equatable {
 }
 
 /// Stable facade errors. Apple messages, credentials and request URLs are excluded.
-public struct ApiError: Error, LocalizedError, Sendable {
+public struct ApiError: Error, LocalizedError, Sendable, Decodable {
     public let status: Int
     public let code: String
     public let message: String
@@ -60,21 +67,49 @@ public struct ApiError: Error, LocalizedError, Sendable {
         self.retryable = retryable; self.details = details; self.retryAfter = retryAfter
     }
 
+    enum CodingKeys: String, CodingKey { case status, code, message, retryable, details, retryAfter }
+    public init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        status = try values.decode(Int.self, forKey: .status)
+        code = try values.decode(String.self, forKey: .code)
+        message = try values.decode(String.self, forKey: .message)
+        retryable = try values.decodeIfPresent(Bool.self, forKey: .retryable) ?? false
+        details = try values.decodeIfPresent([ErrorDetail].self, forKey: .details) ?? []
+        retryAfter = try values.decodeIfPresent(Int.self, forKey: .retryAfter)
+    }
+
     static func invalidUpstream() -> Self {
         Self(502, "upstream_invalid_response", "Apple returned an invalid response.")
     }
-    static func notFound(_ code: String = "resource_not_found") -> Self {
-        Self(404, code, "The requested resource was not found.")
+}
+
+/// Opaque, durable upload state. Save the entire Codable value and reuse it with
+/// the same request and PNG to reconcile an interrupted or uncertain upload.
+/// One checkpoint can participate in only one upload at a time, across clients.
+public final class ListingImageUploadCheckpoint: Codable, @unchecked Sendable {
+    private let lock = NSLock()
+    private var values: [String: JSONValue]
+    private var active = false
+    private var pendingPersistence = 0
+
+    public init() { values = [:] }
+    public init(from decoder: Decoder) throws {
+        values = try decoder.singleValueContainer().decode([String: JSONValue].self)
     }
-    static func incomplete() -> Self {
-        Self(502, "upstream_incomplete_result", "Apple pagination exceeded its bound or repeated a page.")
+    public func encode(to encoder: Encoder) throws {
+        lock.lock(); let snapshot = values; lock.unlock()
+        var container = encoder.singleValueContainer()
+        try container.encode(snapshot)
     }
-    static func unknownWrite() -> Self {
-        Self(503, "write_outcome_unknown", "Apple did not confirm this update. Read the age rating before trying again.")
+    func begin() throws {
+        lock.lock(); defer { lock.unlock() }
+        guard !active, pendingPersistence == 0 else { throw ApiError(409, "checkpoint_in_use", "This checkpoint already has an upload or checkpoint save in progress.") }
+        active = true
     }
-    static func invalidQuery(_ field: String) -> Self {
-        Self(400, "invalid_query", "The request query is invalid.", details: [
-            ErrorDetail(code: "invalid_parameter", message: "Provide a supported parameter and value.", field: field)
-        ])
+    func end() { lock.lock(); active = false; lock.unlock() }
+    func retainPersistence() { lock.lock(); pendingPersistence += 1; lock.unlock() }
+    func releasePersistence() { lock.lock(); pendingPersistence -= 1; lock.unlock() }
+    func replace(_ snapshot: [String: JSONValue]) {
+        lock.lock(); values = snapshot; lock.unlock()
     }
 }

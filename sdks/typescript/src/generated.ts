@@ -4,6 +4,72 @@ export type QueryValue = string | number | boolean | readonly string[];
 export type Query = Readonly<Record<string, QueryValue | undefined>> | URLSearchParams;
 export interface Page<T> { items: T[]; nextCursor: string | null; }
 
+export type ScreenshotDisplayType = "APP_IPHONE_67" | "APP_IPHONE_61" | "APP_IPHONE_65" | "APP_IPHONE_58" | "APP_IPHONE_55" | "APP_IPHONE_47" | "APP_IPHONE_40" | "APP_IPHONE_35" | "APP_IPAD_PRO_3GEN_129" | "APP_IPAD_PRO_3GEN_11" | "APP_IPAD_PRO_129" | "APP_IPAD_105" | "APP_IPAD_97" | "APP_DESKTOP" | "APP_WATCH_ULTRA" | "APP_WATCH_SERIES_10" | "APP_WATCH_SERIES_7" | "APP_WATCH_SERIES_4" | "APP_WATCH_SERIES_3" | "APP_APPLE_TV" | "APP_APPLE_VISION_PRO" | "IMESSAGE_APP_IPHONE_67" | "IMESSAGE_APP_IPHONE_61" | "IMESSAGE_APP_IPHONE_65" | "IMESSAGE_APP_IPHONE_58" | "IMESSAGE_APP_IPHONE_55" | "IMESSAGE_APP_IPHONE_47" | "IMESSAGE_APP_IPHONE_40" | "IMESSAGE_APP_IPAD_PRO_3GEN_129" | "IMESSAGE_APP_IPAD_PRO_3GEN_11" | "IMESSAGE_APP_IPAD_PRO_129" | "IMESSAGE_APP_IPAD_105" | "IMESSAGE_APP_IPAD_97";
+
+export interface ImageAsset {
+  templateUrl?: string | null;
+  width?: number | null;
+  height?: number | null;
+}
+
+export interface UploadOperation {
+  method?: string | null;
+  url?: string | null;
+  length?: number | null;
+  offset?: number | null;
+  requestHeaders?: Array<HttpHeader> | null;
+}
+
+export interface HttpHeader {
+  name?: string | null;
+  value?: string | null;
+}
+
+export interface AppMediaAssetState {
+  errors?: Array<AppMediaStateError> | null;
+  warnings?: Array<AppMediaStateError> | null;
+  state?: string | null;
+}
+
+export interface AppMediaStateError {
+  code?: string | null;
+  description?: string | null;
+}
+
+export type PreviewType = "IPHONE_67" | "IPHONE_61" | "IPHONE_65" | "IPHONE_58" | "IPHONE_55" | "IPHONE_47" | "IPHONE_40" | "IPHONE_35" | "IPAD_PRO_3GEN_129" | "IPAD_PRO_3GEN_11" | "IPAD_PRO_129" | "IPAD_105" | "IPAD_97" | "DESKTOP" | "APPLE_TV" | "APPLE_VISION_PRO";
+
+export interface PreviewFrameImage {
+  image?: ImageAsset | null;
+  state?: AppMediaPreviewFrameImageState | null;
+}
+
+export interface AppMediaPreviewFrameImageState {
+  errors?: Array<AppMediaStateError> | null;
+  warnings?: Array<AppMediaStateError> | null;
+  state?: string | null;
+}
+
+export interface AppMediaVideoState {
+  errors?: Array<AppMediaStateError> | null;
+  warnings?: Array<AppMediaStateError> | null;
+  state?: string | null;
+}
+
+export type AppAssetLibraryMediaType = "IMAGE" | "VIDEO";
+
+export type AppAssetLibraryPlacementType = "APP_SCREENSHOT" | "IMESSAGE_APP_SCREENSHOT" | "APP_PREVIEW" | "PRODUCT_PAGE_HEADER_ASSET" | "APP_STORE_SEARCH_RESULTS_ASSET" | "SEARCH_RESULTS_ADS_ASSET" | "TODAY_TAB_ADS_ASSET" | "EVENT_CARD_ASSET" | "EVENT_DETAILS_PAGE_ASSET" | "RETENTION_MESSAGE_ASSET";
+
+export type AppAssetLibraryPlacementState = "ASSET_PROCESSING" | "FAILED" | "PARENT_PREPARE_FOR_SUBMISSION" | "PARENT_READY_FOR_REVIEW" | "PARENT_WAITING_FOR_REVIEW" | "PARENT_IN_REVIEW" | "PARENT_APPROVED";
+
+export type AppAssetLibraryAssetState = "AWAITING_UPLOAD" | "UPLOAD_COMPLETE" | "FAILED" | "COMPLETE" | "PREPARE_FOR_SUBMISSION" | "READY_FOR_REVIEW" | "WAITING_FOR_REVIEW" | "IN_REVIEW" | "ACCEPTED" | "APPROVED" | "REJECTED" | "ARCHIVED";
+
+export type AppAssetLibraryAssetCategory = "CREATIVE_ASSETS" | "APP_SCREENSHOTS_AND_PREVIEWS";
+
+export interface StateDetail {
+  code?: string | null;
+  description?: string | null;
+}
+
 export interface App {
   id: string;
   accessibilityUrl?: string | null;
@@ -132,6 +198,144 @@ export interface ReviewContact {
   contactEmail?: string | null;
 }
 
+export interface ScreenshotSet {
+  id: string;
+  appId: string;
+  versionId: string;
+  screenshotDisplayType?: string | null;
+  appStoreVersionLocalizationId?: string | null;
+  appCustomProductPageLocalizationId?: string | null;
+  appStoreVersionExperimentTreatmentLocalizationId?: string | null;
+}
+
+export interface Screenshot {
+  id: string;
+  fileSize?: number | null;
+  fileName?: string | null;
+  sourceFileChecksum?: string | null;
+  imageAsset?: ImageAsset | null;
+  assetToken?: string | null;
+  assetType?: string | null;
+  uploadOperations?: Array<UploadOperation> | null;
+  assetDeliveryState?: AppMediaAssetState | null;
+  appScreenshotSetId?: string | null;
+}
+
+export interface PreviewSet {
+  id: string;
+  appId: string;
+  versionId: string;
+  previewType?: string | null;
+  appStoreVersionLocalizationId?: string | null;
+  appCustomProductPageLocalizationId?: string | null;
+  appStoreVersionExperimentTreatmentLocalizationId?: string | null;
+}
+
+export interface Preview {
+  id: string;
+  fileSize?: number | null;
+  fileName?: string | null;
+  sourceFileChecksum?: string | null;
+  previewFrameTimeCode?: string | null;
+  mimeType?: string | null;
+  videoUrl?: string | null;
+  previewFrameImage?: PreviewFrameImage | null;
+  uploadOperations?: Array<UploadOperation> | null;
+  videoDeliveryState?: AppMediaVideoState | null;
+  appPreviewSetId?: string | null;
+}
+
+export interface LibraryPlacement {
+  id: string;
+  appId: string;
+  versionId: string;
+  mediaType?: string | null;
+  placementType?: string | null;
+  placementGroup?: string | null;
+  createdDate?: string | null;
+  lastModifiedDate?: string | null;
+  state?: string | null;
+  stateDetails?: Array<StateDetail> | null;
+  imageId?: string | null;
+  videoId?: string | null;
+  appEventLocalizationId?: string | null;
+  appStoreVersionLocalizationId?: string | null;
+  appCustomProductPageLocalizationId?: string | null;
+  appStoreVersionExperimentTreatmentLocalizationId?: string | null;
+}
+
+export interface LibraryImage {
+  id: string;
+  fileName?: string | null;
+  fileSize?: number | null;
+  referenceName?: string | null;
+  imageAsset?: ImageAsset | null;
+  state?: string | null;
+  stateDetails?: Array<StateDetail> | null;
+  category?: string | null;
+  createdDate?: string | null;
+  lastModifiedDate?: string | null;
+  specId?: string | null;
+  uploadOperations?: Array<UploadOperation> | null;
+}
+
+export interface Build {
+  id: string;
+  appId: string;
+  version?: string | null;
+  uploadedDate?: string | null;
+  expirationDate?: string | null;
+  expired?: boolean | null;
+  minOsVersion?: string | null;
+  lsMinimumSystemVersion?: string | null;
+  computedMinMacOsVersion?: string | null;
+  computedMinVisionOsVersion?: string | null;
+  iconAssetToken?: { templateUrl?: string | null; width?: number | null; height?: number | null; } | null;
+  processingState?: string | null;
+  buildAudienceType?: string | null;
+  usesNonExemptEncryption?: boolean | null;
+  preReleaseVersionId?: string | null;
+  appEncryptionDeclarationId?: string | null;
+  betaAppReviewSubmissionId?: string | null;
+  buildBetaDetailId?: string | null;
+  versionId?: string | null;
+  buildUploadId?: string | null;
+}
+
+export interface PrereleaseVersion {
+  id: string;
+  appId: string;
+  version?: string | null;
+  platform?: string | null;
+}
+
+export type ListingImagePlacementType = "PRODUCT_PAGE_HEADER_ASSET" | "APP_STORE_SEARCH_RESULTS_ASSET";
+
+export interface ListingImageUpload {
+  appId: string;
+  versionId: string;
+  locale: string;
+  placementType: ListingImagePlacementType;
+  fileName: string;
+}
+
+export interface ListingImageUploadCheckpoint {
+  binding?: string;
+  imageId?: string;
+  placementId?: string;
+  placementGroup?: string;
+  phase?: string;
+}
+
+export interface ListingImageUploadReceipt {
+  appId: string;
+  versionId: string;
+  locale: string;
+  placementType: ListingImagePlacementType;
+  imageId: string;
+  placementId: string;
+}
+
 export interface AgeRatingUpdate {
   advertising?: boolean;
   alcoholTobaccoOrDrugUseOrReferences?: "NONE" | "INFREQUENT_OR_MILD" | "FREQUENT_OR_INTENSE" | "INFREQUENT" | "FREQUENT";
@@ -162,6 +366,28 @@ export interface AgeRatingUpdate {
   koreaAgeRatingOverride?: "NONE" | "ALL" | "TWELVE_PLUS" | "FIFTEEN_PLUS" | "NINETEEN_PLUS" | null;
   gracRatingClassificationNumber?: string | null;
   developerAgeRatingInfoUrl?: string | null;
+}
+
+export interface AppUpdate {
+  contentRightsDeclaration?: string;
+}
+
+export interface VersionUpdate {
+  versionString?: string;
+  copyright?: string;
+}
+
+export interface AppInfoLocalizationUpdate {
+  privacyPolicyUrl?: string;
+}
+
+export interface VersionLocalizationUpdate {
+  promotionalText?: string;
+  description?: string;
+  whatsNew?: string;
+  keywords?: string;
+  supportUrl?: string;
+  marketingUrl?: string;
 }
 
 export type AppsQuery = {
@@ -238,7 +464,88 @@ export type ReviewContactQuery = {
   fields?: Selection<"contactFirstName" | "contactLastName" | "contactPhone" | "contactEmail">;
 };
 
-/** Typed resource methods; all behavior lives in the shared facade runtime. */
+export type ScreenshotSetsQuery = {
+  screenshotDisplayType?: Selection<"APP_IPHONE_67" | "APP_IPHONE_61" | "APP_IPHONE_65" | "APP_IPHONE_58" | "APP_IPHONE_55" | "APP_IPHONE_47" | "APP_IPHONE_40" | "APP_IPHONE_35" | "APP_IPAD_PRO_3GEN_129" | "APP_IPAD_PRO_3GEN_11" | "APP_IPAD_PRO_129" | "APP_IPAD_105" | "APP_IPAD_97" | "APP_DESKTOP" | "APP_WATCH_ULTRA" | "APP_WATCH_SERIES_10" | "APP_WATCH_SERIES_7" | "APP_WATCH_SERIES_4" | "APP_WATCH_SERIES_3" | "APP_APPLE_TV" | "APP_APPLE_VISION_PRO" | "IMESSAGE_APP_IPHONE_67" | "IMESSAGE_APP_IPHONE_61" | "IMESSAGE_APP_IPHONE_65" | "IMESSAGE_APP_IPHONE_58" | "IMESSAGE_APP_IPHONE_55" | "IMESSAGE_APP_IPHONE_47" | "IMESSAGE_APP_IPHONE_40" | "IMESSAGE_APP_IPAD_PRO_3GEN_129" | "IMESSAGE_APP_IPAD_PRO_3GEN_11" | "IMESSAGE_APP_IPAD_PRO_129" | "IMESSAGE_APP_IPAD_105" | "IMESSAGE_APP_IPAD_97">;
+  appCustomProductPageLocalization?: Selection<string>;
+  appStoreVersionExperimentTreatmentLocalization?: Selection<string>;
+  fields?: Selection<"screenshotDisplayType">;
+  limit?: number;
+  cursor?: string;
+};
+
+export type ScreenshotsQuery = {
+  fields?: Selection<"fileSize" | "fileName" | "sourceFileChecksum" | "imageAsset" | "assetToken" | "assetType" | "uploadOperations" | "assetDeliveryState">;
+  limit?: number;
+  cursor?: string;
+};
+
+export type PreviewSetsQuery = {
+  previewType?: Selection<"IPHONE_67" | "IPHONE_61" | "IPHONE_65" | "IPHONE_58" | "IPHONE_55" | "IPHONE_47" | "IPHONE_40" | "IPHONE_35" | "IPAD_PRO_3GEN_129" | "IPAD_PRO_3GEN_11" | "IPAD_PRO_129" | "IPAD_105" | "IPAD_97" | "DESKTOP" | "APPLE_TV" | "APPLE_VISION_PRO">;
+  appCustomProductPageLocalization?: Selection<string>;
+  appStoreVersionExperimentTreatmentLocalization?: Selection<string>;
+  fields?: Selection<"previewType">;
+  limit?: number;
+  cursor?: string;
+};
+
+export type PreviewsQuery = {
+  fields?: Selection<"fileSize" | "fileName" | "sourceFileChecksum" | "previewFrameTimeCode" | "mimeType" | "videoUrl" | "previewFrameImage" | "uploadOperations" | "videoDeliveryState">;
+  limit?: number;
+  cursor?: string;
+};
+
+export type PlacementsQuery = {
+  placementType?: Selection<"APP_SCREENSHOT" | "IMESSAGE_APP_SCREENSHOT" | "APP_PREVIEW" | "PRODUCT_PAGE_HEADER_ASSET" | "APP_STORE_SEARCH_RESULTS_ASSET" | "SEARCH_RESULTS_ADS_ASSET" | "TODAY_TAB_ADS_ASSET" | "EVENT_CARD_ASSET" | "EVENT_DETAILS_PAGE_ASSET" | "RETENTION_MESSAGE_ASSET">;
+  placementGroup?: Selection<string>;
+  state?: Selection<"ASSET_PROCESSING" | "FAILED" | "PARENT_PREPARE_FOR_SUBMISSION" | "PARENT_READY_FOR_REVIEW" | "PARENT_WAITING_FOR_REVIEW" | "PARENT_IN_REVIEW" | "PARENT_APPROVED">;
+  image?: Selection<string>;
+  video?: Selection<string>;
+  appEventLocalization?: Selection<string>;
+  appCustomProductPageLocalization?: Selection<string>;
+  appStoreVersionExperimentTreatmentLocalization?: Selection<string>;
+  id?: Selection<string>;
+  sort?: Selection<"createdDate" | "-createdDate" | "lastModifiedDate" | "-lastModifiedDate" | "placementGroupPosition" | "-placementGroupPosition">;
+  fields?: Selection<"mediaType" | "placementType" | "placementGroup" | "createdDate" | "lastModifiedDate" | "state" | "stateDetails" | "image" | "video" | "appEventLocalization" | "appStoreVersionLocalization" | "appCustomProductPageLocalization" | "appStoreVersionExperimentTreatmentLocalization">;
+  limit?: number;
+  cursor?: string;
+};
+
+export type LibraryImageQuery = {
+  fields?: Selection<"category" | "createdDate" | "lastModifiedDate" | "fileName" | "fileSize" | "imageAsset" | "referenceName" | "specId" | "state" | "stateDetails" | "uploadOperations">;
+};
+
+export type BuildsQuery = {
+  version?: Selection<string>;
+  expired?: Selection<string>;
+  processingState?: Selection<"PROCESSING" | "FAILED" | "INVALID" | "VALID">;
+  betaReviewState?: Selection<"WAITING_FOR_REVIEW" | "IN_REVIEW" | "REJECTED" | "APPROVED">;
+  usesNonExemptEncryption?: Selection<string>;
+  prereleaseVersion?: Selection<string>;
+  platform?: Selection<"IOS" | "MAC_OS" | "TV_OS" | "VISION_OS">;
+  buildAudienceType?: Selection<"INTERNAL_ONLY" | "APP_STORE_ELIGIBLE">;
+  prereleaseVersionId?: Selection<string>;
+  betaGroupId?: Selection<string>;
+  versionId?: Selection<string>;
+  id?: Selection<string>;
+  hasUsesNonExemptEncryption?: boolean;
+  sort?: Selection<"version" | "-version" | "uploadedDate" | "-uploadedDate" | "preReleaseVersion" | "-preReleaseVersion">;
+  fields?: Selection<"version" | "uploadedDate" | "expirationDate" | "expired" | "minOsVersion" | "lsMinimumSystemVersion" | "computedMinMacOsVersion" | "computedMinVisionOsVersion" | "iconAssetToken" | "processingState" | "buildAudienceType" | "usesNonExemptEncryption">;
+  limit?: number;
+  cursor?: string;
+};
+
+export type BuildQuery = {
+  fields?: Selection<"version" | "uploadedDate" | "expirationDate" | "expired" | "minOsVersion" | "lsMinimumSystemVersion" | "computedMinMacOsVersion" | "computedMinVisionOsVersion" | "iconAssetToken" | "processingState" | "buildAudienceType" | "usesNonExemptEncryption">;
+};
+
+export type VersionBuildQuery = {
+  fields?: Selection<"version" | "uploadedDate" | "expirationDate" | "expired" | "minOsVersion" | "lsMinimumSystemVersion" | "computedMinMacOsVersion" | "computedMinVisionOsVersion" | "iconAssetToken" | "processingState" | "buildAudienceType" | "usesNonExemptEncryption">;
+};
+
+export type BuildPrereleaseVersionQuery = {
+};
+
+/** Typed resource methods; all operation behavior lives in the shared Rust core. */
 export abstract class ResourceClient {
   protected abstract getResource<T>(path: string, params: Record<string, string>, query: Query): Promise<T>;
 
@@ -300,6 +607,56 @@ export abstract class ResourceClient {
   /** Read `/apps/{appId}/versions/{versionId}/review-contact` directly from Apple. */
   reviewContact(appId: string, versionId: string, query: ReviewContactQuery | URLSearchParams = {}): Promise<ReviewContact> {
     return this.getResource("/apps/{appId}/versions/{versionId}/review-contact", { appId, versionId }, query);
+  }
+
+  /** Read `/apps/{appId}/versions/{versionId}/localizations/{locale}/screenshot-sets` directly from Apple. */
+  screenshotSets(appId: string, versionId: string, locale: string, query: ScreenshotSetsQuery | URLSearchParams = {}): Promise<Page<ScreenshotSet>> {
+    return this.getResource("/apps/{appId}/versions/{versionId}/localizations/{locale}/screenshot-sets", { appId, versionId, locale }, query);
+  }
+
+  /** Read `/screenshot-sets/{screenshotSetId}/screenshots` directly from Apple. */
+  screenshots(screenshotSetId: string, query: ScreenshotsQuery | URLSearchParams = {}): Promise<Page<Screenshot>> {
+    return this.getResource("/screenshot-sets/{screenshotSetId}/screenshots", { screenshotSetId }, query);
+  }
+
+  /** Read `/apps/{appId}/versions/{versionId}/localizations/{locale}/preview-sets` directly from Apple. */
+  previewSets(appId: string, versionId: string, locale: string, query: PreviewSetsQuery | URLSearchParams = {}): Promise<Page<PreviewSet>> {
+    return this.getResource("/apps/{appId}/versions/{versionId}/localizations/{locale}/preview-sets", { appId, versionId, locale }, query);
+  }
+
+  /** Read `/preview-sets/{previewSetId}/previews` directly from Apple. */
+  previews(previewSetId: string, query: PreviewsQuery | URLSearchParams = {}): Promise<Page<Preview>> {
+    return this.getResource("/preview-sets/{previewSetId}/previews", { previewSetId }, query);
+  }
+
+  /** Read `/apps/{appId}/versions/{versionId}/localizations/{locale}/placements` directly from Apple. */
+  placements(appId: string, versionId: string, locale: string, query: PlacementsQuery | URLSearchParams = {}): Promise<Page<LibraryPlacement>> {
+    return this.getResource("/apps/{appId}/versions/{versionId}/localizations/{locale}/placements", { appId, versionId, locale }, query);
+  }
+
+  /** Read `/library-images/{libraryImageId}` directly from Apple. */
+  libraryImage(libraryImageId: string, query: LibraryImageQuery | URLSearchParams = {}): Promise<LibraryImage> {
+    return this.getResource("/library-images/{libraryImageId}", { libraryImageId }, query);
+  }
+
+  /** Read `/apps/{appId}/builds` directly from Apple. */
+  builds(appId: string, query: BuildsQuery | URLSearchParams = {}): Promise<Page<Build>> {
+    return this.getResource("/apps/{appId}/builds", { appId }, query);
+  }
+
+  /** Read `/apps/{appId}/builds/{buildId}` directly from Apple. */
+  build(appId: string, buildId: string, query: BuildQuery | URLSearchParams = {}): Promise<Build> {
+    return this.getResource("/apps/{appId}/builds/{buildId}", { appId, buildId }, query);
+  }
+
+  /** Read `/apps/{appId}/versions/{versionId}/build` directly from Apple. */
+  versionBuild(appId: string, versionId: string, query: VersionBuildQuery | URLSearchParams = {}): Promise<Build> {
+    return this.getResource("/apps/{appId}/versions/{versionId}/build", { appId, versionId }, query);
+  }
+
+  /** Read `/apps/{appId}/builds/{buildId}/prerelease-version` directly from Apple. */
+  buildPrereleaseVersion(appId: string, buildId: string, query: BuildPrereleaseVersionQuery | URLSearchParams = {}): Promise<PrereleaseVersion> {
+    return this.getResource("/apps/{appId}/builds/{buildId}/prerelease-version", { appId, buildId }, query);
   }
 
 }

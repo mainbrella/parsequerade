@@ -6,6 +6,11 @@ import CryptoKit
 private let key = P256.Signing.PrivateKey()
 private let pem = key.pemRepresentation
 
+private func unbase64URL(_ text: String) -> Data? {
+    let value = text.replacingOccurrences(of: "-", with: "+").replacingOccurrences(of: "_", with: "/")
+    return Data(base64Encoded: value + String(repeating: "=", count: (4 - value.count % 4) % 4))
+}
+
 private struct Fixture: Decodable {
     let handler: String
     let collection: Bool
@@ -87,7 +92,7 @@ final class ClientTests: XCTestCase {
         case "versionLocalizations": return try await client.versionLocalizations(appId: "123", versionId: "version_1").items[0].id
         case "versionLocalization": return try await client.versionLocalization(appId: "123", versionId: "version_1", locale: "en-US").id
         case "reviewContact": return try await client.reviewContact(appId: "123", versionId: "version_1").id
-        default: throw ApiError.notFound()
+        default: throw ApiError(404, "resource_not_found", "Unexpected fixture handler.")
         }
     }
 

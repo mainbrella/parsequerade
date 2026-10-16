@@ -19,6 +19,7 @@ test("packed SDK runs and typechecks outside the checkout without runtime depend
     const [metadata] = JSON.parse(packed.stdout);
     assert.ok(metadata.files.some(file => file.path === "dist/index.d.ts"));
     assert.ok(metadata.files.some(file => file.path === "dist/index.js"));
+    assert.ok(metadata.files.some(file => file.path === "dist/parsequerade.node"));
     assert.ok(metadata.files.every(file => !file.path.startsWith("src/") && !file.path.startsWith("tests/")));
     await writeFile(join(directory, "package.json"), JSON.stringify({ private: true, type: "module" }));
     await run("npm", ["install", "--offline", "--ignore-scripts", "--no-audit", "--no-fund", join(directory, metadata.filename)], { cwd: directory });
@@ -44,6 +45,7 @@ test("packed SDK runs and typechecks outside the checkout without runtime depend
       assert.equal((await client.apps()).items[0].name, 'Packaged app');
       assert.equal(calls, 1);
       await assert.rejects(client.apps({ limit: 0 }), error => error instanceof ApiError && error.code === 'invalid_query');
+      client.close();
     `);
     await run(process.execPath, [join(directory, "consumer.mjs")], { cwd: directory });
     await writeFile(join(directory, "consumer.ts"), `

@@ -2,7 +2,7 @@
 
 An async Rust crate that implements the Parsequerade facade locally. Your program calls Apple directly at `https://api.appstoreconnect.apple.com`, with flat resources and facade query names. No Cloudflare deployment, hosted connection, or facade API key is needed.
 
-The SDK supports 22 reads covering core resources, media, and builds; age-rating and metadata updates; version creation; build attachment; and checkpointed PNG uploads for App Store listing images. The Python SDK uses this same execution core and supports these operations. The hosted Worker, TypeScript, Swift, and Go retain their baseline route sets. Reports, copy workflows, and other proposed operations are not implemented.
+The SDK supports 22 reads covering core resources, media, and builds; age-rating and metadata updates; version creation; build attachment; and checkpointed PNG uploads for App Store listing images. The Python, TypeScript, Go, and Swift SDKs use this same execution core and support these operations. The hosted Worker retains its baseline route set. Reports, copy workflows, and other proposed operations are not implemented.
 
 ## Add to your project
 
@@ -229,11 +229,12 @@ Generated response types, upload models, and bundled contracts come from the lan
 
 ## Shared execution core
 
-This crate is also the execution core for the Python SDK. Python's native extension
-calls these same read, metadata, version, build, and checkpointed upload operations;
-it does not maintain another implementation of the facade. The language-neutral
+This crate is also the execution core for Python, TypeScript, Go, and Swift. Python's
+native extension calls it directly; the other bindings use the shared host bridge in
+`sdks/native`. They call these same read, metadata, version, build, and checkpointed
+upload operations. The language-neutral
 `api/sdk-catalog.json` selects the implemented contracts and generates response types
-and resource methods. Other SDKs retain their existing implementations until migrated.
+and resource methods. The hosted Worker retains its existing implementation and route set.
 
 `HttpTransport` and `Client::with_transport` provide a trusted host boundary for language
 bindings. The core prepares authentication and owns validation, retries, pagination,
@@ -242,5 +243,5 @@ honors the supplied timeout and response-size limit, and never follows redirects
 retries. It receives signed Apple requests, so treat it as trusted application code.
 Blob upload requests contain only Apple's supplied storage headers, without the API JWT.
 
-The Rust and Python suites also consume the same operation scenarios from
+The Rust, native bridge, and language binding suites consume the same operation scenarios from
 `tests/sdk/scenarios.json`; `npm run generate:sdks` copies them into the packaged crate.

@@ -1,7 +1,7 @@
 {
   "name": "@parsequerade/sdk",
   "version": "0.1.0",
-  "description": "The Parsequerade facade for TypeScript, calling App Store Connect directly",
+  "description": "The Parsequerade facade for TypeScript, powered by the shared Rust SDK core",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
