@@ -13,6 +13,7 @@ use tokio::{
 };
 
 mod media;
+mod upload;
 
 pub(super) struct Step {
     method: &'static str,
@@ -24,6 +25,8 @@ pub(super) struct Step {
     body: Option<Value>,
     disconnect: bool,
     delay: Duration,
+    raw_body: Option<Vec<u8>>,
+    request_headers: Vec<(&'static str, String)>,
 }
 impl Step {
     pub(super) fn get(path: &str, payload: Value) -> Self {
@@ -37,6 +40,8 @@ impl Step {
             body: None,
             disconnect: false,
             delay: Duration::ZERO,
+            raw_body: None,
+            request_headers: Vec::new(),
         }
     }
     fn query(mut self, pairs: &[(&str, &str)]) -> Self {
@@ -61,6 +66,20 @@ impl Step {
     pub(super) fn patch(mut self, body: Value) -> Self {
         self.method = "PATCH";
         self.body = Some(body);
+        self
+    }
+    fn post(mut self, body: Value) -> Self {
+        self.method = "POST";
+        self.body = Some(body);
+        self
+    }
+    fn put(mut self, body: &[u8]) -> Self {
+        self.method = "PUT";
+        self.raw_body = Some(body.to_vec());
+        self
+    }
+    fn request_header(mut self, name: &'static str, value: &str) -> Self {
+        self.request_headers.push((name, value.into()));
         self
     }
 }
@@ -150,33 +169,43 @@ pub(super) async fn mock(steps: Vec<Step>) -> (Client, JoinHandle<Vec<String>>) 
                 .filter_map(|l| l.split_once(':'))
                 .map(|(k, v)| (k.to_ascii_lowercase(), v.trim().to_owned()))
                 .collect();
-            let token = headers["authorization"].strip_prefix("Bearer ").unwrap();
-            let (content, sig) = token.rsplit_once('.').unwrap();
-            signature::UnparsedPublicKey::new(&signature::ECDSA_P256_SHA256_FIXED, &public_key)
-                .verify(content.as_bytes(), &URL_SAFE_NO_PAD.decode(sig).unwrap())
-                .unwrap();
-            let segments: Vec<_> = token.split('.').collect();
-            let jwt_header: Value =
-                serde_json::from_slice(&URL_SAFE_NO_PAD.decode(segments[0]).unwrap()).unwrap();
-            let claims: Value =
-                serde_json::from_slice(&URL_SAFE_NO_PAD.decode(segments[1]).unwrap()).unwrap();
-            assert_eq!(
-                jwt_header,
-                json!({"alg":"ES256", "kid":"KEY123", "typ":"JWT"})
-            );
-            assert_eq!(claims["aud"], "appstoreconnect-v1");
-            assert_eq!(claims["iss"], "issuer-fixture");
-            assert_eq!(
-                claims["exp"].as_u64().unwrap() - claims["iat"].as_u64().unwrap(),
-                630
-            );
-            tokens.push(token.to_owned());
+            for (name, value) in step.request_headers {
+                assert_eq!(headers[name], value);
+            }
+            if step.method != "PUT" {
+                let token = headers["authorization"].strip_prefix("Bearer ").unwrap();
+                let (content, sig) = token.rsplit_once('.').unwrap();
+                signature::UnparsedPublicKey::new(&signature::ECDSA_P256_SHA256_FIXED, &public_key)
+                    .verify(content.as_bytes(), &URL_SAFE_NO_PAD.decode(sig).unwrap())
+                    .unwrap();
+                let segments: Vec<_> = token.split('.').collect();
+                let jwt_header: Value =
+                    serde_json::from_slice(&URL_SAFE_NO_PAD.decode(segments[0]).unwrap()).unwrap();
+                let claims: Value =
+                    serde_json::from_slice(&URL_SAFE_NO_PAD.decode(segments[1]).unwrap()).unwrap();
+                assert_eq!(
+                    jwt_header,
+                    json!({"alg":"ES256", "kid":"KEY123", "typ":"JWT"})
+                );
+                assert_eq!(claims["aud"], "appstoreconnect-v1");
+                assert_eq!(claims["iss"], "issuer-fixture");
+                assert_eq!(
+                    claims["exp"].as_u64().unwrap() - claims["iat"].as_u64().unwrap(),
+                    630
+                );
+                tokens.push(token.to_owned());
+            } else {
+                assert!(!headers.contains_key("authorization"));
+                assert!(!headers.contains_key("cookie"));
+            }
             if let Some(body) = step.body {
                 assert_eq!(headers["content-type"], "application/json");
                 assert_eq!(
                     serde_json::from_slice::<Value>(&bytes[header_end..]).unwrap(),
                     body
                 );
+            } else if let Some(raw_body) = step.raw_body {
+                assert_eq!(&bytes[header_end..], raw_body.as_slice());
             } else {
                 assert_eq!(content_length, 0);
             }
@@ -184,7 +213,10 @@ pub(super) async fn mock(steps: Vec<Step>) -> (Client, JoinHandle<Vec<String>>) 
                 continue;
             }
             tokio::time::sleep(step.delay).await;
-            let body = step.payload.to_string();
+            let body = step
+                .payload
+                .to_string()
+                .replace("__MOCK_ORIGIN__", &format!("http://{address}"));
             let mut response = format!(
                 "HTTP/1.1 {} Mock\r\nConnection: close\r\nContent-Length: {}\r\n",
                 step.status,

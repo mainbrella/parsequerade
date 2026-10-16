@@ -119,7 +119,29 @@ impl Client {
         budget: &mut Budget,
         route: &Route,
     ) -> Result<Value> {
-        let write = body.is_some();
+        self.apple_method(
+            url,
+            if body.is_some() {
+                Method::PATCH
+            } else {
+                Method::GET
+            },
+            body,
+            budget,
+            route,
+        )
+        .await
+    }
+
+    pub(crate) async fn apple_method(
+        &self,
+        url: Url,
+        method: Method,
+        body: Option<&Value>,
+        budget: &mut Budget,
+        route: &Route,
+    ) -> Result<Value> {
+        let write = method != Method::GET;
         if url.origin() != self.inner.origin.origin()
             || !url.username().is_empty()
             || url.password().is_some()
@@ -158,7 +180,7 @@ impl Client {
                 let mut request = self
                     .inner
                     .http
-                    .request(if write { Method::PATCH } else { Method::GET }, url.clone())
+                    .request(method.clone(), url.clone())
                     .bearer_auth(&jwt)
                     .header(header::ACCEPT, "application/json");
                 if let Some(body) = body {

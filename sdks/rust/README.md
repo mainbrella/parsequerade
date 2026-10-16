@@ -2,7 +2,7 @@
 
 An async Rust crate that implements the Parsequerade facade locally. Your program calls Apple directly at `https://api.appstoreconnect.apple.com`, with flat resources and facade query names. No Cloudflare deployment, hosted connection, or facade API key is needed.
 
-The SDK covers the 12 implemented core read routes, six documented media reads, and the scoped age-rating update. The media adapters are available in this Rust SDK; the hosted Worker and other SDKs still expose their existing route sets. Reports, other writes, copy workflows, and other proposed routes are not implemented.
+The SDK covers the implemented core read routes, documented media reads, scoped age-rating updates, and a narrow PNG upload for App Store listing images. The media adapters and listing-image upload are available in this Rust SDK; the hosted Worker and other SDKs still expose their existing route sets. Reports, other writes, copy workflows, and other proposed routes are not implemented.
 
 ## Add to your project
 
@@ -140,7 +140,25 @@ for set in sets.items {
 }
 ```
 
-`Screenshot::image_asset` contains Apple's image URL template and dimensions. `Preview::preview_frame_image` contains a nested `image` with the same fields and its processing `state`; a preview can also contain `video_url` and `video_delivery_state`. Missing or processing media remain optional. The SDK returns asset metadata without downloading images, playing videos, or performing any upload operation. Generic `get::<Page<serde_json::Value>>` reads preserve explicit nulls and additional fields inside nested asset metadata.
+`Screenshot::image_asset` contains Apple's image URL template and dimensions. `Preview::preview_frame_image` contains a nested `image` with the same fields and its processing `state`; a preview can also contain `video_url` and `video_delivery_state`. Missing or processing media remain optional. The SDK returns asset metadata without downloading image bytes or playing videos. Generic `get::<Page<serde_json::Value>>` reads preserve explicit nulls and additional fields inside nested asset metadata.
+
+## Upload a listing image
+
+The Rust SDK can upload one PNG as a product page header or App Store search result image. It validates the PNG dimensions and Apple's live reference data before reserving an image, uploads the reserved byte ranges, commits the image, and creates a placement for the exact version localization. Existing placements are never replaced. Apple must grant the key access to the App Asset Library and the selected version.
+
+The runnable example reads Studio's flat credentials JSON (`connection.issuerId`, `connection.keyId`, and `connection.privateKey`), writes an atomic checkpoint before each Apple write, and prints a receipt only after reading the placement back:
+
+```sh
+cargo run --manifest-path sdks/rust/Cargo.toml --example upload_listing_image -- \\
+  --credentials ./credentials.json \\
+  --app-id 1234567890 --version-id VERSION_ID --locale en-US \\
+  --placement-type PRODUCT_PAGE_HEADER_ASSET --png ./header.png \\
+  --receipt ./header.receipt.json
+```
+
+Use `APP_STORE_SEARCH_RESULTS_ASSET` for search artwork. Header PNGs must be exactly 3840×1646; search PNGs must be exactly 1920×1280. The checkpoint defaults to `<receipt>.checkpoint.json`. Keep it with the same PNG and request to resume. A `write_outcome_unknown` error means Apple may have accepted the request; rerun with the same checkpoint so the SDK can reconcile the image or placement before continuing. The checkpoint contains IDs and a local content binding, never upload URLs or credentials. The command creates an exclusive `.lock` file while running; after a crash, inspect the checkpoint and remove a stale lock manually.
+
+The upload is a local SDK capability that calls App Store Connect and Apple's blob storage directly. It does not add hosted upload support.
 
 ## Pagination
 

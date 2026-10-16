@@ -7,6 +7,7 @@ mod generated;
 mod pagination;
 mod resources;
 mod transport;
+mod upload;
 
 pub use error::{Error, ErrorDetail, Result};
 pub use generated::*;
@@ -15,6 +16,10 @@ use ring::{hmac, rand::SystemRandom};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::sync::Arc;
+pub use upload::{
+    ListingImagePlacementType, ListingImageUpload, ListingImageUploadCheckpoint,
+    ListingImageUploadReceipt,
+};
 
 /// Facade query names, e.g. `bundleId`, `platform`, `state`, `fields`, `limit`, `cursor`.
 /// Values use the hosted facade's comma-separated format and are validated per route.
